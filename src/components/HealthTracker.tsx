@@ -33,9 +33,9 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
 
   const [customValue, setCustomValue] = useState<string>('');
   const [isEditingMax, setIsEditingMax] = useState(false);
-  const [editingMaxHp, setEditingMaxHp] = useState(health.maxHp);
+  const [editingMaxHp, setEditingMaxHp] = useState<number | ''>(health.maxHp);
   const [isEditingTemp, setIsEditingTemp] = useState(false);
-  const [editingTempHp, setEditingTempHp] = useState(health.tempHp);
+  const [editingTempHp, setEditingTempHp] = useState<number | ''>(health.tempHp);
   const [feedbackEffect, setFeedbackEffect] = useState<'damage' | 'heal' | null>(null);
 
   const toggleCompact = () => {
@@ -301,7 +301,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               type="number"
               min={1}
               value={editingMaxHp}
-              onChange={(e) => setEditingMaxHp(Number(e.target.value))}
+              onChange={(e) => setEditingMaxHp(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-amber-400"
               required
             />
@@ -316,10 +316,9 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               <button
                 type="button"
                 onClick={() => {
-                  if (editingMaxHp >= 1) {
-                    onUpdateHealth(updateMaxHp(health, editingMaxHp));
-                    setIsEditingMax(false);
-                  }
+                  const newMax = Math.max(1, Math.floor(editingMaxHp === '' ? 1 : editingMaxHp));
+                  onUpdateHealth(updateMaxHp(health, newMax));
+                  setIsEditingMax(false);
                 }}
                 className="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"
               >
@@ -339,8 +338,8 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               type="number"
               min={0}
               value={editingTempHp}
-              onChange={(e) => setEditingTempHp(Number(e.target.value))}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-cyan-400"
+              onChange={(e) => setEditingTempHp(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
               required
             />
             <div className="flex gap-2">
@@ -354,7 +353,8 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               <button
                 type="button"
                 onClick={() => {
-                  onUpdateHealth(setTempHp(health, editingTempHp));
+                  const newTemp = Math.max(0, Math.floor(editingTempHp === '' ? 0 : editingTempHp));
+                  onUpdateHealth(setTempHp(health, newTemp));
                   setIsEditingTemp(false);
                 }}
                 className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"

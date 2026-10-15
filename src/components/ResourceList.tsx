@@ -39,7 +39,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const [usageMode, setUsageMode] = useState<UsageMode>('limited');
   const [spellLevel, setSpellLevel] = useState<number>(1);
   const [url, setUrl] = useState('');
-  const [maxUses, setMaxUses] = useState(3);
+  const [maxUses, setMaxUses] = useState<number | ''>(3);
   const [description, setDescription] = useState('');
 
   const filteredResources = resources.filter((res) => {
@@ -61,7 +61,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         usageMode,
         spellLevel: category === 'spell' ? spellLevel : null,
         url: url.trim() || undefined,
-        maxUses: usageMode === 'limited' ? maxUses : null,
+        maxUses: usageMode === 'limited' ? (maxUses === '' ? 1 : Math.max(1, Math.floor(maxUses))) : null,
         description: description.trim(),
       },
       resources.length
@@ -246,7 +246,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     type="number"
                     min={1}
                     value={maxUses}
-                    onChange={(e) => setMaxUses(Number(e.target.value))}
+                    onChange={(e) => setMaxUses(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-bold text-center text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
                     required
                   />

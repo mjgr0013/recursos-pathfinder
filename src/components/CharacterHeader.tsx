@@ -11,7 +11,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(profile.name);
-  const [level, setLevel] = useState(profile.level);
+  const [level, setLevel] = useState<number | ''>(profile.level);
   const [characterClass, setCharacterClass] = useState(profile.characterClass);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
@@ -38,9 +38,11 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
     const cleanClass = characterClass.trim();
     if (!cleanName || !cleanClass) return;
 
+    const cleanLevel = Math.min(20, Math.max(1, Math.floor(level === '' ? 1 : level)));
+
     onUpdateProfile({
       name: cleanName.slice(0, 60),
-      level: Math.min(20, Math.max(1, Math.floor(level))),
+      level: cleanLevel,
       characterClass: cleanClass.slice(0, 60),
       updatedAt: new Date().toISOString(),
     });
@@ -157,7 +159,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
                     min={1}
                     max={20}
                     value={level}
-                    onChange={(e) => setLevel(Number(e.target.value))}
+                    onChange={(e) => setLevel(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch text-center"
                     required
                   />

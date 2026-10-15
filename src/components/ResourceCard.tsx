@@ -25,8 +25,8 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isEditingMax, setIsEditingMax] = useState(false);
-  const [editingAvailVal, setEditingAvailVal] = useState(resource.availableUses ?? resource.maxUses ?? 1);
-  const [editingMaxVal, setEditingMaxVal] = useState(resource.maxUses ?? 1);
+  const [editingAvailVal, setEditingAvailVal] = useState<number | ''>(resource.availableUses ?? resource.maxUses ?? 1);
+  const [editingMaxVal, setEditingMaxVal] = useState<number | ''>(resource.maxUses ?? 1);
 
   const isSpell = resource.category === 'spell';
   const isCantrip = isSpell && resource.spellLevel === 0;
@@ -244,8 +244,8 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const cleanMax = Math.max(1, Math.floor(editingMaxVal));
-                const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingAvailVal)));
+                const cleanMax = Math.max(1, Math.floor(editingMaxVal === '' ? 1 : editingMaxVal));
+                const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingAvailVal === '' ? 0 : editingAvailVal)));
                 if (onUpdateResourceUses) {
                   onUpdateResourceUses(resource.id, cleanAvail, cleanMax);
                 } else if (onUpdateResourceMaxUses) {
@@ -262,9 +262,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                 <input
                   type="number"
                   min={0}
-                  max={Math.max(1, editingMaxVal)}
+                  max={editingMaxVal === '' ? undefined : Math.max(1, editingMaxVal)}
                   value={editingAvailVal}
-                  onChange={(e) => setEditingAvailVal(Number(e.target.value))}
+                  onChange={(e) => setEditingAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
                   required
                 />
@@ -278,7 +278,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                   type="number"
                   min={1}
                   value={editingMaxVal}
-                  onChange={(e) => setEditingMaxVal(Number(e.target.value))}
+                  onChange={(e) => setEditingMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
                   required
                 />

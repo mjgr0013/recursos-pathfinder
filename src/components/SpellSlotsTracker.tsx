@@ -16,7 +16,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [editingLevel, setEditingLevel] = useState<number | null>(null);
-  const [editingMaxVal, setEditingMaxVal] = useState<number>(0);
+  const [editingMaxVal, setEditingMaxVal] = useState<number | ''>(0);
 
   const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -32,7 +32,8 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
   const handleSaveMax = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingLevel !== null) {
-      onUpdateMaxSlots(editingLevel, Math.max(0, Math.floor(editingMaxVal)));
+      const cleanMax = Math.max(0, Math.floor(editingMaxVal === '' ? 0 : editingMaxVal));
+      onUpdateMaxSlots(editingLevel, cleanMax);
       setEditingLevel(null);
     }
   };
@@ -153,7 +154,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                 type="number"
                 min={0}
                 value={editingMaxVal}
-                onChange={(e) => setEditingMaxVal(Number(e.target.value))}
+                onChange={(e) => setEditingMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-purple-400"
                 required
               />

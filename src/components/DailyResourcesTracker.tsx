@@ -26,14 +26,14 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
 
   // Slot editing state
   const [editingSlotLevel, setEditingSlotLevel] = useState<number | null>(null);
-  const [editingSlotAvailVal, setEditingSlotAvailVal] = useState<number>(0);
-  const [editingSlotMaxVal, setEditingSlotMaxVal] = useState<number>(0);
+  const [editingSlotAvailVal, setEditingSlotAvailVal] = useState<number | ''>(0);
+  const [editingSlotMaxVal, setEditingSlotMaxVal] = useState<number | ''>(0);
 
   // Trait editing state
   const [editingTraitId, setEditingTraitId] = useState<string | null>(null);
   const [editingTraitName, setEditingTraitName] = useState<string>('');
-  const [editingTraitAvailVal, setEditingTraitAvailVal] = useState<number>(1);
-  const [editingTraitMaxVal, setEditingTraitMaxVal] = useState<number>(1);
+  const [editingTraitAvailVal, setEditingTraitAvailVal] = useState<number | ''>(1);
+  const [editingTraitMaxVal, setEditingTraitMaxVal] = useState<number | ''>(1);
 
   // Derivado ESTRICTAMENTE del conjuro más alto (0 si no tiene conjuros de nivel >= 1)
   const maxActiveLevel = getHighestSpellLevel(resources);
@@ -44,12 +44,6 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
 
   const limitedTraits = getLimitedTraits(resources);
 
-  // Totales para badge de cabecera
-  const totalSlotsAvail = activeSpellLevels.reduce((acc, lvl) => acc + (spellSlots[lvl]?.available ?? 0), 0);
-  const totalSlotsMax = activeSpellLevels.reduce((acc, lvl) => acc + (spellSlots[lvl]?.max ?? 0), 0);
-  const totalTraitsAvail = limitedTraits.reduce((acc, t) => acc + (t.availableUses ?? 0), 0);
-  const totalTraitsMax = limitedTraits.reduce((acc, t) => acc + (t.maxUses ?? 0), 0);
-
   const handleOpenEditSlot = (lvl: number) => {
     setEditingSlotLevel(lvl);
     setEditingSlotAvailVal(spellSlots[lvl]?.available ?? 0);
@@ -59,8 +53,8 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   const handleSaveSlot = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingSlotLevel !== null) {
-      const cleanMax = Math.max(0, Math.floor(editingSlotMaxVal));
-      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingSlotAvailVal)));
+      const cleanMax = Math.max(0, Math.floor(editingSlotMaxVal === '' ? 0 : editingSlotMaxVal));
+      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingSlotAvailVal === '' ? 0 : editingSlotAvailVal)));
       if (onUpdateSlotValues) {
         onUpdateSlotValues(editingSlotLevel, cleanAvail, cleanMax);
       } else if (onUpdateMaxSlots) {
@@ -80,8 +74,8 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   const handleSaveTrait = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTraitId !== null) {
-      const cleanMax = Math.max(1, Math.floor(editingTraitMaxVal));
-      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingTraitAvailVal)));
+      const cleanMax = Math.max(1, Math.floor(editingTraitMaxVal === '' ? 1 : editingTraitMaxVal));
+      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingTraitAvailVal === '' ? 0 : editingTraitAvailVal)));
       if (onUpdateResourceUses) {
         onUpdateResourceUses(editingTraitId, cleanAvail, cleanMax);
       } else if (onUpdateResourceMaxUses) {
@@ -106,22 +100,6 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
               Recursos Diarios
             </h3>
             <p className="text-[11px] text-slate-400 font-medium">
-              {maxActiveLevel > 0 && limitedTraits.length > 0 && (
-                <>
-                  Magia: <span className="text-purple-300 font-bold">{totalSlotsAvail}/{totalSlotsMax}</span> •{' '}
-                  Rasgos: <span className="text-amber-300 font-bold">{totalTraitsAvail}/{totalTraitsMax}</span>
-                </>
-              )}
-              {maxActiveLevel > 0 && limitedTraits.length === 0 && (
-                <>
-                  Magia: <span className="text-purple-300 font-bold">{totalSlotsAvail}/{totalSlotsMax}</span>
-                </>
-              )}
-              {maxActiveLevel === 0 && limitedTraits.length > 0 && (
-                <>
-                  Rasgos: <span className="text-amber-300 font-bold">{totalTraitsAvail}/{totalTraitsMax}</span>
-                </>
-              )}
               {maxActiveLevel === 0 && limitedTraits.length === 0 && (
                 <>Sin recursos diarios activos</>
               )}
@@ -278,9 +256,9 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 <input
                   type="number"
                   min={0}
-                  max={Math.max(0, editingSlotMaxVal)}
+                  max={editingSlotMaxVal === '' ? undefined : Math.max(0, editingSlotMaxVal)}
                   value={editingSlotAvailVal}
-                  onChange={(e) => setEditingSlotAvailVal(Number(e.target.value))}
+                  onChange={(e) => setEditingSlotAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
                   required
                 />
@@ -294,7 +272,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   type="number"
                   min={0}
                   value={editingSlotMaxVal}
-                  onChange={(e) => setEditingSlotMaxVal(Number(e.target.value))}
+                  onChange={(e) => setEditingSlotMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
                   required
                 />
@@ -338,9 +316,9 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 <input
                   type="number"
                   min={0}
-                  max={Math.max(1, editingTraitMaxVal)}
+                  max={editingTraitMaxVal === '' ? undefined : Math.max(1, editingTraitMaxVal)}
                   value={editingTraitAvailVal}
-                  onChange={(e) => setEditingTraitAvailVal(Number(e.target.value))}
+                  onChange={(e) => setEditingTraitAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
                   required
                 />
@@ -354,7 +332,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   type="number"
                   min={1}
                   value={editingTraitMaxVal}
-                  onChange={(e) => setEditingTraitMaxVal(Number(e.target.value))}
+                  onChange={(e) => setEditingTraitMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
                   required
                 />
