@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PathfinderCharacterBackup",
+  "description": "Schema for exporting and importing Pathfinder character tracking sheets.",
+  "type": "object",
+  "required": ["schemaVersion", "exportedAt", "character", "health", "resources"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["1.0.0"]
+    },
+    "exportedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "character": {
+      "type": "object",
+      "required": ["id", "name", "level", "characterClass", "createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "characterClass": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "avatarDataUrl": {
+          "type": "string",
+          "pattern": "^data:image/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "required": ["maxHp", "currentHp", "tempHp"],
+      "additionalProperties": false,
+      "properties": {
+        "maxHp": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currentHp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tempHp": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "category", "usageMode", "description", "sortOrder"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "category": {
+            "type": "string",
+            "enum": ["spell", "feat_trait"]
+          },
+          "usageMode": {
+            "type": "string",
+            "enum": ["limited", "unlimited"]
+          },
+          "maxUses": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          },
+          "availableUses": {
+            "type": ["integer", "null"],
+            "minimum": 0
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "sortOrder": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

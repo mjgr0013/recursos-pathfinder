@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .touch-btn {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center select-none active:scale-95 transition-all duration-75;
+  }
+}
