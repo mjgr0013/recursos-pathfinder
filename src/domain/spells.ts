@@ -117,6 +117,32 @@ export function updateSpellSlotMax(slots: SpellSlotsMap, level: number, rawMax: 
 }
 
 /**
+ * Actualiza tanto los espacios disponibles como los máximos de un nivel,
+ * asegurando las invariantes: max >= 0 y 0 <= available <= max.
+ */
+export function updateSpellSlotValues(
+  slots: SpellSlotsMap,
+  level: number,
+  rawAvailable: number,
+  rawMax: number
+): SpellSlotsMap {
+  const slot = slots[level];
+  if (!slot) return slots;
+
+  const max = Math.max(0, Math.floor(rawMax));
+  const available = Math.max(0, Math.min(max, Math.floor(rawAvailable)));
+
+  return {
+    ...slots,
+    [level]: {
+      ...slot,
+      max,
+      available,
+    },
+  };
+}
+
+/**
  * Restablece todos los espacios disponibles de todos los niveles a su capacidad máxima.
  */
 export function resetAllSpellSlots(slots: SpellSlotsMap): SpellSlotsMap {

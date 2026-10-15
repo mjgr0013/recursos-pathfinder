@@ -4,6 +4,7 @@ import {
   spendSpellSlot,
   restoreSpellSlot,
   updateSpellSlotMax,
+  updateSpellSlotValues,
   resetAllSpellSlots,
   getMaxActiveSpellLevel,
   getHighestSpellLevel,
@@ -59,6 +60,46 @@ describe('Spell Slots Domain Calculations (Pathfinder Rules)', () => {
     const reduced = updateSpellSlotMax(expanded, 1, 2);
     expect(reduced[1].max).toBe(2);
     expect(reduced[1].available).toBe(2);
+  });
+
+  describe('updateSpellSlotValues', () => {
+    it('updates both available and max slots correctly', () => {
+      const initial = createDefaultSpellSlots(); // 3/3
+      const updated = updateSpellSlotValues(initial, 1, 2, 4);
+      expect(updated[1].available).toBe(2);
+      expect(updated[1].max).toBe(4);
+    });
+
+    it('clamps available slots if raw available exceeds max', () => {
+      const initial = createDefaultSpellSlots();
+      const updated = updateSpellSlotValues(initial, 1, 10, 3);
+      expect(updated[1].available).toBe(3);
+      expect(updated[1].max).toBe(3);
+    });
+
+    it('clamps available slots to minimum 0 if negative', () => {
+      const initial = createDefaultSpellSlots();
+      const updated = updateSpellSlotValues(initial, 1, -2, 3);
+      expect(updated[1].available).toBe(0);
+      expect(updated[1].max).toBe(3);
+    });
+
+    it('enforces max >= 0 when setting 0 slots', () => {
+      const initial = createDefaultSpellSlots();
+      const updated = updateSpellSlotValues(initial, 1, 5, 0);
+      expect(updated[1].max).toBe(0);
+      expect(updated[1].available).toBe(0);
+    });
+
+    it('allows correcting an accidental spend without long rest', () => {
+      let slots = createDefaultSpellSlots(); // 3/3
+      slots = spendSpellSlot(slots, 1); // 2/3 (accidental click)
+      expect(slots[1].available).toBe(2);
+
+      const corrected = updateSpellSlotValues(slots, 1, 3, 3);
+      expect(corrected[1].available).toBe(3);
+      expect(corrected[1].max).toBe(3);
+    });
   });
 
   it('resets all spell slots to their maximum capacity', () => {

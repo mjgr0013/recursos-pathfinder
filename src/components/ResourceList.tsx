@@ -13,6 +13,7 @@ interface ResourceListProps {
   onSpendSpellSlot: (level: number) => void;
   onRestoreSpellSlot: (level: number) => void;
   onUpdateResourceMaxUses?: (id: string, newMax: number) => void;
+  onUpdateResourceUses?: (id: string, newAvailable: number, newMax: number) => void;
 }
 
 type FilterTab = 'all' | 'spell' | 'feat_trait';
@@ -27,6 +28,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   onSpendSpellSlot,
   onRestoreSpellSlot,
   onUpdateResourceMaxUses,
+  onUpdateResourceUses,
 }) => {
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,6 +157,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               onSpendSpellSlot={onSpendSpellSlot}
               onRestoreSpellSlot={onRestoreSpellSlot}
               onUpdateResourceMaxUses={onUpdateResourceMaxUses}
+              onUpdateResourceUses={onUpdateResourceUses}
             />
           ))
         )}

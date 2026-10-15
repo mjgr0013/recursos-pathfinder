@@ -6,29 +6,33 @@ import { getLimitedTraits } from '../domain/resources';
 interface DailyResourcesTrackerProps {
   spellSlots: SpellSlotsMap;
   resources: ResourceItem[];
-  onUpdateMaxSlots: (level: number, newMax: number) => void;
-  onSpendResource: (id: string) => void;
-  onRestoreResource: (id: string) => void;
-  onUpdateResourceMaxUses: (id: string, newMax: number) => void;
+  onUpdateMaxSlots?: (level: number, newMax: number) => void;
+  onUpdateSlotValues?: (level: number, newAvailable: number, newMax: number) => void;
+  onSpendResource?: (id: string) => void;
+  onRestoreResource?: (id: string) => void;
+  onUpdateResourceMaxUses?: (id: string, newMax: number) => void;
+  onUpdateResourceUses?: (id: string, newAvailable: number, newMax: number) => void;
 }
 
 export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   spellSlots,
   resources,
   onUpdateMaxSlots,
-  onSpendResource,
-  onRestoreResource,
+  onUpdateSlotValues,
   onUpdateResourceMaxUses,
+  onUpdateResourceUses,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Slot editing state
   const [editingSlotLevel, setEditingSlotLevel] = useState<number | null>(null);
+  const [editingSlotAvailVal, setEditingSlotAvailVal] = useState<number>(0);
   const [editingSlotMaxVal, setEditingSlotMaxVal] = useState<number>(0);
 
   // Trait editing state
   const [editingTraitId, setEditingTraitId] = useState<string | null>(null);
   const [editingTraitName, setEditingTraitName] = useState<string>('');
+  const [editingTraitAvailVal, setEditingTraitAvailVal] = useState<number>(1);
   const [editingTraitMaxVal, setEditingTraitMaxVal] = useState<number>(1);
 
   // Derivado ESTRICTAMENTE del conjuro más alto (0 si no tiene conjuros de nivel >= 1)
@@ -48,13 +52,20 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
 
   const handleOpenEditSlot = (lvl: number) => {
     setEditingSlotLevel(lvl);
+    setEditingSlotAvailVal(spellSlots[lvl]?.available ?? 0);
     setEditingSlotMaxVal(spellSlots[lvl]?.max ?? 0);
   };
 
-  const handleSaveSlotMax = (e: React.FormEvent) => {
+  const handleSaveSlot = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingSlotLevel !== null) {
-      onUpdateMaxSlots(editingSlotLevel, Math.max(0, Math.floor(editingSlotMaxVal)));
+      const cleanMax = Math.max(0, Math.floor(editingSlotMaxVal));
+      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingSlotAvailVal)));
+      if (onUpdateSlotValues) {
+        onUpdateSlotValues(editingSlotLevel, cleanAvail, cleanMax);
+      } else if (onUpdateMaxSlots) {
+        onUpdateMaxSlots(editingSlotLevel, cleanMax);
+      }
       setEditingSlotLevel(null);
     }
   };
@@ -62,13 +73,20 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   const handleOpenEditTrait = (trait: ResourceItem) => {
     setEditingTraitId(trait.id);
     setEditingTraitName(trait.name);
+    setEditingTraitAvailVal(trait.availableUses ?? trait.maxUses ?? 1);
     setEditingTraitMaxVal(trait.maxUses ?? 1);
   };
 
-  const handleSaveTraitMax = (e: React.FormEvent) => {
+  const handleSaveTrait = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTraitId !== null) {
-      onUpdateResourceMaxUses(editingTraitId, Math.max(1, Math.floor(editingTraitMaxVal)));
+      const cleanMax = Math.max(1, Math.floor(editingTraitMaxVal));
+      const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingTraitAvailVal)));
+      if (onUpdateResourceUses) {
+        onUpdateResourceUses(editingTraitId, cleanAvail, cleanMax);
+      } else if (onUpdateResourceMaxUses) {
+        onUpdateResourceMaxUses(editingTraitId, cleanMax);
+      }
       setEditingTraitId(null);
     }
   };
@@ -88,12 +106,25 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
               Recursos Diarios
             </h3>
             <p className="text-[11px] text-slate-400 font-medium">
-              {maxActiveLevel > 0 && (
+              {maxActiveLevel > 0 && limitedTraits.length > 0 && (
                 <>
                   Magia: <span className="text-purple-300 font-bold">{totalSlotsAvail}/{totalSlotsMax}</span> •{' '}
+                  Rasgos: <span className="text-amber-300 font-bold">{totalTraitsAvail}/{totalTraitsMax}</span>
                 </>
               )}
-              Rasgos: <span className="text-amber-300 font-bold">{totalTraitsAvail}/{totalTraitsMax}</span>
+              {maxActiveLevel > 0 && limitedTraits.length === 0 && (
+                <>
+                  Magia: <span className="text-purple-300 font-bold">{totalSlotsAvail}/{totalSlotsMax}</span>
+                </>
+              )}
+              {maxActiveLevel === 0 && limitedTraits.length > 0 && (
+                <>
+                  Rasgos: <span className="text-amber-300 font-bold">{totalTraitsAvail}/{totalTraitsMax}</span>
+                </>
+              )}
+              {maxActiveLevel === 0 && limitedTraits.length === 0 && (
+                <>Sin recursos diarios activos</>
+              )}
             </p>
           </div>
         </button>
@@ -162,7 +193,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                           type="button"
                           onClick={() => handleOpenEditSlot(lvl)}
                           className="touch-btn w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-amber-400 rounded-lg text-xs"
-                          title={`Editar espacios máximos nivel ${lvl}`}
+                          title={`Editar espacios nivel ${lvl}`}
                           aria-label={`Editar espacios nivel ${lvl}`}
                         >
                           ✏️
@@ -193,51 +224,34 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   return (
                     <div
                       key={`trait-daily-${trait.id}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
+                      className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
                     >
-                      <div className="flex items-center gap-1 min-w-[80px] max-w-[140px]">
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
                         <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>
                           {trait.name}
                         </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="text-right">
+                          <span
+                            className={`text-sm font-extrabold ${
+                              isOutOfUses ? 'text-rose-400' : 'text-slate-100'
+                            }`}
+                          >
+                            {available}
+                          </span>
+                          <span className="text-xs text-slate-500 font-bold"> / {max} usos</span>
+                        </div>
+
                         <button
                           type="button"
                           onClick={() => handleOpenEditTrait(trait)}
-                          className="text-[10px] text-slate-400 hover:text-amber-400 touch-btn p-1 shrink-0"
-                          title={`Editar usos máximos de ${trait.name}`}
+                          className="touch-btn w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-amber-400 rounded-lg text-xs"
+                          title={`Editar usos de ${trait.name}`}
+                          aria-label={`Editar usos de ${trait.name}`}
                         >
                           ✏️
-                        </button>
-                      </div>
-
-                      <div className="px-1 text-center">
-                        <span
-                          className={`text-sm font-extrabold ${
-                            isOutOfUses ? 'text-rose-400' : 'text-slate-100'
-                          }`}
-                        >
-                          {available}
-                        </span>
-                        <span className="text-xs text-slate-500 font-bold">/{max}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          disabled={available === 0}
-                          onClick={() => onSpendResource(trait.id)}
-                          className="touch-btn w-10 h-10 bg-amber-950/90 hover:bg-amber-900 border border-amber-800 text-amber-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95"
-                          title={`Gastar uso de ${trait.name}`}
-                        >
-                          -1
-                        </button>
-                        <button
-                          type="button"
-                          disabled={available >= max}
-                          onClick={() => onRestoreResource(trait.id)}
-                          className="touch-btn w-10 h-10 bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-800 text-emerald-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95"
-                          title={`Recuperar uso de ${trait.name}`}
-                        >
-                          +1
                         </button>
                       </div>
                     </div>
@@ -249,23 +263,44 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         </div>
       )}
 
-      {/* Modal Editar Máximo de Espacios */}
+      {/* Modal Editar Espacios de Conjuro (Disponibles y Máximos) */}
       {editingSlotLevel !== null && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
             <h4 className="text-sm font-bold text-slate-100 mb-2">
-              Espacios Máximos Nivel {editingSlotLevel}
+              Espacios de Magia Nivel {editingSlotLevel}
             </h4>
-            <form onSubmit={handleSaveSlotMax}>
-              <input
-                type="number"
-                min={0}
-                value={editingSlotMaxVal}
-                onChange={(e) => setEditingSlotMaxVal(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-purple-400"
-                required
-              />
-              <div className="flex gap-2">
+            <form onSubmit={handleSaveSlot} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Espacios Disponibles (Actuales)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={Math.max(0, editingSlotMaxVal)}
+                  value={editingSlotAvailVal}
+                  onChange={(e) => setEditingSlotAvailVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Espacios Máximos
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={editingSlotMaxVal}
+                  onChange={(e) => setEditingSlotMaxVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setEditingSlotLevel(null)}
@@ -285,26 +320,47 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         </div>
       )}
 
-      {/* Modal Editar Máximo de Usos de Rasgo */}
+      {/* Modal Editar Usos de Rasgo (Disponibles y Máximos) */}
       {editingTraitId !== null && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
             <h4 className="text-sm font-bold text-slate-100 mb-1">
-              Usos Máximos Diarios
+              Editar Usos Diarios
             </h4>
             <p className="text-xs text-amber-300 font-semibold mb-3 truncate">
               {editingTraitName}
             </p>
-            <form onSubmit={handleSaveTraitMax}>
-              <input
-                type="number"
-                min={1}
-                value={editingTraitMaxVal}
-                onChange={(e) => setEditingTraitMaxVal(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-amber-400"
-                required
-              />
-              <div className="flex gap-2">
+            <form onSubmit={handleSaveTrait} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Usos Disponibles (Actuales)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={Math.max(1, editingTraitMaxVal)}
+                  value={editingTraitAvailVal}
+                  onChange={(e) => setEditingTraitAvailVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Usos Máximos Diarios
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  value={editingTraitMaxVal}
+                  onChange={(e) => setEditingTraitMaxVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setEditingTraitId(null)}

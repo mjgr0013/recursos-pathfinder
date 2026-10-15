@@ -13,8 +13,14 @@ import {
   deleteResource,
   applyLongRest,
   updateResourceMaxUses,
+  updateResourceUses,
 } from './domain/resources';
-import { spendSpellSlot, restoreSpellSlot, updateSpellSlotMax } from './domain/spells';
+import {
+  spendSpellSlot,
+  restoreSpellSlot,
+  updateSpellSlotMax,
+  updateSpellSlotValues,
+} from './domain/spells';
 
 export default function App() {
   const [characterState, setCharacterState] = useState<CharacterState>(() => loadCharacterState());
@@ -69,6 +75,14 @@ export default function App() {
     showToast('Usos máximos actualizados');
   };
 
+  const handleUpdateResourceUses = (id: string, newAvailable: number, newMax: number) => {
+    setCharacterState((prev) => ({
+      ...prev,
+      resources: updateResourceUses(prev.resources, id, newAvailable, newMax),
+    }));
+    showToast('Usos actualizados');
+  };
+
   const handleSpendSlot = (level: number) => {
     setCharacterState((prev) => ({
       ...prev,
@@ -87,6 +101,14 @@ export default function App() {
     setCharacterState((prev) => ({
       ...prev,
       spellSlots: updateSpellSlotMax(prev.spellSlots, level, newMax),
+    }));
+    showToast(`Espacios nivel ${level} actualizados`);
+  };
+
+  const handleUpdateSpellSlotValues = (level: number, newAvailable: number, newMax: number) => {
+    setCharacterState((prev) => ({
+      ...prev,
+      spellSlots: updateSpellSlotValues(prev.spellSlots, level, newAvailable, newMax),
     }));
     showToast(`Espacios nivel ${level} actualizados`);
   };
@@ -168,14 +190,16 @@ export default function App() {
           }
         />
 
-        {/* Feature 003: Unified Daily Resources (Dynamic Spell Slots + Limited Traits) */}
+        {/* Feature 003 & 006: Unified Daily Resources (Dynamic Spell Slots + Limited Traits) */}
         <DailyResourcesTracker
           spellSlots={characterState.spellSlots}
           resources={characterState.resources}
           onUpdateMaxSlots={handleUpdateMaxSlots}
+          onUpdateSlotValues={handleUpdateSpellSlotValues}
           onSpendResource={handleSpendResource}
           onRestoreResource={handleRestoreResource}
           onUpdateResourceMaxUses={handleUpdateResourceMaxUses}
+          onUpdateResourceUses={handleUpdateResourceUses}
         />
 
         {/* Catalog: Full Spells & Feats Resource List with Rules */}
@@ -189,6 +213,7 @@ export default function App() {
           onSpendSpellSlot={handleSpendSlot}
           onRestoreSpellSlot={handleRestoreSlot}
           onUpdateResourceMaxUses={handleUpdateResourceMaxUses}
+          onUpdateResourceUses={handleUpdateResourceUses}
         />
       </main>
 

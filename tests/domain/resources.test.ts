@@ -8,6 +8,7 @@ import {
   applyLongRest,
   getLimitedTraits,
   updateResourceMaxUses,
+  updateResourceUses,
 } from '../../src/domain/resources';
 import { createDefaultSpellSlots } from '../../src/domain/spells';
 
@@ -258,6 +259,108 @@ describe('Resource Domain Calculations (Pathfinder Rules)', () => {
       const updated = updateResourceMaxUses(items, 'res-trait-1', 3);
       expect(updated[0].maxUses).toBe(3);
       expect(updated[0].availableUses).toBe(3);
+    });
+  });
+
+  describe('updateResourceUses', () => {
+    it('updates both available and max uses correctly', () => {
+      const items: ResourceItem[] = [
+        {
+          id: 'res-trait-1',
+          name: 'Canalizar',
+          category: 'feat_trait',
+          usageMode: 'limited',
+          maxUses: 4,
+          availableUses: 2,
+          description: '',
+          sortOrder: 0,
+        },
+      ];
+
+      const updated = updateResourceUses(items, 'res-trait-1', 3, 5);
+      expect(updated[0].availableUses).toBe(3);
+      expect(updated[0].maxUses).toBe(5);
+    });
+
+    it('clamps available uses to max if rawAvailable exceeds max', () => {
+      const items: ResourceItem[] = [
+        {
+          id: 'res-trait-1',
+          name: 'Canalizar',
+          category: 'feat_trait',
+          usageMode: 'limited',
+          maxUses: 3,
+          availableUses: 3,
+          description: '',
+          sortOrder: 0,
+        },
+      ];
+
+      const updated = updateResourceUses(items, 'res-trait-1', 8, 4);
+      expect(updated[0].availableUses).toBe(4);
+      expect(updated[0].maxUses).toBe(4);
+    });
+
+    it('clamps available uses to 0 if negative', () => {
+      const items: ResourceItem[] = [
+        {
+          id: 'res-trait-1',
+          name: 'Canalizar',
+          category: 'feat_trait',
+          usageMode: 'limited',
+          maxUses: 3,
+          availableUses: 3,
+          description: '',
+          sortOrder: 0,
+        },
+      ];
+
+      const updated = updateResourceUses(items, 'res-trait-1', -1, 3);
+      expect(updated[0].availableUses).toBe(0);
+      expect(updated[0].maxUses).toBe(3);
+    });
+
+    it('enforces minimum maxUses of 1', () => {
+      const items: ResourceItem[] = [
+        {
+          id: 'res-trait-1',
+          name: 'Canalizar',
+          category: 'feat_trait',
+          usageMode: 'limited',
+          maxUses: 3,
+          availableUses: 3,
+          description: '',
+          sortOrder: 0,
+        },
+      ];
+
+      const updated = updateResourceUses(items, 'res-trait-1', 0, 0);
+      expect(updated[0].maxUses).toBe(1);
+      expect(updated[0].availableUses).toBe(0);
+    });
+
+    it('allows correcting an accidental spend without long rest', () => {
+      let items: ResourceItem[] = [
+        {
+          id: 'res-trait-1',
+          name: 'Canalizar',
+          category: 'feat_trait',
+          usageMode: 'limited',
+          maxUses: 3,
+          availableUses: 3,
+          description: '',
+          sortOrder: 0,
+        },
+      ];
+
+      // Accidental click on "Usar"
+      items = [spendResource(items[0])];
+      expect(items[0].availableUses).toBe(2);
+
+      // Rectify using edit modal
+      const corrected = updateResourceUses(items, 'res-trait-1', 3, 3);
+      expect(corrected[0].availableUses).toBe(3);
+      expect(corrected[0].maxUses).toBe(3);
     });
   });
 });

@@ -10,6 +10,7 @@ interface ResourceCardProps {
   onRestore?: (id: string) => void;
   onRestoreSpellSlot?: (level: number) => void;
   onUpdateResourceMaxUses?: (id: string, newMax: number) => void;
+  onUpdateResourceUses?: (id: string, newAvailable: number, newMax: number) => void;
 }
 
 export const ResourceCard: React.FC<ResourceCardProps> = ({
@@ -19,10 +20,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   onDelete,
   onSpendSpellSlot,
   onUpdateResourceMaxUses,
+  onUpdateResourceUses,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isEditingMax, setIsEditingMax] = useState(false);
+  const [editingAvailVal, setEditingAvailVal] = useState(resource.availableUses ?? resource.maxUses ?? 1);
   const [editingMaxVal, setEditingMaxVal] = useState(resource.maxUses ?? 1);
 
   const isSpell = resource.category === 'spell';
@@ -107,15 +110,16 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                 {currentAvailable}
               </span>
               <span className="text-xs text-slate-400 font-bold">/{currentMax}</span>
-              {isLimitedFeat && onUpdateResourceMaxUses && (
+              {isLimitedFeat && (onUpdateResourceUses || onUpdateResourceMaxUses) && (
                 <button
                   type="button"
                   onClick={() => {
+                    setEditingAvailVal(resource.availableUses ?? resource.maxUses ?? 1);
                     setEditingMaxVal(resource.maxUses ?? 1);
                     setIsEditingMax(true);
                   }}
                   className="text-[10px] text-slate-400 hover:text-amber-400 p-0.5 touch-btn ml-0.5"
-                  title="Editar usos máximos"
+                  title="Editar usos"
                 >
                   ✏️
                 </button>
@@ -227,12 +231,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       )}
 
-      {/* Modal Editar Usos Máximos */}
+      {/* Modal Editar Usos (Disponibles y Máximos) */}
       {isEditingMax && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
             <h4 className="text-sm font-bold text-slate-100 mb-1">
-              Editar Usos Máximos
+              Editar Usos Diarios
             </h4>
             <p className="text-xs text-amber-300 font-semibold mb-3 truncate">
               {resource.name}
@@ -240,21 +244,47 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (onUpdateResourceMaxUses) {
-                  onUpdateResourceMaxUses(resource.id, Math.max(1, Math.floor(editingMaxVal)));
+                const cleanMax = Math.max(1, Math.floor(editingMaxVal));
+                const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingAvailVal)));
+                if (onUpdateResourceUses) {
+                  onUpdateResourceUses(resource.id, cleanAvail, cleanMax);
+                } else if (onUpdateResourceMaxUses) {
+                  onUpdateResourceMaxUses(resource.id, cleanMax);
                 }
                 setIsEditingMax(false);
               }}
+              className="space-y-3"
             >
-              <input
-                type="number"
-                min={1}
-                value={editingMaxVal}
-                onChange={(e) => setEditingMaxVal(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-amber-400"
-                required
-              />
-              <div className="flex gap-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Usos Disponibles (Actuales)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={Math.max(1, editingMaxVal)}
+                  value={editingAvailVal}
+                  onChange={(e) => setEditingAvailVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Usos Máximos Diarios
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  value={editingMaxVal}
+                  onChange={(e) => setEditingMaxVal(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setIsEditingMax(false)}

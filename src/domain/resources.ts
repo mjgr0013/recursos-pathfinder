@@ -134,6 +134,31 @@ export function updateResourceMaxUses(resources: ResourceItem[], id: string, raw
 }
 
 /**
+ * Actualiza tanto los usos disponibles como los máximos diarios de un rasgo limitado,
+ * asegurando las invariantes: maxUses >= 1 y 0 <= availableUses <= maxUses.
+ */
+export function updateResourceUses(
+  resources: ResourceItem[],
+  id: string,
+  rawAvailable: number,
+  rawMax: number
+): ResourceItem[] {
+  const cleanMax = Math.max(1, Math.floor(rawMax));
+  const cleanAvailable = Math.max(0, Math.min(cleanMax, Math.floor(rawAvailable)));
+
+  return resources.map((r) => {
+    if (r.id === id) {
+      return {
+        ...r,
+        maxUses: cleanMax,
+        availableUses: cleanAvailable,
+      };
+    }
+    return r;
+  });
+}
+
+/**
  * Aplica el Descanso Largo (Long Rest) restableciendo todos los recursos limitados a su valor máximo,
  * restaurando la vida actual al 100% de los PG máximos, reiniciando los PG temporales a 0
  * y recargando al 100% todos los espacios de conjuros de todos los niveles.
