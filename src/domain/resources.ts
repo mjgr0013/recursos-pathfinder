@@ -159,6 +159,38 @@ export function updateResourceUses(
 }
 
 /**
+ * Parámetros para la actualización de los detalles descriptivos y de referencia de un recurso.
+ */
+export interface UpdateResourceDetailsInput {
+  url?: string;
+  description: string;
+}
+
+/**
+ * Actualiza la URL y la descripción de un recurso existente, manteniendo intactos todos los demás campos.
+ * Sanitiza la URL (solo http/https, máx 500 caracteres o undefined si está vacía) y la descripción (máx 4000 caracteres).
+ */
+export function updateResourceDetails(
+  resources: ResourceItem[],
+  id: string,
+  details: UpdateResourceDetailsInput
+): ResourceItem[] {
+  const cleanUrl = isValidHttpUrl(details.url) ? details.url!.trim().slice(0, 500) : undefined;
+  const cleanDescription = details.description.slice(0, 4000);
+
+  return resources.map((r) => {
+    if (r.id === id) {
+      return {
+        ...r,
+        url: cleanUrl,
+        description: cleanDescription,
+      };
+    }
+    return r;
+  });
+}
+
+/**
  * Aplica el Descanso Largo (Long Rest) restableciendo todos los recursos limitados a su valor máximo,
  * restaurando la vida actual al 100% de los PG máximos, reiniciando los PG temporales a 0
  * y recargando al 100% todos los espacios de conjuros de todos los niveles.

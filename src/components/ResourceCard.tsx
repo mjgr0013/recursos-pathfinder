@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ResourceItem, SpellSlotsMap } from '../domain/types';
+import { isValidHttpUrl } from '../domain/resources';
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -9,8 +10,7 @@ interface ResourceCardProps {
   onSpendSpellSlot: (level: number) => void;
   onRestore?: (id: string) => void;
   onRestoreSpellSlot?: (level: number) => void;
-  onUpdateResourceMaxUses?: (id: string, newMax: number) => void;
-  onUpdateResourceUses?: (id: string, newAvailable: number, newMax: number) => void;
+  onUpdateResourceDetails?: (id: string, details: { url?: string; description: string }) => void;
 }
 
 export const ResourceCard: React.FC<ResourceCardProps> = ({
@@ -19,14 +19,15 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   onSpend,
   onDelete,
   onSpendSpellSlot,
-  onUpdateResourceMaxUses,
-  onUpdateResourceUses,
+  onUpdateResourceDetails,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [isEditingMax, setIsEditingMax] = useState(false);
-  const [editingAvailVal, setEditingAvailVal] = useState<number | ''>(resource.availableUses ?? resource.maxUses ?? 1);
-  const [editingMaxVal, setEditingMaxVal] = useState<number | ''>(resource.maxUses ?? 1);
+
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [editUrlVal, setEditUrlVal] = useState(resource.url ?? '');
+  const [editDescriptionVal, setEditDescriptionVal] = useState(resource.description ?? '');
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   const isSpell = resource.category === 'spell';
   const isCantrip = isSpell && resource.spellLevel === 0;
@@ -59,6 +60,29 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     } else {
       onSpend(resource.id);
     }
+  };
+
+  const handleOpenEditDetails = () => {
+    setEditUrlVal(resource.url ?? '');
+    setEditDescriptionVal(resource.description ?? '');
+    setUrlError(null);
+    setIsEditingDetails(true);
+  };
+
+  const handleSaveDetails = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedUrl = editUrlVal.trim();
+    if (trimmedUrl && !isValidHttpUrl(trimmedUrl)) {
+      setUrlError('La URL debe comenzar con http:// o https://');
+      return;
+    }
+
+    onUpdateResourceDetails?.(resource.id, {
+      url: trimmedUrl || undefined,
+      description: editDescriptionVal,
+    });
+    setIsEditingDetails(false);
+    setUrlError(null);
   };
 
   return (
@@ -110,20 +134,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                 {currentAvailable}
               </span>
               <span className="text-xs text-slate-400 font-bold">/{currentMax}</span>
-              {isLimitedFeat && (onUpdateResourceUses || onUpdateResourceMaxUses) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingAvailVal(resource.availableUses ?? resource.maxUses ?? 1);
-                    setEditingMaxVal(resource.maxUses ?? 1);
-                    setIsEditingMax(true);
-                  }}
-                  className="text-[10px] text-slate-400 hover:text-amber-400 p-0.5 touch-btn ml-0.5"
-                  title="Editar usos"
-                >
-                  ✏️
-                </button>
-              )}
             </div>
           )}
 
@@ -184,13 +194,24 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               href={resource.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="touch-btn flex items-center gap-1 px-2 py-1 text-[11px] font-bold bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 rounded-md transition-colors"
-              title="Ver reglas oficiales"
+              className="touch-btn flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 rounded transition-colors"
+              title="Ver más (reglas oficiales en nueva pestaña)"
+              aria-label={`Ver más información oficial sobre ${resource.name}`}
             >
-              <span>🌐</span>
-              <span className="hidden xs:inline">Reglas Oficiales</span>
+              <span aria-hidden="true">🌐</span>
+              <span>Ver más</span>
             </a>
           )}
+
+          <button
+            type="button"
+            onClick={handleOpenEditDetails}
+            className="text-slate-400 hover:text-amber-400 p-1 touch-btn"
+            title="Editar detalles del recurso"
+            aria-label={`Editar detalles de ${resource.name}`}
+          >
+            ✏️
+          </button>
 
           {showConfirmDelete ? (
             <div className="flex items-center gap-1">
@@ -231,64 +252,60 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       )}
 
-      {/* Modal Editar Usos (Disponibles y Máximos) */}
-      {isEditingMax && (
+      {/* Modal Editar Detalles (URL y Descripción) */}
+      {isEditingDetails && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
-            <h4 className="text-sm font-bold text-slate-100 mb-1">
-              Editar Usos Diarios
+          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h4 className="text-sm font-bold text-slate-100 mb-1 flex items-center gap-1.5">
+              <span>✏️</span> Editar Detalles
             </h4>
             <p className="text-xs text-amber-300 font-semibold mb-3 truncate">
               {resource.name}
             </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const cleanMax = Math.max(1, Math.floor(editingMaxVal === '' ? 1 : editingMaxVal));
-                const cleanAvail = Math.max(0, Math.min(cleanMax, Math.floor(editingAvailVal === '' ? 0 : editingAvailVal)));
-                if (onUpdateResourceUses) {
-                  onUpdateResourceUses(resource.id, cleanAvail, cleanMax);
-                } else if (onUpdateResourceMaxUses) {
-                  onUpdateResourceMaxUses(resource.id, cleanMax);
-                }
-                setIsEditingMax(false);
-              }}
-              className="space-y-3"
-            >
+
+            <form onSubmit={handleSaveDetails} className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Usos Disponibles (Actuales)
+                  URL de Documentación Oficial (opcional)
                 </label>
                 <input
-                  type="number"
-                  min={0}
-                  max={editingMaxVal === '' ? undefined : Math.max(1, editingMaxVal)}
-                  value={editingAvailVal}
-                  onChange={(e) => setEditingAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
-                  required
+                  type="url"
+                  maxLength={500}
+                  placeholder="https://aonprd.com/..."
+                  value={editUrlVal}
+                  onChange={(e) => {
+                    setEditUrlVal(e.target.value);
+                    if (urlError) setUrlError(null);
+                  }}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
                 />
+                {urlError && (
+                  <p className="text-[11px] text-rose-400 mt-1 font-medium">{urlError}</p>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Usos Máximos Diarios
+                  Descripción o reglas
                 </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={editingMaxVal}
-                  onChange={(e) => setEditingMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
-                  required
+                <textarea
+                  rows={4}
+                  maxLength={4000}
+                  placeholder="Detalles de las reglas..."
+                  value={editDescriptionVal}
+                  onChange={(e) => setEditDescriptionVal(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-2 border-t border-slate-700/60">
                 <button
                   type="button"
-                  onClick={() => setIsEditingMax(false)}
-                  className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                  onClick={() => {
+                    setIsEditingDetails(false);
+                    setUrlError(null);
+                  }}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
                 >
                   Cancelar
                 </button>
@@ -296,7 +313,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                   type="submit"
                   className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"
                 >
-                  Guardar
+                  Guardar Cambios
                 </button>
               </div>
             </form>

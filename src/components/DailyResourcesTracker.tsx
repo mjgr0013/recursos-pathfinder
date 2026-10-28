@@ -147,7 +147,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   return (
                     <div
                       key={`slot-dyn-lvl-${lvl}`}
-                      className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black text-purple-300">
@@ -202,7 +202,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   return (
                     <div
                       key={`trait-daily-${trait.id}`}
-                      className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
                     >
                       <div className="flex items-center gap-2 min-w-0 pr-2">
                         <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>

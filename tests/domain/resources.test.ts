@@ -9,6 +9,7 @@ import {
   getLimitedTraits,
   updateResourceMaxUses,
   updateResourceUses,
+  updateResourceDetails,
 } from '../../src/domain/resources';
 import { createDefaultSpellSlots } from '../../src/domain/spells';
 
@@ -361,6 +362,103 @@ describe('Resource Domain Calculations (Pathfinder Rules)', () => {
       const corrected = updateResourceUses(items, 'res-trait-1', 3, 3);
       expect(corrected[0].availableUses).toBe(3);
       expect(corrected[0].maxUses).toBe(3);
+    });
+  });
+
+  describe('updateResourceDetails (URL and Description Editing)', () => {
+    const baseItem: ResourceItem = {
+      id: 'res-edit-1',
+      name: 'Curar Heridas Leves',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 1,
+      maxUses: null,
+      availableUses: null,
+      description: 'Cura daño menor.',
+      url: 'https://aonprd.com/old',
+      sortOrder: 0,
+    };
+
+    it('updates URL and description with valid values', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds',
+        description: 'Cura 1d8+1 puntos de golpe.',
+      });
+
+      expect(updated[0].url).toBe('https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds');
+      expect(updated[0].description).toBe('Cura 1d8+1 puntos de golpe.');
+    });
+
+    it('preserves all other fields (id, name, category, usageMode, spellLevel, sortOrder)', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: 'https://example.com',
+        description: 'Nueva descripción',
+      });
+
+      expect(updated[0].id).toBe(baseItem.id);
+      expect(updated[0].name).toBe(baseItem.name);
+      expect(updated[0].category).toBe(baseItem.category);
+      expect(updated[0].usageMode).toBe(baseItem.usageMode);
+      expect(updated[0].spellLevel).toBe(baseItem.spellLevel);
+      expect(updated[0].maxUses).toBe(baseItem.maxUses);
+      expect(updated[0].availableUses).toBe(baseItem.availableUses);
+      expect(updated[0].sortOrder).toBe(baseItem.sortOrder);
+    });
+
+    it('cleans URL to undefined if empty or whitespace', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: '   ',
+        description: 'Sin URL',
+      });
+
+      expect(updated[0].url).toBeUndefined();
+    });
+
+    it('normalizes invalid URL protocol to undefined', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: 'ftp://invalid-url.com',
+        description: 'URL con protocolo no permitido',
+      });
+
+      expect(updated[0].url).toBeUndefined();
+    });
+
+    it('truncates description exceeding 4000 characters', () => {
+      const longText = 'a'.repeat(4500);
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: 'https://valid.com',
+        description: longText,
+      });
+
+      expect(updated[0].description.length).toBe(4000);
+    });
+
+    it('returns a new array and does not mutate the original list or item', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-edit-1', {
+        url: 'https://valid.com',
+        description: 'Nueva desc',
+      });
+
+      expect(updated).not.toBe(items);
+      expect(updated[0]).not.toBe(items[0]);
+      expect(items[0].description).toBe('Cura daño menor.');
+      expect(items[0].url).toBe('https://aonprd.com/old');
+    });
+
+    it('returns list unchanged if id does not match', () => {
+      const items = [baseItem];
+      const updated = updateResourceDetails(items, 'res-non-existent', {
+        url: 'https://valid.com',
+        description: 'Nueva desc',
+      });
+
+      expect(updated[0]).toEqual(baseItem);
     });
   });
 });

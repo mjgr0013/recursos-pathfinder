@@ -14,6 +14,8 @@ import {
   applyLongRest,
   updateResourceMaxUses,
   updateResourceUses,
+  updateResourceDetails,
+  UpdateResourceDetailsInput,
 } from './domain/resources';
 import {
   spendSpellSlot,
@@ -81,6 +83,14 @@ export default function App() {
       resources: updateResourceUses(prev.resources, id, newAvailable, newMax),
     }));
     showToast('Usos actualizados');
+  };
+
+  const handleUpdateResourceDetails = (id: string, details: UpdateResourceDetailsInput) => {
+    setCharacterState((prev) => ({
+      ...prev,
+      resources: updateResourceDetails(prev.resources, id, details),
+    }));
+    showToast('Detalles actualizados');
   };
 
   const handleSpendSlot = (level: number) => {
@@ -212,8 +222,7 @@ export default function App() {
           onAddResource={handleAddResource}
           onSpendSpellSlot={handleSpendSlot}
           onRestoreSpellSlot={handleRestoreSlot}
-          onUpdateResourceMaxUses={handleUpdateResourceMaxUses}
-          onUpdateResourceUses={handleUpdateResourceUses}
+          onUpdateResourceDetails={handleUpdateResourceDetails}
         />
       </main>
 
