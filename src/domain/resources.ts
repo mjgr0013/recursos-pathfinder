@@ -47,6 +47,7 @@ export interface CreateResourceInput {
   category: ResourceCategory;
   usageMode: UsageMode;
   spellLevel?: number | null;
+  range?: string;
   url?: string;
   maxUses: number | null;
   description: string;
@@ -92,6 +93,7 @@ export function createResource(input: CreateResourceInput, sortOrder: number): R
     category: input.category,
     usageMode,
     spellLevel,
+    range: input.range?.trim().slice(0, 100) || undefined,
     url: cleanUrl,
     maxUses,
     availableUses: maxUses,
@@ -164,11 +166,12 @@ export function updateResourceUses(
 export interface UpdateResourceDetailsInput {
   url?: string;
   description: string;
+  range?: string;
 }
 
 /**
- * Actualiza la URL y la descripción de un recurso existente, manteniendo intactos todos los demás campos.
- * Sanitiza la URL (solo http/https, máx 500 caracteres o undefined si está vacía) y la descripción (máx 4000 caracteres).
+ * Actualiza la URL, descripción y alcance de un recurso existente, manteniendo intactos todos los demás campos.
+ * Sanitiza la URL (solo http/https, máx 500 caracteres o undefined si está vacía), la descripción (máx 4000 caracteres) y el alcance (máx 100 caracteres).
  */
 export function updateResourceDetails(
   resources: ResourceItem[],
@@ -177,6 +180,7 @@ export function updateResourceDetails(
 ): ResourceItem[] {
   const cleanUrl = isValidHttpUrl(details.url) ? details.url!.trim().slice(0, 500) : undefined;
   const cleanDescription = details.description.slice(0, 4000);
+  const cleanRange = details.range?.trim().slice(0, 100) || undefined;
 
   return resources.map((r) => {
     if (r.id === id) {
@@ -184,6 +188,7 @@ export function updateResourceDetails(
         ...r,
         url: cleanUrl,
         description: cleanDescription,
+        range: cleanRange,
       };
     }
     return r;

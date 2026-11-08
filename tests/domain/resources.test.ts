@@ -379,15 +379,27 @@ describe('Resource Domain Calculations (Pathfinder Rules)', () => {
       sortOrder: 0,
     };
 
-    it('updates URL and description with valid values', () => {
+    it('updates URL, description and range with valid values', () => {
       const items = [baseItem];
       const updated = updateResourceDetails(items, 'res-edit-1', {
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds',
         description: 'Cura 1d8+1 puntos de golpe.',
+        range: 'corto (25 pies + 5 pies/2 nivel personaje)',
       });
 
       expect(updated[0].url).toBe('https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds');
       expect(updated[0].description).toBe('Cura 1d8+1 puntos de golpe.');
+      expect(updated[0].range).toBe('corto (25 pies + 5 pies/2 nivel personaje)');
+    });
+
+    it('cleans range to undefined if empty or whitespace', () => {
+      const itemWithRange = { ...baseItem, range: 'Toque' };
+      const updated = updateResourceDetails([itemWithRange], 'res-edit-1', {
+        description: 'Sin rango',
+        range: '   ',
+      });
+
+      expect(updated[0].range).toBeUndefined();
     });
 
     it('preserves all other fields (id, name, category, usageMode, spellLevel, sortOrder)', () => {

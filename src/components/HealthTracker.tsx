@@ -86,7 +86,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
   const consciousness = getConsciousnessState(health);
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md mb-3 transition-all">
+    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md transition-all">
       {/* Header with Title, Consciousness State, and Compact Toggle */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">

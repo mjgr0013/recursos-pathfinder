@@ -12,6 +12,7 @@ interface BackupModalProps {
   characterState: CharacterState;
   onImportCharacter: (importedState: CharacterState) => void;
   onResetCharacter: () => void;
+  onGenerateRandomCharacter?: () => void;
   onClose: () => void;
 }
 
@@ -20,12 +21,14 @@ export const BackupModal: React.FC<BackupModalProps> = ({
   characterState,
   onImportCharacter,
   onResetCharacter,
+  onGenerateRandomCharacter,
   onClose,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
+  const [isConfirmingRandom, setIsConfirmingRandom] = useState(false);
 
   if (!isOpen) return null;
 
@@ -151,6 +154,51 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             className="hidden"
             onChange={handleFileChange}
           />
+
+          {/* Generate Random Character button */}
+          {onGenerateRandomCharacter && (
+            <div className="pt-1">
+              {isConfirmingRandom ? (
+                <div className="p-3 bg-slate-900 border border-amber-600/70 rounded-xl text-center space-y-2">
+                  <p className="text-xs text-rose-300 font-bold flex items-center justify-center gap-1.5">
+                    <span>⚠️</span> ¿Generar ficha aleatoria?
+                  </p>
+                  <p className="text-[11px] text-slate-300">
+                    Esta acción <strong className="text-rose-400">borrará y reemplazará</strong> por completo la ficha actual.
+                  </p>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsConfirmingRandom(false)}
+                      className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 touch-btn rounded-lg text-xs font-bold py-2"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onGenerateRandomCharacter();
+                        setIsConfirmingRandom(false);
+                        onClose();
+                      }}
+                      className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black touch-btn rounded-lg text-xs py-2 shadow-md"
+                    >
+                      Sí, borrar y generar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmingRandom(true)}
+                  className="w-full touch-btn bg-purple-950/80 hover:bg-purple-900 border border-purple-700/80 text-purple-200 font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
+                >
+                  <span>🎲</span>
+                  <span>Generar Ficha Aleatoria Completa</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Reset button */}
           <div className="pt-2 border-t border-slate-700/60">

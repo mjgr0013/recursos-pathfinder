@@ -60,6 +60,7 @@ export interface ResourceItem {
   category: ResourceCategory;
   usageMode: UsageMode;
   spellLevel?: number | null;
+  range?: string;
   url?: string;
   maxUses: number | null;
   availableUses: number | null;

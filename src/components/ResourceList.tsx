@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import { ResourceItem, ResourceCategory, UsageMode, SpellSlotsMap } from '../domain/types';
 import { ResourceCard } from './ResourceCard';
 import { createResource } from '../domain/resources';
+import { MarkdownEditor } from './MarkdownEditor';
+import { CharacterVariables, resolveRange } from '../domain/variables';
 
 interface ResourceListProps {
   resources: ResourceItem[];
   spellSlots: SpellSlotsMap;
+  characterLevel?: number;
+  characterVariables?: CharacterVariables;
   onSpendResource: (id: string) => void;
   onRestoreResource: (id: string) => void;
   onDeleteResource: (id: string) => void;
   onAddResource: (newResource: ResourceItem) => void;
   onSpendSpellSlot: (level: number) => void;
   onRestoreSpellSlot: (level: number) => void;
-  onUpdateResourceDetails?: (id: string, details: { url?: string; description: string }) => void;
+  onUpdateResourceDetails?: (id: string, details: { url?: string; description: string; range?: string }) => void;
 }
 
 type FilterTab = 'all' | 'spell' | 'feat_trait';
@@ -20,6 +24,8 @@ type FilterTab = 'all' | 'spell' | 'feat_trait';
 export const ResourceList: React.FC<ResourceListProps> = ({
   resources,
   spellSlots,
+  characterLevel = 1,
+  characterVariables,
   onSpendResource,
   onRestoreResource,
   onDeleteResource,
@@ -31,11 +37,18 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const variables: CharacterVariables = characterVariables ?? {
+    nivel_personaje: characterLevel,
+    nivel: characterLevel,
+    level: characterLevel,
+  };
+
   // Form State
   const [name, setName] = useState('');
   const [category, setCategory] = useState<ResourceCategory>('spell');
   const [usageMode, setUsageMode] = useState<UsageMode>('limited');
   const [spellLevel, setSpellLevel] = useState<number>(1);
+  const [range, setRange] = useState('');
   const [url, setUrl] = useState('');
   const [maxUses, setMaxUses] = useState<number | ''>(3);
   const [description, setDescription] = useState('');
@@ -58,6 +71,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         category,
         usageMode,
         spellLevel: category === 'spell' ? spellLevel : null,
+        range: range.trim() || undefined,
         url: url.trim() || undefined,
         maxUses: usageMode === 'limited' ? (maxUses === '' ? 1 : Math.max(1, Math.floor(maxUses))) : null,
         description: description.trim(),
@@ -68,6 +82,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     onAddResource(newRes);
     setName('');
     setDescription('');
+    setRange('');
     setUrl('');
     setMaxUses(3);
     setSpellLevel(1);
@@ -134,9 +149,9 @@ export const ResourceList: React.FC<ResourceListProps> = ({
       </div>
 
       {/* Resource Cards Collection */}
-      <div className="space-y-2.5 flex-1">
+      <div className="flex flex-col gap-3 flex-1 w-full">
         {filteredResources.length === 0 ? (
-          <div className="text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
+          <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
             <p className="text-2xl mb-1">📜</p>
             <p className="font-semibold text-slate-300">No hay elementos registrados</p>
             <p className="text-xs text-slate-500 mt-1">
@@ -149,6 +164,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               key={res.id}
               resource={res}
               spellSlots={spellSlots}
+              characterLevel={characterLevel}
+              characterVariables={variables}
               onSpend={onSpendResource}
               onRestore={onRestoreResource}
               onDelete={onDeleteResource}
@@ -163,7 +180,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
       {/* Modal Añadir Recurso */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-bold text-slate-100 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
               <span>✨</span> Nuevo Conjuro o Rasgo
             </h3>
@@ -265,16 +282,77 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Descripción o reglas (alcance, tirada, daño...)
-                </label>
-                <textarea
-                  rows={3}
-                  maxLength={4000}
-                  placeholder="Detalles de las reglas..."
+                <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Alcance (opcional)
+                  </label>
+                  <div className="flex items-center gap-1 text-[10px] flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setRange('Toque')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                    >
+                      Toque
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRange('Personal')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                    >
+                      Personal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRange('corto (25 pies + 5 pies/2 nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="25 pies + 5 pies cada 2 niveles"
+                    >
+                      Corto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRange('medio (100 pies + 10 pies/nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="100 pies + 10 pies por nivel"
+                    >
+                      Medio
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRange('largo (400 pies + 40 pies/nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="400 pies + 40 pies por nivel"
+                    >
+                      Largo
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  maxLength={100}
+                  placeholder="Ej. corto (25 pies + 5 pies/2 nivel personaje), Toque, 30 pies..."
+                  value={range}
+                  onChange={(e) => setRange(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
+                />
+                {range.trim() && (
+                  <p className="text-[11px] text-cyan-400 mt-1 font-medium flex items-center gap-1">
+                    <span>🎯 Calculado con nivel actual ({characterLevel}):</span>
+                    <strong>{resolveRange(range, variables)}</strong>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <MarkdownEditor
+                  id="create-resource-description"
+                  label="Descripción o reglas (alcance, tirada, daño...)"
+                  placeholder="Detalles de las reglas (soporta Markdown y variables)..."
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400"
+                  onChange={setDescription}
+                  rows={4}
+                  maxLength={4000}
+                  variables={variables}
                 />
               </div>
 

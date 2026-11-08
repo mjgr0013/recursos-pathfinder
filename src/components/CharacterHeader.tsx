@@ -50,7 +50,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md mb-3">
+    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md">
       <div className="flex items-center gap-3">
         {/* Avatar button */}
         <div className="relative group shrink-0">

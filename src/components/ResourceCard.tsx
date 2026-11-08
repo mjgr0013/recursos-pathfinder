@@ -1,31 +1,50 @@
 import React, { useState } from 'react';
 import { ResourceItem, SpellSlotsMap } from '../domain/types';
 import { isValidHttpUrl } from '../domain/resources';
+import { MarkdownRenderer } from './MarkdownRenderer';
+import { MarkdownEditor } from './MarkdownEditor';
+import { CharacterVariables, resolveRange } from '../domain/variables';
 
 interface ResourceCardProps {
   resource: ResourceItem;
   spellSlots: SpellSlotsMap;
+  characterLevel?: number;
+  characterVariables?: CharacterVariables;
   onSpend: (id: string) => void;
   onDelete: (id: string) => void;
   onSpendSpellSlot: (level: number) => void;
   onRestore?: (id: string) => void;
   onRestoreSpellSlot?: (level: number) => void;
-  onUpdateResourceDetails?: (id: string, details: { url?: string; description: string }) => void;
+  onUpdateResourceDetails?: (id: string, details: { url?: string; description: string; range?: string }) => void;
 }
 
 export const ResourceCard: React.FC<ResourceCardProps> = ({
   resource,
   spellSlots,
+  characterLevel = 1,
+  characterVariables,
   onSpend,
   onDelete,
   onSpendSpellSlot,
   onUpdateResourceDetails,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(min-width: 1024px)').matches;
+    }
+    return false;
+  });
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  const variables: CharacterVariables = characterVariables ?? {
+    nivel_personaje: characterLevel,
+    nivel: characterLevel,
+    level: characterLevel,
+  };
 
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editUrlVal, setEditUrlVal] = useState(resource.url ?? '');
+  const [editRangeVal, setEditRangeVal] = useState(resource.range ?? '');
   const [editDescriptionVal, setEditDescriptionVal] = useState(resource.description ?? '');
   const [urlError, setUrlError] = useState<string | null>(null);
 
@@ -64,6 +83,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
   const handleOpenEditDetails = () => {
     setEditUrlVal(resource.url ?? '');
+    setEditRangeVal(resource.range ?? '');
     setEditDescriptionVal(resource.description ?? '');
     setUrlError(null);
     setIsEditingDetails(true);
@@ -80,6 +100,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     onUpdateResourceDetails?.(resource.id, {
       url: trimmedUrl || undefined,
       description: editDescriptionVal,
+      range: editRangeVal.trim() || undefined,
     });
     setIsEditingDetails(false);
     setUrlError(null);
@@ -119,6 +140,15 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             {isUnlimitedFeat && (
               <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/50">
                 Ilimitado
+              </span>
+            )}
+            {resource.range && (
+              <span
+                className="text-[10px] font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-800/80 flex items-center gap-1 shadow-sm"
+                title={`Alcance configurado: ${resource.range} • Nivel actual: ${characterLevel}`}
+              >
+                <span>🎯</span>
+                <span>{resolveRange(resource.range, variables)}</span>
               </span>
             )}
           </div>
@@ -168,10 +198,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               type="button"
               disabled={isOutOfUses}
               onClick={handleSpendClick}
-              className="touch-btn min-h-[44px] px-3.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5"
+              className="touch-btn min-h-[44px] px-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5"
               title="Usar este rasgo (gasta 1 uso)"
             >
-              <span>⚡</span>
+              <span className="w-5 h-5 rounded bg-slate-950 text-amber-400 flex items-center justify-center shrink-0 shadow-sm">
+                <svg className="w-3 h-3 fill-amber-400" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </span>
               <span>{isOutOfUses ? 'Sin usos' : 'Usar'}</span>
             </button>
           )}
@@ -247,15 +281,15 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
       {/* Expanded rules drawer */}
       {isExpanded && (
-        <div className="mt-2 p-3 bg-slate-900/90 rounded-lg border border-slate-700/60 text-xs text-slate-300 whitespace-pre-wrap leading-relaxed shadow-inner">
-          {resource.description.trim() ? resource.description : <span className="italic text-slate-400">Sin descripción registrada.</span>}
+        <div className="mt-2 p-3 bg-slate-900/90 rounded-lg border border-slate-700/60 shadow-inner max-h-[350px] overflow-y-auto">
+          <MarkdownRenderer content={resource.description} variables={variables} />
         </div>
       )}
 
       {/* Modal Editar Detalles (URL y Descripción) */}
       {isEditingDetails && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <h4 className="text-sm font-bold text-slate-100 mb-1 flex items-center gap-1.5">
               <span>✏️</span> Editar Detalles
             </h4>
@@ -285,16 +319,77 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Descripción o reglas
-                </label>
-                <textarea
+                <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Alcance (opcional)
+                  </label>
+                  <div className="flex items-center gap-1 text-[10px] flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setEditRangeVal('Toque')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                    >
+                      Toque
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditRangeVal('Personal')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                    >
+                      Personal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditRangeVal('corto (25 pies + 5 pies/2 nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="25 pies + 5 pies cada 2 niveles"
+                    >
+                      Corto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditRangeVal('medio (100 pies + 10 pies/nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="100 pies + 10 pies por nivel"
+                    >
+                      Medio
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditRangeVal('largo (400 pies + 40 pies/nivel personaje)')}
+                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      title="400 pies + 40 pies por nivel"
+                    >
+                      Largo
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  maxLength={100}
+                  placeholder="Ej. corto (25 pies + 5 pies/2 nivel personaje), Toque, 30 pies..."
+                  value={editRangeVal}
+                  onChange={(e) => setEditRangeVal(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
+                />
+                {editRangeVal.trim() && (
+                  <p className="text-[11px] text-cyan-400 mt-1 font-medium flex items-center gap-1">
+                    <span>🎯 Calculado con nivel actual ({characterLevel}):</span>
+                    <strong>{resolveRange(editRangeVal, variables)}</strong>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <MarkdownEditor
+                  id={`edit-resource-${resource.id}-description`}
+                  label="Descripción o reglas"
+                  placeholder="Detalles de las reglas (soporta Markdown y variables)..."
+                  value={editDescriptionVal}
+                  onChange={setEditDescriptionVal}
                   rows={4}
                   maxLength={4000}
-                  placeholder="Detalles de las reglas..."
-                  value={editDescriptionVal}
-                  onChange={(e) => setEditDescriptionVal(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400"
+                  variables={variables}
                 />
               </div>
 

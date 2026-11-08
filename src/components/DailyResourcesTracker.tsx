@@ -86,7 +86,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md mb-3">
+    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md">
       {/* Panel Header */}
       <div className="flex items-center justify-between">
         <button
@@ -139,7 +139,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2">
                 {activeSpellLevels.map((lvl) => {
                   const slot = spellSlots[lvl] ?? { level: lvl, max: 0, available: 0 };
                   const isOutOfSlots = slot.max > 0 && slot.available === 0;
@@ -193,7 +193,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2">
                 {limitedTraits.map((trait) => {
                   const available = trait.availableUses ?? 0;
                   const max = trait.maxUses ?? 0;

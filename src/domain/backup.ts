@@ -160,6 +160,7 @@ export function validateBackupPayload(data: unknown): ValidationResult {
       category: res.category,
       usageMode: res.usageMode,
       spellLevel: spellLevel ?? null,
+      range: typeof res.range === 'string' && res.range.trim() ? res.range.trim().slice(0, 100) : undefined,
       url: isValidHttpUrl(res.url) ? res.url : undefined,
       maxUses: maxUses ?? null,
       availableUses: availableUses ?? null,
