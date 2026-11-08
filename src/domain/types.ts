@@ -19,6 +19,8 @@ export interface CharacterProfile {
   level: number;
   characterClass: string;
   avatarDataUrl?: string;
+  baseAttackBonus?: number;
+  casterModifier?: number;
   createdAt: string;
   updatedAt: string;
 }

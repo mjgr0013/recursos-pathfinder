@@ -1,12 +1,25 @@
 import { useState, useEffect } from 'react';
 import { CharacterState, ResourceItem } from './domain/types';
-import { loadCharacterState, saveCharacterState, createDefaultCharacterState } from './storage/local-storage';
+import {
+  loadCharacterRoster,
+  saveCharacterRoster,
+} from './storage/local-storage';
+import {
+  CharacterRosterState,
+  createBlankCharacter,
+  addCharacterToRoster,
+  switchActiveCharacter,
+  deleteCharacterFromRoster,
+  updateActiveCharacterInRoster,
+  getActiveCharacter,
+} from './domain/roster';
 import { CharacterHeader } from './components/CharacterHeader';
 import { HealthTracker } from './components/HealthTracker';
 import { DailyResourcesTracker } from './components/DailyResourcesTracker';
 import { ResourceList } from './components/ResourceList';
 import { LongRestModal } from './components/LongRestModal';
 import { BackupModal } from './components/BackupModal';
+import { CharacterRosterModal } from './components/CharacterRosterModal';
 import {
   spendResource,
   restoreResource,
@@ -24,18 +37,29 @@ import {
   updateSpellSlotValues,
 } from './domain/spells';
 import { generateRandomCharacter } from './domain/generator';
-import { RandomConfirmModal } from './components/RandomConfirmModal';
 
 export default function App() {
-  const [characterState, setCharacterState] = useState<CharacterState>(() => loadCharacterState());
+  const [roster, setRoster] = useState<CharacterRosterState>(() => loadCharacterRoster());
+  const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isLongRestModalOpen, setIsLongRestModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
-  const [isRandomConfirmModalOpen, setIsRandomConfirmModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const characterState = getActiveCharacter(roster);
+
+  const setCharacterState = (updater: CharacterState | ((prev: CharacterState) => CharacterState)) => {
+    setRoster((prevRoster) => {
+      const currentActive = getActiveCharacter(prevRoster);
+      const updated = typeof updater === 'function' ? updater(currentActive) : updater;
+      const updatedRoster = updateActiveCharacterInRoster(prevRoster, updated);
+      saveCharacterRoster(updatedRoster);
+      return updatedRoster;
+    });
+  };
+
   useEffect(() => {
-    saveCharacterState(characterState);
-  }, [characterState]);
+    saveCharacterRoster(roster);
+  }, [roster]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -138,15 +162,51 @@ export default function App() {
   };
 
   const handleResetCharacter = () => {
-    const fresh = createDefaultCharacterState();
+    const fresh = createBlankCharacter();
     setCharacterState(fresh);
     showToast('Ficha reiniciada');
   };
 
-  const handleGenerateRandomCharacter = () => {
-    const randomState = generateRandomCharacter();
-    setCharacterState(randomState);
-    showToast(`¡Ficha de "${randomState.profile.name}" (Nv. ${randomState.profile.level}) cargada!`);
+  const handleSelectCharacter = (id: string) => {
+    const res = switchActiveCharacter(roster, id);
+    if (res.success) {
+      setRoster(res.roster);
+      saveCharacterRoster(res.roster);
+      const active = getActiveCharacter(res.roster);
+      showToast(`Cargado: "${active.profile.name}"`);
+    }
+  };
+
+  const handleCreateCharacter = () => {
+    const blank = createBlankCharacter(roster.characters.length + 1);
+    const res = addCharacterToRoster(roster, blank);
+    if (res.success) {
+      setRoster(res.roster);
+      saveCharacterRoster(res.roster);
+      showToast('¡Nuevo personaje creado! Puedes personalizarlo.');
+    } else if (res.error) {
+      showToast(res.error);
+    }
+  };
+
+  const handleCreateRandomCharacterInRoster = () => {
+    const randomChar = generateRandomCharacter();
+    const res = addCharacterToRoster(roster, randomChar);
+    if (res.success) {
+      setRoster(res.roster);
+      saveCharacterRoster(res.roster);
+      showToast(`¡Personaje "${randomChar.profile.name}" añadido en nueva ranura!`);
+    } else if (res.error) {
+      showToast(res.error);
+    }
+  };
+
+  const handleDeleteCharacter = (id: string) => {
+    const updated = deleteCharacterFromRoster(roster, id);
+    setRoster(updated);
+    saveCharacterRoster(updated);
+    const active = getActiveCharacter(updated);
+    showToast(`Personaje eliminado. Activo: "${active.profile.name}"`);
   };
 
   return (
@@ -167,12 +227,15 @@ export default function App() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setIsRandomConfirmModalOpen(true)}
-            className="touch-btn bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 hover:text-amber-200 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
-            title="Generar ficha aleatoria completa (para probar todas las funciones)"
+            onClick={() => setIsRosterModalOpen(true)}
+            className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
+            title="Ver y gestionar personajes guardados (máximo 5)"
           >
-            <span>🎲</span>
-            <span>Aleatoria</span>
+            <span>🎭</span>
+            <span className="hidden sm:inline">Personajes</span>
+            <span className="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded text-[10px] font-black border border-amber-500/40">
+              {roster.characters.length}/5
+            </span>
           </button>
 
           <button
@@ -241,6 +304,19 @@ export default function App() {
             resources={characterState.resources}
             spellSlots={characterState.spellSlots}
             characterLevel={characterState.profile.level}
+            characterVariables={{
+              nivel_personaje: characterState.profile.level,
+              nivel: characterState.profile.level,
+              level: characterState.profile.level,
+              ataque_base: characterState.profile.baseAttackBonus ?? 0,
+              bab: characterState.profile.baseAttackBonus ?? 0,
+              base_attack: characterState.profile.baseAttackBonus ?? 0,
+              modificador_lanzador: characterState.profile.casterModifier ?? 0,
+              mod_lanzador: characterState.profile.casterModifier ?? 0,
+              mod_conjuros: characterState.profile.casterModifier ?? 0,
+              modificador_conjuros: characterState.profile.casterModifier ?? 0,
+              caster_mod: characterState.profile.casterModifier ?? 0,
+            }}
             onSpendResource={handleSpendResource}
             onRestoreResource={handleRestoreResource}
             onDeleteResource={handleDeleteResource}
@@ -259,21 +335,24 @@ export default function App() {
         onClose={() => setIsLongRestModalOpen(false)}
       />
 
-      {/* Random Character Confirmation Modal */}
-      <RandomConfirmModal
-        isOpen={isRandomConfirmModalOpen}
-        onConfirm={handleGenerateRandomCharacter}
-        onClose={() => setIsRandomConfirmModalOpen(false)}
-      />
-
       {/* Backup Export / Import Modal */}
       <BackupModal
         isOpen={isBackupModalOpen}
         characterState={characterState}
         onImportCharacter={handleImportCharacter}
         onResetCharacter={handleResetCharacter}
-        onGenerateRandomCharacter={handleGenerateRandomCharacter}
         onClose={() => setIsBackupModalOpen(false)}
+      />
+
+      {/* Character Roster Management Modal */}
+      <CharacterRosterModal
+        isOpen={isRosterModalOpen}
+        roster={roster}
+        onSelectCharacter={handleSelectCharacter}
+        onCreateCharacter={handleCreateCharacter}
+        onCreateRandomCharacter={handleCreateRandomCharacterInRoster}
+        onDeleteCharacter={handleDeleteCharacter}
+        onClose={() => setIsRosterModalOpen(false)}
       />
     </div>
   );

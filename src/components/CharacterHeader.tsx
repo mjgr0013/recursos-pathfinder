@@ -7,12 +7,17 @@ interface CharacterHeaderProps {
   onUpdateProfile: (updated: Partial<CharacterProfile>) => void;
 }
 
-export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpdateProfile }) => {
+export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
+  profile,
+  onUpdateProfile,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(profile.name);
   const [level, setLevel] = useState<number | ''>(profile.level);
   const [characterClass, setCharacterClass] = useState(profile.characterClass);
+  const [baseAttackBonus, setBaseAttackBonus] = useState<number | ''>(profile.baseAttackBonus ?? 0);
+  const [casterModifier, setCasterModifier] = useState<number | ''>(profile.casterModifier ?? 0);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
 
@@ -39,11 +44,15 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
     if (!cleanName || !cleanClass) return;
 
     const cleanLevel = Math.min(20, Math.max(1, Math.floor(level === '' ? 1 : level)));
+    const cleanBab = Math.max(0, Math.min(30, Math.floor(baseAttackBonus === '' ? 0 : baseAttackBonus)));
+    const cleanMod = Math.max(-10, Math.min(30, Math.floor(casterModifier === '' ? 0 : casterModifier)));
 
     onUpdateProfile({
       name: cleanName.slice(0, 60),
       level: cleanLevel,
       characterClass: cleanClass.slice(0, 60),
+      baseAttackBonus: cleanBab,
+      casterModifier: cleanMod,
       updatedAt: new Date().toISOString(),
     });
     setIsEditing(false);
@@ -95,18 +104,35 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
                 setName(profile.name);
                 setLevel(profile.level);
                 setCharacterClass(profile.characterClass);
+                setBaseAttackBonus(profile.baseAttackBonus ?? 0);
+                setCasterModifier(profile.casterModifier ?? 0);
                 setIsEditing(true);
               }}
-              className="text-slate-400 hover:text-amber-400 p-2 touch-btn text-xs font-semibold shrink-0"
+              className="text-slate-400 hover:text-amber-400 p-1.5 touch-btn text-xs font-semibold flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/60 shrink-0"
               title="Editar datos básicos"
               aria-label="Editar perfil"
             >
-              ✏️ Editar
+              <span>✏️</span>
+              <span>Editar</span>
             </button>
           </div>
-          <p className="text-xs text-amber-400/90 font-medium truncate">
-            {profile.characterClass} • Nivel {profile.level}
-          </p>
+          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+            <span className="text-xs text-amber-400/90 font-medium truncate">
+              {profile.characterClass} • Nivel {profile.level}
+            </span>
+            <span
+              className="text-[10px] font-bold bg-slate-900 border border-slate-700/80 px-1.5 py-0.5 rounded text-amber-300 shadow-sm"
+              title="Ataque Base (BAB)"
+            >
+              ⚔️ BAB +{profile.baseAttackBonus ?? 0}
+            </span>
+            <span
+              className="text-[10px] font-bold bg-slate-900 border border-slate-700/80 px-1.5 py-0.5 rounded text-purple-300 shadow-sm"
+              title="Modificador de Lanzador de Conjuros"
+            >
+              🔮 Mod {(profile.casterModifier ?? 0) >= 0 ? `+${profile.casterModifier ?? 0}` : profile.casterModifier}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -161,6 +187,41 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({ profile, onUpd
                     value={level}
                     onChange={(e) => setLevel(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch text-center"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Ataque Base (BAB)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    value={baseAttackBonus}
+                    onChange={(e) =>
+                      setBaseAttackBonus(e.target.value === '' ? '' : Number(e.target.value))
+                    }
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch text-center font-bold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Mod. Lanzador (+/-)
+                  </label>
+                  <input
+                    type="number"
+                    min={-10}
+                    max={30}
+                    value={casterModifier}
+                    onChange={(e) =>
+                      setCasterModifier(e.target.value === '' ? '' : Number(e.target.value))
+                    }
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-400 min-h-touch text-center font-bold"
                     required
                   />
                 </div>

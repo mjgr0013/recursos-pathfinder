@@ -9,6 +9,8 @@ describe('Random Character Generator', () => {
     expect(character.profile.name).toBeTruthy();
     expect(character.profile.characterClass).toBeTruthy();
     expect(character.profile.level).toBeGreaterThan(0);
+    expect(typeof character.profile.baseAttackBonus).toBe('number');
+    expect(typeof character.profile.casterModifier).toBe('number');
     expect(character.profile.avatarDataUrl).toMatch(/^data:image\/svg\+xml/);
 
     expect(character.health.maxHp).toBeGreaterThan(0);

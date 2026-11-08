@@ -19,6 +19,8 @@ interface ArchetypeTemplate {
   name: string;
   characterClass: string;
   level: number;
+  baseAttackBonus?: number;
+  casterModifier?: number;
   maxHp: number;
   currentHp: number;
   tempHp: number;
@@ -34,6 +36,8 @@ const ARCHETYPES: ArchetypeTemplate[] = [
     name: 'Kyra de Sarenrae',
     characterClass: 'Clériga del Sol Radiante',
     level: 5,
+    baseAttackBonus: 3,
+    casterModifier: 4,
     maxHp: 44,
     currentHp: 38,
     tempHp: 6,
@@ -224,6 +228,8 @@ La inquebrantable fe en Sarenrae otorga un escudo mental y espiritual inalterabl
     name: 'Ezren de Absalom',
     characterClass: 'Mago Evocador Versado',
     level: 7,
+    baseAttackBonus: 3,
+    casterModifier: 5,
     maxHp: 40,
     currentHp: 34,
     tempHp: 8,
@@ -380,6 +386,8 @@ Aumenta la dificultad de resistencia a todos los conjuros de evocación:
     name: 'Seoni de Varisia',
     characterClass: 'Hechicera de Linaje Dracónico',
     level: 6,
+    baseAttackBonus: 3,
+    casterModifier: 4,
     maxHp: 42,
     currentHp: 31,
     tempHp: 5,
@@ -497,6 +505,8 @@ La sangre de dragón otorga endurecimiento dérmico y tolerancia al calor:
     name: 'Valeros el Valiente',
     characterClass: 'Paladín Sagrado de Iomedae',
     level: 5,
+    baseAttackBonus: 5,
+    casterModifier: 2,
     maxHp: 56,
     currentHp: 48,
     tempHp: 10,
@@ -632,6 +642,8 @@ export function generateRandomCharacter(seedIndex?: number): CharacterState {
       name: tpl.name,
       level: tpl.level,
       characterClass: tpl.characterClass,
+      baseAttackBonus: tpl.baseAttackBonus ?? 0,
+      casterModifier: tpl.casterModifier ?? 0,
       avatarDataUrl: createSvgAvatar(tpl.avatarBg, tpl.avatarAccent, tpl.avatarSymbol),
       createdAt: now,
       updatedAt: now,
