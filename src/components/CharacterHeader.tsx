@@ -60,14 +60,14 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md">
+    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none">
       <div className="flex items-center gap-3">
         {/* Avatar button */}
         <div className="relative group shrink-0">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-full overflow-hidden bg-slate-700 border-2 border-amber-500/80 flex items-center justify-center touch-btn relative focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-16 h-16 rounded-full overflow-hidden bg-slate-700 print:bg-slate-100 border-2 border-amber-500/80 print:border-slate-400 flex items-center justify-center touch-btn relative focus:outline-none focus:ring-2 focus:ring-amber-400 print:pointer-events-none"
             title="Cambiar avatar"
             aria-label="Cambiar foto de avatar"
           >
@@ -81,7 +81,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
               <span className="text-2xl">👤</span>
             )}
             {isUploading && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-xs text-amber-300">
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-xs text-amber-300 print:hidden">
                 ...
               </div>
             )}
@@ -98,7 +98,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
         {/* Character Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1">
-            <h2 className="text-lg font-bold text-slate-100 truncate">{profile.name}</h2>
+            <h2 className="text-lg font-bold text-slate-100 print:text-slate-900 truncate">{profile.name}</h2>
             <button
               type="button"
               onClick={() => {
@@ -109,7 +109,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                 setCasterModifier(profile.casterModifier ?? 0);
                 setIsEditing(true);
               }}
-              className="text-slate-400 hover:text-amber-400 p-1.5 touch-btn text-xs font-semibold flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/60 shrink-0"
+              className="text-slate-400 hover:text-amber-400 p-1.5 touch-btn text-xs font-semibold flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/60 shrink-0 print:hidden"
               title="Editar datos básicos"
               aria-label="Editar perfil"
             >
@@ -118,17 +118,17 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
             </button>
           </div>
           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-            <span className="text-xs text-amber-400/90 font-medium truncate">
+            <span className="text-xs text-amber-400/90 print:text-slate-800 font-medium truncate">
               {profile.characterClass} • Nivel {profile.level}
             </span>
             <span
-              className="text-[10px] font-bold bg-slate-900 border border-slate-700/80 px-1.5 py-0.5 rounded text-amber-300 shadow-sm"
+              className="text-[10px] font-bold bg-slate-900 print:bg-slate-100 border border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-amber-300 print:text-slate-900 shadow-sm"
               title="Ataque Base (BAB)"
             >
               ⚔️ BAB +{profile.baseAttackBonus ?? 0}
             </span>
             <span
-              className="text-[10px] font-bold bg-slate-900 border border-slate-700/80 px-1.5 py-0.5 rounded text-purple-300 shadow-sm"
+              className="text-[10px] font-bold bg-slate-900 print:bg-slate-100 border border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-purple-300 print:text-slate-900 shadow-sm"
               title="Modificador de Lanzador de Conjuros"
             >
               🔮 Mod {(profile.casterModifier ?? 0) >= 0 ? `+${profile.casterModifier ?? 0}` : profile.casterModifier}
@@ -138,7 +138,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
       </div>
 
       {avatarError && (
-        <p className="text-rose-400 text-xs mt-2 text-center">{avatarError}</p>
+        <p className="text-rose-400 text-xs mt-2 text-center print:hidden">{avatarError}</p>
       )}
 
       {/* Modal / Overlay de Edición */}

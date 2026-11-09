@@ -155,7 +155,7 @@ describe('ResourceCard component', () => {
     expect(html).not.toContain('Lanzar');
   });
 
-  it('renders description collapsed by default with toggle button', () => {
+  it('renders description collapsed on screen with toggle button, and includes print description', () => {
     const html = renderToString(
       <ResourceCard
         resource={cantripSpell}
@@ -170,7 +170,50 @@ describe('ResourceCard component', () => {
     expect(html).toContain('▼ Ver descripción');
     expect(html).not.toContain('▲ Ocultar reglas');
 
-    // Description markdown drawer should NOT be rendered in DOM by default
-    expect(html).not.toContain('Otorga +1 a una tirada');
+    // Interactive screen drawer (with max-h-[350px]) should NOT be rendered in DOM by default
+    expect(html).not.toContain('max-h-[350px]');
+
+    // Print drawer should be present with print:block so PDF / paper export includes it
+    expect(html).toContain('hidden print:block');
+    expect(html).toContain('Otorga +1 a una tirada');
+  });
+
+  it('transforms counters into squares for paper export and hides action buttons in print', () => {
+    const html = renderToString(
+      <ResourceCard
+        resource={limitedTrait}
+        spellSlots={defaultSlots}
+        onSpend={vi.fn()}
+        onDelete={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+      />
+    );
+
+    // Digital counter and "Usar" button must have print:hidden
+    expect(html).toContain('print:hidden');
+    expect(html).toMatch(/Usar/);
+
+    // Paper view must render 4 square checkboxes for tracking (limitedTrait maxUses = 4)
+    const squareMatches = html.match(/w-4 h-4 border-2 border-slate-900 rounded-sm/g);
+    expect(squareMatches).toHaveLength(4);
+  });
+
+  it('does NOT render squares for spells in print, leaving slot tracking to Recursos Diarios', () => {
+    const html = renderToString(
+      <ResourceCard
+        resource={leveledSpell}
+        spellSlots={defaultSlots}
+        onSpend={vi.fn()}
+        onDelete={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+      />
+    );
+
+    // Digital counter exists for screen but is hidden in print
+    expect(html).toContain('print:hidden');
+
+    // Should NOT render square checkboxes for spells in paper view
+    expect(html).not.toContain('Casillas de uso:');
+    expect(html).not.toContain('w-4 h-4 border-2 border-slate-900 rounded-sm');
   });
 });

@@ -24,6 +24,9 @@ describe('TopBarActions component', () => {
 
     // Outside the menu, standalone buttons like external Descanso should not be rendered
     expect(html).not.toContain('bg-indigo-950/80');
+
+    // Menu container must be hidden in print view
+    expect(html).toContain('print:hidden');
   });
 
   it('reflects different character count dynamically in badge', () => {

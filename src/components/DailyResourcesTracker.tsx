@@ -87,20 +87,20 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md">
+    <section className={`w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none ${maxActiveLevel === 0 ? 'print:hidden' : ''}`}>
       {/* Panel Header */}
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="flex items-center gap-2 touch-btn py-1 text-left flex-1"
+          className="flex items-center gap-2 touch-btn py-1 text-left flex-1 print:pointer-events-none"
         >
           <span className="text-lg">⚡</span>
           <div>
-            <h3 className="text-sm font-bold tracking-wider text-slate-100 uppercase">
+            <h3 className="text-sm font-bold tracking-wider text-slate-100 print:text-slate-900 uppercase">
               Recursos Diarios
             </h3>
-            <p className="text-[11px] text-slate-400 font-medium">
+            <p className="text-[11px] text-slate-400 print:text-slate-600 font-medium">
               {maxActiveLevel === 0 && limitedTraits.length === 0 && (
                 <>Sin recursos diarios activos</>
               )}
@@ -111,136 +111,151 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="touch-btn text-xs text-slate-400 hover:text-amber-400 font-bold px-2 shrink-0"
+          className="touch-btn text-xs text-slate-400 hover:text-amber-400 font-bold px-2 shrink-0 print:hidden"
           aria-label={isExpanded ? 'Plegar recursos diarios' : 'Desplegar recursos diarios'}
         >
           {isExpanded ? '▲ Plegar' : '▼ Ver todo'}
         </button>
       </div>
 
-      {isExpanded && (
-        <div className="mt-3 space-y-4 border-t border-slate-700/60 pt-3">
-          {/* Si no hay magia ni rasgos limitados */}
-          {maxActiveLevel === 0 && limitedTraits.length === 0 && (
-            <div className="p-4 bg-slate-900/40 rounded-lg border border-dashed border-slate-700/70 text-center text-xs text-slate-400">
-              <p className="text-base mb-1">🛡️</p>
-              <p className="font-semibold text-slate-300">Sin recursos diarios activos</p>
-              <p className="text-slate-500 mt-1">
-                Añade conjuros o rasgos de uso limitado desde el catálogo inferior para gestionarlos aquí.
-              </p>
+      <div className={`mt-3 space-y-4 border-t border-slate-700/60 print:border-slate-300 pt-3 ${isExpanded ? 'block' : 'hidden print:block'}`}>
+        {/* Si no hay magia ni rasgos limitados */}
+        {maxActiveLevel === 0 && limitedTraits.length === 0 && (
+          <div className="p-4 bg-slate-900/40 print:bg-slate-50 rounded-lg border border-dashed border-slate-700/70 print:border-slate-300 text-center text-xs text-slate-400 print:text-slate-600">
+            <p className="text-base mb-1">🛡️</p>
+            <p className="font-semibold text-slate-300 print:text-slate-800">Sin recursos diarios activos</p>
+            <p className="text-slate-500 print:text-slate-600 mt-1">
+              Añade conjuros o rasgos de uso limitado desde el catálogo inferior para gestionarlos aquí.
+            </p>
+          </div>
+        )}
+
+        {/* Subsección 1: Espacios de Magia (Solo si tiene conjuros de nivel >= 1) */}
+        {maxActiveLevel > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold text-purple-300 print:text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                <span>🔮</span> Espacios de Magia (Niveles 1 a {maxActiveLevel})
+              </span>
             </div>
-          )}
 
-          {/* Subsección 1: Espacios de Magia (Solo si tiene conjuros de nivel >= 1) */}
-          {maxActiveLevel > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-purple-300 uppercase tracking-wide flex items-center gap-1.5">
-                  <span>🔮</span> Espacios de Magia (Niveles 1 a {maxActiveLevel})
-                </span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2 print:grid-cols-2">
+              {activeSpellLevels.map((lvl) => {
+                const slot = spellSlots[lvl] ?? { level: lvl, max: 0, available: 0 };
+                const isOutOfSlots = slot.max > 0 && slot.available === 0;
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2">
-                {activeSpellLevels.map((lvl) => {
-                  const slot = spellSlots[lvl] ?? { level: lvl, max: 0, available: 0 };
-                  const isOutOfSlots = slot.max > 0 && slot.available === 0;
-
-                  return (
-                    <div
-                      key={`slot-dyn-lvl-${lvl}`}
-                      className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-black text-purple-300">
-                          {lvl}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <div className="text-right">
-                          <span
-                            className={`text-sm font-extrabold ${
-                              isOutOfSlots ? 'text-rose-400' : 'text-slate-100'
-                            }`}
-                          >
-                            {slot.available}
-                          </span>
-                          <span className="text-xs text-slate-500 font-bold">/{slot.max}</span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditSlot(lvl)}
-                          className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
-                          title={`Editar espacios nivel ${lvl}`}
-                          aria-label={`Editar espacios nivel ${lvl}`}
-                        >
-                          ✏️
-                        </button>
-                      </div>
+                return (
+                  <div
+                    key={`slot-dyn-lvl-${lvl}`}
+                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80 print:bg-slate-50 print:border-slate-300"
+                  >
+                    <div className="flex items-center gap-1.5 print:text-slate-900">
+                      <span className="text-xs font-black text-purple-300">
+                        {lvl}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
-          {/* Subsección 2: Rasgos y Dotes con Usos Diarios */}
-          {limitedTraits.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
-                  <span>⚔️</span> Rasgos y Dotes (Usos Diarios)
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2">
-                {limitedTraits.map((trait) => {
-                  const available = trait.availableUses ?? 0;
-                  const max = trait.maxUses ?? 0;
-                  const isOutOfUses = available === 0;
-
-                  return (
-                    <div
-                      key={`trait-daily-${trait.id}`}
-                      className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
-                    >
-                      <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                        <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>
-                          {trait.name}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <div className="text-right">
-                          <span
-                            className={`text-sm font-extrabold ${
-                              isOutOfUses ? 'text-rose-400' : 'text-slate-100'
-                            }`}
-                          >
-                            {available}
-                          </span>
-                          <span className="text-xs text-slate-500 font-bold">/{max}</span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditTrait(trait)}
-                          className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
-                          title={`Editar usos de ${trait.name}`}
-                          aria-label={`Editar usos de ${trait.name}`}
+                    {/* Controles para pantalla */}
+                    <div className="flex items-center gap-1.5 print:hidden">
+                      <div className="text-right">
+                        <span
+                          className={`text-sm font-extrabold ${
+                            isOutOfSlots ? 'text-rose-400' : 'text-slate-100'
+                          }`}
                         >
-                          ✏️
-                        </button>
+                          {slot.available}
+                        </span>
+                        <span className="text-xs text-slate-500 font-bold">/{slot.max}</span>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditSlot(lvl)}
+                        className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
+                        title={`Editar espacios nivel ${lvl}`}
+                        aria-label={`Editar espacios nivel ${lvl}`}
+                      >
+                        ✏️
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* Casillas cuadradas para imprimir en papel */}
+                    <div className="hidden print:flex items-center gap-1.5 flex-wrap">
+                      {slot.max > 0 ? (
+                        Array.from({ length: slot.max }).map((_, i) => (
+                          <span
+                            key={i}
+                            className="w-4 h-4 border-2 border-slate-900 rounded-sm inline-block bg-white"
+                            aria-hidden="true"
+                          />
+                        ))
+                      ) : (
+                        <span className="text-xs text-slate-500 italic">0</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+
+        {/* Subsección 2: Rasgos y Dotes con Usos Diarios (Oculto en print para dejar solo los conjuros en Recursos Diarios) */}
+        {limitedTraits.length > 0 && (
+          <div className="print:hidden">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+                <span>⚔️</span> Rasgos y Dotes (Usos Diarios)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+              {limitedTraits.map((trait) => {
+                const available = trait.availableUses ?? 0;
+                const max = trait.maxUses ?? 0;
+                const isOutOfUses = available === 0;
+
+                return (
+                  <div
+                    key={`trait-daily-${trait.id}`}
+                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
+                  >
+                    <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                      <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>
+                        {trait.name}
+                      </span>
+                    </div>
+
+                    {/* Controles para pantalla */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="text-right">
+                        <span
+                          className={`text-sm font-extrabold ${
+                            isOutOfUses ? 'text-rose-400' : 'text-slate-100'
+                          }`}
+                        >
+                          {available}
+                        </span>
+                        <span className="text-xs text-slate-500 font-bold">/{max}</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditTrait(trait)}
+                        className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
+                        title={`Editar usos de ${trait.name}`}
+                        aria-label={`Editar usos de ${trait.name}`}
+                      >
+                        ✏️
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Modal Editar Espacios de Conjuro (Disponibles y Máximos) */}
       {editingSlotLevel !== null && (

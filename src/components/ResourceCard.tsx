@@ -103,7 +103,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   return (
-    <article className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl p-3 shadow-sm transition-all">
+    <article className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl p-3 shadow-sm transition-all print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none print-avoid-break">
       <div className="flex items-start justify-between gap-2">
         {/* Title and Badges */}
         <div className="flex-1 min-w-0">
@@ -111,36 +111,36 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             <span
               className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                 isSpell
-                  ? 'bg-purple-950 text-purple-300 border border-purple-700/60'
-                  : 'bg-amber-950 text-amber-300 border border-amber-700/60'
+                  ? 'bg-purple-950 text-purple-300 border border-purple-700/60 print:bg-purple-50 print:border-purple-300 print:text-purple-900'
+                  : 'bg-amber-950 text-amber-300 border border-amber-700/60 print:bg-amber-50 print:border-amber-300 print:text-amber-900'
               }`}
             >
               {isSpell ? '🔮 Conjuro' : '⚔️ Rasgo/Dote'}
             </span>
 
             {isCantrip && (
-              <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/50">
+              <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/50 print:bg-slate-100 print:border-slate-300 print:text-slate-800">
                 Truco (Nivel 0) • Ilimitado
               </span>
             )}
             {isLeveledSpell && (
-              <span className="text-[10px] font-semibold text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded-full border border-purple-800/80">
+              <span className="text-[10px] font-semibold text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded-full border border-purple-800/80 print:bg-slate-100 print:border-slate-300 print:text-slate-800">
                 Nivel {resource.spellLevel}
               </span>
             )}
             {isLimitedFeat && (
-              <span className="text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-800">
+              <span className="text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-800 print:bg-slate-100 print:border-slate-300 print:text-slate-800">
                 Usos diarios
               </span>
             )}
             {isUnlimitedFeat && (
-              <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/50">
+              <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/50 print:bg-slate-100 print:border-slate-300 print:text-slate-800">
                 Ilimitado
               </span>
             )}
             {resource.range && (
               <span
-                className="text-[10px] font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-800/80 flex items-center gap-1 shadow-sm"
+                className="text-[10px] font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-800/80 flex items-center gap-1 shadow-sm print:bg-slate-100 print:border-slate-300 print:text-slate-800"
                 title={`Alcance configurado: ${resource.range} • Nivel actual: ${characterLevel}`}
               >
                 <span>🎯</span>
@@ -149,27 +149,44 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             )}
           </div>
 
-          <h4 className="text-sm font-bold text-slate-100 truncate">{resource.name}</h4>
+          <h4 className="text-sm font-bold text-slate-100 print:text-slate-900 truncate">{resource.name}</h4>
         </div>
 
-        {/* Action Controls: Direct "Lanzar" / "Usar" button */}
+        {/* Action Controls: Direct "Lanzar" / "Usar" button on screen, Casillas cuadradas en papel */}
         <div className="flex items-center gap-2 shrink-0">
           {hasCounters && (
-            <div className="flex items-center gap-1 bg-slate-900/90 border border-slate-700/80 rounded-lg px-2 py-1">
-              <span className={`text-sm font-black ${isOutOfUses ? 'text-rose-400' : 'text-slate-100'}`}>
-                {currentAvailable}
-              </span>
-              <span className="text-xs text-slate-400 font-bold">/{currentMax}</span>
-            </div>
+            <>
+              {/* Contador numérico interactivo en pantalla */}
+              <div className="flex items-center gap-1 bg-slate-900/90 border border-slate-700/80 rounded-lg px-2 py-1 print:hidden">
+                <span className={`text-sm font-black ${isOutOfUses ? 'text-rose-400' : 'text-slate-100'}`}>
+                  {currentAvailable}
+                </span>
+                <span className="text-xs text-slate-400 font-bold">/{currentMax}</span>
+              </div>
+
+              {/* Casillas cuadradas para marcar en papel (solo para rasgos con usos diarios; los conjuros usan los espacios en Recursos Diarios) */}
+              {!isSpell && (
+                <div className="hidden print:flex items-center gap-1 flex-wrap" aria-label={`Casillas de uso: ${currentMax}`}>
+                  {currentMax > 0 &&
+                    Array.from({ length: currentMax }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="w-4 h-4 border-2 border-slate-900 rounded-sm inline-block bg-white"
+                        aria-hidden="true"
+                      />
+                    ))}
+                </div>
+              )}
+            </>
           )}
 
-          {/* Dedicated Action Button */}
+          {/* Dedicated Action Button (Screen only) */}
           {isLeveledSpell && (
             <button
               type="button"
               disabled={isOutOfUses}
               onClick={handleSpendClick}
-              className="touch-btn min-h-[44px] px-3.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5"
+              className="touch-btn min-h-[44px] px-3.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5 print:hidden"
               title="Lanzar este conjuro (gasta 1 espacio)"
             >
               <span>✨</span>
@@ -182,7 +199,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               type="button"
               disabled={isOutOfUses}
               onClick={handleSpendClick}
-              className="touch-btn min-h-[44px] px-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5"
+              className="touch-btn min-h-[44px] px-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-xs rounded-lg shadow-md disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all flex items-center gap-1.5 print:hidden"
               title="Usar este rasgo (gasta 1 uso)"
             >
               <span className="w-5 h-5 rounded bg-slate-950 text-amber-400 flex items-center justify-center shrink-0 shadow-sm">
@@ -196,8 +213,8 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       </div>
 
-      {/* Description toggle & action bar */}
-      <div className="mt-2.5 pt-2 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+      {/* Description toggle & action bar (Solo en pantalla) */}
+      <div className="mt-2.5 pt-2 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 print:hidden">
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
@@ -263,12 +280,19 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       </div>
 
-      {/* Expanded rules drawer */}
+      {/* Expanded rules drawer (Pantalla cuando se despliega) */}
       {isExpanded && (
-        <div className="mt-2 p-3 bg-slate-900/90 rounded-lg border border-slate-700/60 shadow-inner max-h-[350px] overflow-y-auto">
+        <div className="mt-2 p-3 bg-slate-900/90 rounded-lg border border-slate-700/60 shadow-inner max-h-[350px] overflow-y-auto print:hidden">
           <MarkdownRenderer content={resource.description} variables={variables} />
         </div>
       )}
+
+      {/* Reglas y descripción completas para impresión en papel / PDF (Siempre visible si tiene descripción) */}
+      {resource.description ? (
+        <div className="hidden print:block mt-2 pt-2 border-t border-slate-300 text-xs text-slate-800">
+          <MarkdownRenderer content={resource.description} variables={variables} />
+        </div>
+      ) : null}
 
       {/* Modal Editar Detalles (URL y Descripción) */}
       {isEditingDetails && (

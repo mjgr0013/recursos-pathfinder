@@ -164,8 +164,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
   return (
     <section className="w-full mt-1 mb-4 flex-1 flex flex-col">
-      {/* Category Tabs and Add Button */}
-      <div className="flex items-center justify-between gap-2 mb-3">
+      {/* Category Tabs and Add Button (Solo en pantalla) */}
+      <div className="flex items-center justify-between gap-2 mb-3 print:hidden">
         <div className="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 gap-1 flex-1">
           <button
             type="button"
@@ -221,8 +221,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         </button>
       </div>
 
-      {/* Buscador de Recursos */}
-      <div className="relative mb-3">
+      {/* Buscador de Recursos (Solo en pantalla) */}
+      <div className="relative mb-3 print:hidden">
         <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs sm:text-sm">
           🔍
         </span>
@@ -257,7 +257,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
       <div className="flex flex-col gap-3 flex-1 w-full">
         {filteredResources.length === 0 ? (
           searchQuery.trim() ? (
-            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
+            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm print:hidden">
               <p className="text-2xl mb-1">🔍</p>
               <p className="font-semibold text-slate-300">
                 No se encontraron resultados para &quot;{searchQuery}&quot;
@@ -274,108 +274,28 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               </button>
             </div>
           ) : (
-            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
+            <div className="w-full text-center py-10 px-4 bg-slate-800/40 print:bg-white rounded-xl border border-dashed border-slate-700 print:border-slate-300 text-slate-400 print:text-slate-600 text-sm">
               <p className="text-2xl mb-1">📜</p>
-              <p className="font-semibold text-slate-300">No hay elementos registrados</p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="font-semibold text-slate-300 print:text-slate-800">No hay elementos registrados</p>
+              <p className="text-xs text-slate-500 print:text-slate-600 mt-1 print:hidden">
                 Pulsa el botón &quot;+ Añadir&quot; para registrar un conjuro o dote/rasgo.
               </p>
             </div>
           )
-        ) : activeTab === 'spell' ? (
-          <div className="space-y-3">
-            {spellGroups.length > 1 && (
-              <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-                <span className="font-semibold">Niveles de conjuro ({spellGroups.length})</span>
-                <button
-                  type="button"
-                  onClick={handleToggleAllLevels}
-                  className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1"
-                >
-                  {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
-                </button>
-              </div>
-            )}
-
-            {spellGroups.map((group) => {
-              const isCollapsed = Boolean(collapsedLevels[group.level]);
-
-              return (
-                <div key={`spell-group-lvl-${group.level}`} className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleLevelCollapse(group.level)}
-                    className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors"
-                    aria-expanded={!isCollapsed}
-                    aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">🔮</span>
-                      <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
-                        {group.label}
-                      </span>
-                      <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
-                        {group.spells.length}
-                      </span>
-                    </div>
-
-                    <span className="text-xs text-slate-400 font-bold">
-                      {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
-                    </span>
-                  </button>
-
-                  {!isCollapsed && (
-                    <div className="flex flex-col gap-2.5 pl-1 sm:pl-2">
-                      {group.spells.map((spell) => (
-                        <ResourceCard
-                          key={spell.id}
-                          resource={spell}
-                          spellSlots={spellSlots}
-                          characterLevel={characterLevel}
-                          characterVariables={variables}
-                          onSpend={onSpendResource}
-                          onRestore={onRestoreResource}
-                          onDelete={onDeleteResource}
-                          onSpendSpellSlot={onSpendSpellSlot}
-                          onRestoreSpellSlot={onRestoreSpellSlot}
-                          onUpdateResourceDetails={onUpdateResourceDetails}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ) : activeTab === 'feat_trait' ? (
-          <div className="flex flex-col gap-2.5">
-            {feats.map((feat) => (
-              <ResourceCard
-                key={feat.id}
-                resource={feat}
-                spellSlots={spellSlots}
-                characterLevel={characterLevel}
-                characterVariables={variables}
-                onSpend={onSpendResource}
-                onRestore={onRestoreResource}
-                onDelete={onDeleteResource}
-                onSpendSpellSlot={onSpendSpellSlot}
-                onRestoreSpellSlot={onRestoreSpellSlot}
-                onUpdateResourceDetails={onUpdateResourceDetails}
-              />
-            ))}
-          </div>
         ) : (
           <div className="space-y-4">
+            {/* Sección de Conjuros */}
             {spells.length > 0 && (
-              <div className="space-y-3">
+              <div className={`space-y-3 ${activeTab === 'feat_trait' ? 'hidden print:block' : 'block'}`}>
                 {spellGroups.length > 1 && (
-                  <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-                    <span className="font-semibold">Conjuros ({spells.length})</span>
+                  <div className="flex items-center justify-between text-xs text-slate-400 print:text-slate-700 px-1">
+                    <span className="font-semibold">
+                      {activeTab === 'spell' ? `Niveles de conjuro (${spellGroups.length})` : `Conjuros (${spells.length})`}
+                    </span>
                     <button
                       type="button"
                       onClick={handleToggleAllLevels}
-                      className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1"
+                      className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1 print:hidden"
                     >
                       {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
                     </button>
@@ -390,58 +310,55 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                       <button
                         type="button"
                         onClick={() => toggleLevelCollapse(group.level)}
-                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors"
+                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors print:pointer-events-none print:bg-slate-100 print:border-slate-300"
                         aria-expanded={!isCollapsed}
                         aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-sm">🔮</span>
-                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300 print:text-slate-900">
                             {group.label}
                           </span>
-                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full print:bg-slate-200 print:border-slate-400 print:text-slate-800">
                             {group.spells.length}
                           </span>
                         </div>
 
-                        <span className="text-xs text-slate-400 font-bold">
+                        <span className="text-xs text-slate-400 font-bold print:hidden">
                           {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
                         </span>
                       </button>
 
-                      {!isCollapsed && (
-                        <div className="flex flex-col gap-2.5 pl-1 sm:pl-2">
-                          {group.spells.map((spell) => (
-                            <ResourceCard
-                              key={spell.id}
-                              resource={spell}
-                              spellSlots={spellSlots}
-                              characterLevel={characterLevel}
-                              characterVariables={variables}
-                              onSpend={onSpendResource}
-                              onRestore={onRestoreResource}
-                              onDelete={onDeleteResource}
-                              onSpendSpellSlot={onSpendSpellSlot}
-                              onRestoreSpellSlot={onRestoreSpellSlot}
-                              onUpdateResourceDetails={onUpdateResourceDetails}
-                            />
-                          ))}
-                        </div>
-                      )}
+                      <div className={`flex flex-col gap-2.5 pl-1 sm:pl-2 ${isCollapsed ? 'hidden print:flex' : 'flex'}`}>
+                        {group.spells.map((spell) => (
+                          <ResourceCard
+                            key={spell.id}
+                            resource={spell}
+                            spellSlots={spellSlots}
+                            characterLevel={characterLevel}
+                            characterVariables={variables}
+                            onSpend={onSpendResource}
+                            onRestore={onRestoreResource}
+                            onDelete={onDeleteResource}
+                            onSpendSpellSlot={onSpendSpellSlot}
+                            onRestoreSpellSlot={onRestoreSpellSlot}
+                            onUpdateResourceDetails={onUpdateResourceDetails}
+                          />
+                        ))}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             )}
 
+            {/* Sección de Rasgos y Dotes */}
             {feats.length > 0 && (
-              <div className="space-y-2">
-                {spells.length > 0 && (
-                  <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-300">
-                    <span>⚔️</span>
-                    <span>Rasgos y Dotes ({feats.length})</span>
-                  </div>
-                )}
+              <div className={`space-y-2 ${activeTab === 'spell' ? 'hidden print:block' : 'block'}`}>
+                <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-300 print:text-slate-900">
+                  <span>⚔️</span>
+                  <span>Rasgos y Dotes ({feats.length})</span>
+                </div>
                 <div className="flex flex-col gap-2.5">
                   {feats.map((feat) => (
                     <ResourceCard

@@ -217,16 +217,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center px-3 py-3 md:px-6 md:py-5 max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full pb-16">
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center px-3 py-3 md:px-6 md:py-5 max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full pb-16 print:min-h-0 print:bg-white print:text-slate-900 print:p-0 print:max-w-none print:pb-0">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-3 z-50 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg animate-bounce">
+        <div className="fixed top-3 z-50 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg animate-bounce print:hidden">
           {toastMessage}
         </div>
       )}
 
-      {/* Main App Bar */}
-      <header className="w-full flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+      {/* Main App Bar (Solo en pantalla) */}
+      <header className="w-full flex items-center justify-between pb-3 mb-4 border-b border-slate-800 print:hidden">
         <h1 className="text-base md:text-lg font-bold tracking-wide text-amber-400 flex items-center gap-1.5">
           <span>⚔️</span> Recursos Pathfinder
         </h1>
@@ -238,14 +238,33 @@ export default function App() {
           onOpenBackup={() => setIsBackupModalOpen(true)}
           onOpenFormulaGuide={() => setIsFormulaGuideOpen(true)}
           onOpenLongRest={() => setIsLongRestModalOpen(true)}
+          onExportPdf={() => window.print()}
         />
       </header>
 
-      <main className="w-full flex-1 flex flex-col lg:flex-row lg:items-start lg:gap-6">
+      {/* Print Header: Encabezado formal de la ficha de personaje en papel */}
+      <div className="hidden print:flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-3 w-full">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">⚔️</span>
+          <div>
+            <h1 className="text-base font-black tracking-wide text-slate-900 uppercase">
+              Recursos Pathfinder • Ficha de Personaje
+            </h1>
+            <p className="text-[10px] text-slate-600 font-medium">
+              Puntos de Golpe, Recursos Diarios, Conjuros y Rasgos
+            </p>
+          </div>
+        </div>
+        <div className="text-right text-[10px] text-slate-600 font-bold">
+          <span>{characterState.profile.name}</span> • <span>Nivel {characterState.profile.level}</span>
+        </div>
+      </div>
+
+      <main className="w-full flex-1 flex flex-col lg:flex-row lg:items-start lg:gap-6 print:block print:w-full print:gap-0">
         {/* Left Column on Desktop / Top Area on Mobile & Tablet */}
-        <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col gap-3 lg:sticky lg:top-4 self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1">
-          {/* On Tablet portrait (md), CharacterHeader and HealthTracker sit side-by-side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3">
+        <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col gap-3 lg:sticky lg:top-4 self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 print:w-full print:static print:max-h-none print:overflow-visible print:p-0 print:gap-3">
+          {/* On Tablet portrait (md) and Print, CharacterHeader and HealthTracker sit side-by-side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 print:grid-cols-2 print:gap-3">
             <CharacterHeader
               profile={characterState.profile}
               onUpdateProfile={(updated) =>
@@ -280,7 +299,7 @@ export default function App() {
         </div>
 
         {/* Right Column on Desktop / Bottom Area on Mobile & Tablet */}
-        <div className="w-full flex-1 min-w-0 mt-3 lg:mt-0">
+        <div className="w-full flex-1 min-w-0 mt-3 lg:mt-0 print:w-full print:mt-4 print:p-0">
           <ResourceList
             resources={characterState.resources}
             spellSlots={characterState.spellSlots}

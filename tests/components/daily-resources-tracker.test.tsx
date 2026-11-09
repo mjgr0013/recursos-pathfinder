@@ -85,4 +85,22 @@ describe('DailyResourcesTracker component', () => {
     expect(html).toContain('w-7 h-7');
     expect(html).not.toContain('w-10 h-10');
   });
+
+  it('renders squares only for spell slots in paper export, hiding traits in print view', () => {
+    const html = renderToString(
+      <DailyResourcesTracker
+        spellSlots={defaultSlots}
+        resources={[spellLvl1, limitedTrait]}
+        onUpdateMaxSlots={vi.fn()}
+        onUpdateSlotValues={vi.fn()}
+      />
+    );
+
+    // Spell slot level 1 has max: 3 -> exactly 3 squares in print (traits do not render squares in Recursos Diarios)
+    const squareMatches = html.match(/w-4 h-4 border-2 border-slate-900 rounded-sm inline-block bg-white/g);
+    expect(squareMatches).toHaveLength(3);
+
+    // The limited traits subsection in Recursos Diarios has print:hidden
+    expect(html).toMatch(/class="[^"]*print:hidden[^"]*">.*Rasgos y Dotes \(Usos Diarios\)/);
+  });
 });

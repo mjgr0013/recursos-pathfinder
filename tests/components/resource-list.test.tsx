@@ -295,4 +295,34 @@ describe('ResourceList component', () => {
       expect(html).toContain('Limpiar búsqueda');
     });
   });
+
+  describe('Print / Paper Export optimizations', () => {
+    const sampleResources = [cantrip, spellLvl1, trait];
+
+    it('hides search bar, category tabs, and add button in print mode', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={sampleResources}
+          spellSlots={defaultSlots}
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      // Search bar wrapper must have print:hidden
+      expect(html).toMatch(/class="[^"]*relative mb-3 print:hidden[^"]*"/);
+
+      // Category tabs & add button must have print:hidden
+      expect(html).toMatch(/class="[^"]*print:hidden[^"]*">.*Todos/);
+
+      // Both spells and traits must be rendered in the document
+      expect(html).toContain('Rayo de Escarcha (Truco)');
+      expect(html).toContain('Proyectil Mágico');
+      expect(html).toContain('Vínculo Arcano');
+    });
+  });
 });

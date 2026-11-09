@@ -7,6 +7,7 @@ interface TopBarActionsProps {
   onOpenBackup: () => void;
   onOpenFormulaGuide: () => void;
   onOpenLongRest: () => void;
+  onExportPdf?: () => void;
 }
 
 export const TopBarActions: React.FC<TopBarActionsProps> = ({
@@ -16,6 +17,7 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
   onOpenBackup,
   onOpenFormulaGuide,
   onOpenLongRest,
+  onExportPdf,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -54,7 +56,7 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative print:hidden" ref={menuRef}>
       <button
         type="button"
         onClick={() => setIsMenuOpen((prev) => !prev)}
@@ -136,9 +138,23 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
               </div>
             </button>
 
+            {/* Option 4: Export to PDF / Print */}
+            <button
+              type="button"
+              onClick={() => handleAction(onExportPdf ?? (() => window.print()))}
+              className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-200 text-xs font-medium transition-colors touch-btn"
+              role="menuitem"
+            >
+              <span className="text-base shrink-0">📄</span>
+              <div>
+                <div className="font-bold text-slate-100">Exportar a PDF / Imprimir</div>
+                <div className="text-[10px] text-slate-400">Versión optimizada para papel y fichas</div>
+              </div>
+            </button>
+
             <div className="my-1 border-t border-slate-800" />
 
-            {/* Option 4: Long Rest in Menu */}
+            {/* Option 5: Long Rest in Menu */}
             <button
               type="button"
               onClick={() => handleAction(onOpenLongRest)}
