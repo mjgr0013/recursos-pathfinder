@@ -154,4 +154,23 @@ describe('ResourceCard component', () => {
     expect(html).not.toContain('Usar');
     expect(html).not.toContain('Lanzar');
   });
+
+  it('renders description collapsed by default with toggle button', () => {
+    const html = renderToString(
+      <ResourceCard
+        resource={cantripSpell}
+        spellSlots={defaultSlots}
+        onSpend={vi.fn()}
+        onDelete={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+      />
+    );
+
+    // Button should offer to see description
+    expect(html).toContain('▼ Ver descripción');
+    expect(html).not.toContain('▲ Ocultar reglas');
+
+    // Description markdown drawer should NOT be rendered in DOM by default
+    expect(html).not.toContain('Otorga +1 a una tirada');
+  });
 });

@@ -29,12 +29,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   onSpendSpellSlot,
   onUpdateResourceDetails,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(min-width: 1024px)').matches;
-    }
-    return false;
-  });
+  const [isExpanded, setIsExpanded] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const variables: CharacterVariables = characterVariables ?? {

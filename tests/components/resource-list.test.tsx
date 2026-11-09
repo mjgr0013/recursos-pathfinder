@@ -153,4 +153,146 @@ describe('ResourceList component', () => {
     expect(posLvl1).toBeLessThan(posLvl2);
     expect(posLvl2).toBeLessThan(posTrait);
   });
+
+  it('renders spells grouped by level with headers and counts', () => {
+    const list = [cantrip, spellLvl1, spellLvl2, spellLvl3];
+
+    const html = renderToString(
+      <ResourceList
+        resources={list}
+        spellSlots={defaultSlots}
+        initialTab="spell"
+        onSpendResource={vi.fn()}
+        onRestoreResource={vi.fn()}
+        onDeleteResource={vi.fn()}
+        onAddResource={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+        onRestoreSpellSlot={vi.fn()}
+      />
+    );
+
+    // Group headers for each level should be present
+    expect(html).toContain('Trucos (Nivel 0)');
+    expect(html).toContain('Nivel 1');
+    expect(html).toContain('Nivel 2');
+    expect(html).toContain('Nivel 3');
+
+    // Global toggle for all levels
+    expect(html).toContain('Niveles de conjuro');
+    expect(html).toContain('Plegar todos');
+
+    // Level headers indicate they can be toggled
+    expect(html).toContain('▲ Plegar');
+  });
+
+  describe('Search functionality (Buscador)', () => {
+    const listWithDesc = [
+      { ...cantrip, description: 'Rayo gélido que causa frío' },
+      { ...spellLvl1, description: 'Misiles arcanos infalibles' },
+      { ...spellLvl2, description: 'Chorros de fuego abrasador' },
+      { ...spellLvl3, description: 'Explosión flamígera masiva' },
+      { ...trait, description: 'Objeto de vínculo arcano para canalizar magia' },
+    ];
+
+    it('renders the search input with icon and placeholder', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={listWithDesc}
+          spellSlots={defaultSlots}
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      expect(html).toContain('🔍');
+      expect(html).toContain('aria-label="Buscar conjuros o rasgos"');
+      expect(html).toContain('placeholder="Buscar conjuro o rasgo por nombre o descripción..."');
+    });
+
+    it('filters spells by name matching query', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={listWithDesc}
+          spellSlots={defaultSlots}
+          initialSearchQuery="Fuego"
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      // Matches "Bola de Fuego" (name) and "Rayo Abrasador" (description has "fuego")
+      expect(html).toContain('Bola de Fuego');
+      expect(html).toContain('Rayo Abrasador');
+
+      // Does not match other unrelated spells
+      expect(html).not.toContain('Rayo de Escarcha (Truco)');
+      expect(html).not.toContain('Vínculo Arcano');
+    });
+
+    it('filters accent-insensitively (e.g. "magico" matches "Proyectil Mágico")', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={listWithDesc}
+          spellSlots={defaultSlots}
+          initialSearchQuery="magico"
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      expect(html).toContain('Proyectil Mágico');
+      expect(html).not.toContain('Bola de Fuego');
+    });
+
+    it('filters traits matching query', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={listWithDesc}
+          spellSlots={defaultSlots}
+          initialSearchQuery="vinculo"
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      expect(html).toContain('Vínculo Arcano');
+      expect(html).not.toContain('Bola de Fuego');
+      expect(html).not.toContain('Proyectil Mágico');
+    });
+
+    it('displays friendly empty state when no elements match the search', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={listWithDesc}
+          spellSlots={defaultSlots}
+          initialSearchQuery="palabraInexistente123"
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      expect(html).toMatch(/No se encontraron resultados para &quot;(<!-- -->)?palabraInexistente123(<!-- -->)?&quot;/);
+      expect(html).toContain('Limpiar búsqueda');
+    });
+  });
 });

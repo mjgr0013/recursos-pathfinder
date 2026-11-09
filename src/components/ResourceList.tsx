@@ -11,6 +11,8 @@ interface ResourceListProps {
   spellSlots: SpellSlotsMap;
   characterLevel?: number;
   characterVariables?: CharacterVariables;
+  initialSearchQuery?: string;
+  initialTab?: FilterTab;
   onSpendResource: (id: string) => void;
   onRestoreResource: (id: string) => void;
   onDeleteResource: (id: string) => void;
@@ -27,6 +29,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   spellSlots,
   characterLevel = 1,
   characterVariables,
+  initialSearchQuery = '',
+  initialTab = 'all',
   onSpendResource,
   onRestoreResource,
   onDeleteResource,
@@ -35,7 +39,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   onRestoreSpellSlot,
   onUpdateResourceDetails,
 }) => {
-  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [activeTab, setActiveTab] = useState<FilterTab>(initialTab);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const variables: CharacterVariables = characterVariables ?? {
@@ -54,12 +58,78 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const [maxUses, setMaxUses] = useState<number | ''>(3);
   const [description, setDescription] = useState('');
 
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [collapsedLevels, setCollapsedLevels] = useState<Record<number, boolean>>({});
+
+  const normalizeText = (text: string) =>
+    text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
   const sortedResources = useMemo(() => sortResources(resources), [resources]);
 
   const filteredResources = useMemo(() => {
-    if (activeTab === 'all') return sortedResources;
-    return sortedResources.filter((res) => res.category === activeTab);
-  }, [sortedResources, activeTab]);
+    let list = activeTab === 'all' ? sortedResources : sortedResources.filter((res) => res.category === activeTab);
+
+    if (searchQuery.trim()) {
+      const q = normalizeText(searchQuery.trim());
+      list = list.filter((res) => {
+        const nameMatches = normalizeText(res.name).includes(q);
+        const descMatches = normalizeText(res.description || '').includes(q);
+        return nameMatches || descMatches;
+      });
+    }
+
+    return list;
+  }, [sortedResources, activeTab, searchQuery]);
+
+  const spells = useMemo(
+    () => filteredResources.filter((r) => r.category === 'spell'),
+    [filteredResources]
+  );
+  const feats = useMemo(
+    () => filteredResources.filter((r) => r.category === 'feat_trait'),
+    [filteredResources]
+  );
+
+  const spellGroups = useMemo(() => {
+    const groupsMap = new Map<number, ResourceItem[]>();
+
+    for (const spell of spells) {
+      const lvl = typeof spell.spellLevel === 'number' ? spell.spellLevel : 0;
+      if (!groupsMap.has(lvl)) {
+        groupsMap.set(lvl, []);
+      }
+      groupsMap.get(lvl)!.push(spell);
+    }
+
+    const sortedLevels = Array.from(groupsMap.keys()).sort((a, b) => a - b);
+
+    return sortedLevels.map((lvl) => ({
+      level: lvl,
+      label: lvl === 0 ? 'Trucos (Nivel 0)' : `Nivel ${lvl}`,
+      spells: groupsMap.get(lvl)!,
+    }));
+  }, [spells]);
+
+  const toggleLevelCollapse = (level: number) => {
+    setCollapsedLevels((prev) => ({
+      ...prev,
+      [level]: !prev[level],
+    }));
+  };
+
+  const allLevelsCollapsed = spellGroups.length > 0 && spellGroups.every((g) => Boolean(collapsedLevels[g.level]));
+
+  const handleToggleAllLevels = () => {
+    const nextCollapsed = !allLevelsCollapsed;
+    const updated: Record<number, boolean> = {};
+    for (const g of spellGroups) {
+      updated[g.level] = nextCollapsed;
+    }
+    setCollapsedLevels(updated);
+  };
 
   const spellsCount = resources.filter((r) => r.category === 'spell').length;
   const featsCount = resources.filter((r) => r.category === 'feat_trait').length;
@@ -151,32 +221,247 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         </button>
       </div>
 
+      {/* Buscador de Recursos */}
+      <div className="relative mb-3">
+        <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs sm:text-sm">
+          🔍
+        </span>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={
+            activeTab === 'spell'
+              ? 'Buscar conjuro por nombre o descripción...'
+              : activeTab === 'feat_trait'
+              ? 'Buscar rasgo por nombre o descripción...'
+              : 'Buscar conjuro o rasgo por nombre o descripción...'
+          }
+          className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl pl-9 pr-9 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors shadow-sm"
+          aria-label="Buscar conjuros o rasgos"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 text-xs font-bold"
+            title="Limpiar búsqueda"
+            aria-label="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
       {/* Resource Cards Collection */}
       <div className="flex flex-col gap-3 flex-1 w-full">
         {filteredResources.length === 0 ? (
-          <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
-            <p className="text-2xl mb-1">📜</p>
-            <p className="font-semibold text-slate-300">No hay elementos registrados</p>
-            <p className="text-xs text-slate-500 mt-1">
-              Pulsa el botón &quot;+ Añadir&quot; para registrar un conjuro o dote/rasgo.
-            </p>
+          searchQuery.trim() ? (
+            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
+              <p className="text-2xl mb-1">🔍</p>
+              <p className="font-semibold text-slate-300">
+                No se encontraron resultados para &quot;{searchQuery}&quot;
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Prueba con otro término o limpia el buscador.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="mt-3 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg touch-btn"
+              >
+                Limpiar búsqueda
+              </button>
+            </div>
+          ) : (
+            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm">
+              <p className="text-2xl mb-1">📜</p>
+              <p className="font-semibold text-slate-300">No hay elementos registrados</p>
+              <p className="text-xs text-slate-500 mt-1">
+                Pulsa el botón &quot;+ Añadir&quot; para registrar un conjuro o dote/rasgo.
+              </p>
+            </div>
+          )
+        ) : activeTab === 'spell' ? (
+          <div className="space-y-3">
+            {spellGroups.length > 1 && (
+              <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                <span className="font-semibold">Niveles de conjuro ({spellGroups.length})</span>
+                <button
+                  type="button"
+                  onClick={handleToggleAllLevels}
+                  className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1"
+                >
+                  {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
+                </button>
+              </div>
+            )}
+
+            {spellGroups.map((group) => {
+              const isCollapsed = Boolean(collapsedLevels[group.level]);
+
+              return (
+                <div key={`spell-group-lvl-${group.level}`} className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleLevelCollapse(group.level)}
+                    className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors"
+                    aria-expanded={!isCollapsed}
+                    aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🔮</span>
+                      <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                        {group.label}
+                      </span>
+                      <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
+                        {group.spells.length}
+                      </span>
+                    </div>
+
+                    <span className="text-xs text-slate-400 font-bold">
+                      {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
+                    </span>
+                  </button>
+
+                  {!isCollapsed && (
+                    <div className="flex flex-col gap-2.5 pl-1 sm:pl-2">
+                      {group.spells.map((spell) => (
+                        <ResourceCard
+                          key={spell.id}
+                          resource={spell}
+                          spellSlots={spellSlots}
+                          characterLevel={characterLevel}
+                          characterVariables={variables}
+                          onSpend={onSpendResource}
+                          onRestore={onRestoreResource}
+                          onDelete={onDeleteResource}
+                          onSpendSpellSlot={onSpendSpellSlot}
+                          onRestoreSpellSlot={onRestoreSpellSlot}
+                          onUpdateResourceDetails={onUpdateResourceDetails}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : activeTab === 'feat_trait' ? (
+          <div className="flex flex-col gap-2.5">
+            {feats.map((feat) => (
+              <ResourceCard
+                key={feat.id}
+                resource={feat}
+                spellSlots={spellSlots}
+                characterLevel={characterLevel}
+                characterVariables={variables}
+                onSpend={onSpendResource}
+                onRestore={onRestoreResource}
+                onDelete={onDeleteResource}
+                onSpendSpellSlot={onSpendSpellSlot}
+                onRestoreSpellSlot={onRestoreSpellSlot}
+                onUpdateResourceDetails={onUpdateResourceDetails}
+              />
+            ))}
           </div>
         ) : (
-          filteredResources.map((res) => (
-            <ResourceCard
-              key={res.id}
-              resource={res}
-              spellSlots={spellSlots}
-              characterLevel={characterLevel}
-              characterVariables={variables}
-              onSpend={onSpendResource}
-              onRestore={onRestoreResource}
-              onDelete={onDeleteResource}
-              onSpendSpellSlot={onSpendSpellSlot}
-              onRestoreSpellSlot={onRestoreSpellSlot}
-              onUpdateResourceDetails={onUpdateResourceDetails}
-            />
-          ))
+          <div className="space-y-4">
+            {spells.length > 0 && (
+              <div className="space-y-3">
+                {spellGroups.length > 1 && (
+                  <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                    <span className="font-semibold">Conjuros ({spells.length})</span>
+                    <button
+                      type="button"
+                      onClick={handleToggleAllLevels}
+                      className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1"
+                    >
+                      {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
+                    </button>
+                  </div>
+                )}
+
+                {spellGroups.map((group) => {
+                  const isCollapsed = Boolean(collapsedLevels[group.level]);
+
+                  return (
+                    <div key={`spell-group-lvl-${group.level}`} className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleLevelCollapse(group.level)}
+                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors"
+                        aria-expanded={!isCollapsed}
+                        aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">🔮</span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                            {group.label}
+                          </span>
+                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
+                            {group.spells.length}
+                          </span>
+                        </div>
+
+                        <span className="text-xs text-slate-400 font-bold">
+                          {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
+                        </span>
+                      </button>
+
+                      {!isCollapsed && (
+                        <div className="flex flex-col gap-2.5 pl-1 sm:pl-2">
+                          {group.spells.map((spell) => (
+                            <ResourceCard
+                              key={spell.id}
+                              resource={spell}
+                              spellSlots={spellSlots}
+                              characterLevel={characterLevel}
+                              characterVariables={variables}
+                              onSpend={onSpendResource}
+                              onRestore={onRestoreResource}
+                              onDelete={onDeleteResource}
+                              onSpendSpellSlot={onSpendSpellSlot}
+                              onRestoreSpellSlot={onRestoreSpellSlot}
+                              onUpdateResourceDetails={onUpdateResourceDetails}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {feats.length > 0 && (
+              <div className="space-y-2">
+                {spells.length > 0 && (
+                  <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-300">
+                    <span>⚔️</span>
+                    <span>Rasgos y Dotes ({feats.length})</span>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2.5">
+                  {feats.map((feat) => (
+                    <ResourceCard
+                      key={feat.id}
+                      resource={feat}
+                      spellSlots={spellSlots}
+                      characterLevel={characterLevel}
+                      characterVariables={variables}
+                      onSpend={onSpendResource}
+                      onRestore={onRestoreResource}
+                      onDelete={onDeleteResource}
+                      onSpendSpellSlot={onSpendSpellSlot}
+                      onRestoreSpellSlot={onRestoreSpellSlot}
+                      onUpdateResourceDetails={onUpdateResourceDetails}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
