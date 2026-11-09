@@ -247,7 +247,7 @@ export default function App() {
         <div className="flex items-center gap-2">
           <span className="text-xl">⚔️</span>
           <div>
-            <h1 className="text-base font-black tracking-wide text-slate-900 uppercase">
+            <h1 className="text-base font-black tracking-wide text-slate-900 uppercase print:text-xs">
               Recursos Pathfinder • Ficha de Personaje
             </h1>
             <p className="text-[10px] text-slate-600 font-medium">

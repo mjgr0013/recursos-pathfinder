@@ -95,7 +95,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <h2
               key={idx}
-              className="text-sm font-black text-amber-400 print:text-slate-950 mt-2 mb-1 border-b border-slate-700/60 print:border-slate-300 pb-1"
+              className="text-sm font-black text-amber-400 print:text-slate-950 print:text-xs mt-2 mb-1 border-b border-slate-700/60 print:border-slate-300 pb-1"
             >
               {renderInline(block.tokens)}
             </h2>

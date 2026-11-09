@@ -98,7 +98,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
         {/* Character Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1">
-            <h2 className="text-lg font-bold text-slate-100 print:text-slate-900 truncate">{profile.name}</h2>
+            <h2 className="text-lg font-bold text-slate-100 print:text-slate-900 print:text-xs truncate">{profile.name}</h2>
             <button
               type="button"
               onClick={() => {

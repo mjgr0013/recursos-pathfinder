@@ -91,7 +91,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
       {/* VISTA PARA IMPRESIÓN EN PAPEL (Sin botones de sumar/quitar vida y con casilla en blanco para PG actuales) */}
       <div className="hidden print:block space-y-2">
         <div className="flex items-center justify-between border-b border-slate-300 pb-1.5">
-          <h3 className="text-sm font-bold text-slate-900 uppercase flex items-center gap-1.5">
+          <h3 className="text-sm font-bold text-slate-900 uppercase flex items-center gap-1.5 print:text-xs">
             <span>❤️</span> Puntos de Golpe (PG)
           </h3>
 

@@ -287,11 +287,23 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             {/* Sección de Conjuros */}
             {spells.length > 0 && (
               <div className={`space-y-3 ${activeTab === 'feat_trait' ? 'hidden print:block' : 'block'}`}>
-                {spellGroups.length > 1 && (
-                  <div className="flex items-center justify-between text-xs text-slate-400 print:text-slate-700 px-1">
-                    <span className="font-semibold">
-                      {activeTab === 'spell' ? `Niveles de conjuro (${spellGroups.length})` : `Conjuros (${spells.length})`}
+                <div
+                  className={`flex items-center justify-between text-xs text-slate-400 print:text-slate-900 px-1 ${
+                    spellGroups.length <= 1 ? 'hidden print:flex' : 'flex'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-300 print:text-slate-900 font-bold uppercase tracking-wider">
+                      <span className="hidden print:inline mr-1">🔮</span>
+                      <span className="print:hidden">
+                        {activeTab === 'spell'
+                          ? `Niveles de conjuro (${spellGroups.length})`
+                          : `Conjuros (${spells.length})`}
+                      </span>
+                      <span className="hidden print:inline">Conjuros ({spells.length})</span>
                     </span>
+                  </div>
+                  {spellGroups.length > 1 && (
                     <button
                       type="button"
                       onClick={handleToggleAllLevels}
@@ -299,37 +311,37 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     >
                       {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {spellGroups.map((group) => {
                   const isCollapsed = Boolean(collapsedLevels[group.level]);
 
                   return (
-                    <div key={`spell-group-lvl-${group.level}`} className="space-y-2">
+                    <div key={`spell-group-lvl-${group.level}`} className="space-y-2 print:space-y-0">
                       <button
                         type="button"
                         onClick={() => toggleLevelCollapse(group.level)}
-                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors print:pointer-events-none print:bg-slate-100 print:border-slate-300"
+                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors print:hidden"
                         aria-expanded={!isCollapsed}
                         aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-sm">🔮</span>
-                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300 print:text-slate-900">
+                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
                             {group.label}
                           </span>
-                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full print:bg-slate-200 print:border-slate-400 print:text-slate-800">
+                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
                             {group.spells.length}
                           </span>
                         </div>
 
-                        <span className="text-xs text-slate-400 font-bold print:hidden">
+                        <span className="text-xs text-slate-400 font-bold">
                           {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
                         </span>
                       </button>
 
-                      <div className={`flex flex-col gap-2.5 pl-1 sm:pl-2 ${isCollapsed ? 'hidden print:flex' : 'flex'}`}>
+                      <div className={`flex flex-col gap-2.5 pl-1 sm:pl-2 print:pl-0 ${isCollapsed ? 'hidden print:flex' : 'flex'}`}>
                         {group.spells.map((spell) => (
                           <ResourceCard
                             key={spell.id}

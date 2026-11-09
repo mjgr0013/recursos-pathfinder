@@ -324,5 +324,35 @@ describe('ResourceList component', () => {
       expect(html).toContain('Proyectil Mágico');
       expect(html).toContain('Vínculo Arcano');
     });
+
+    it('hides spell level separator buttons in print mode and displays clean spells section', () => {
+      const multipleLevelSpells = [cantrip, spellLvl1, spellLvl2];
+
+      const html = renderToString(
+        <ResourceList
+          resources={multipleLevelSpells}
+          spellSlots={defaultSlots}
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+      // All spell level separator toggle buttons must include print:hidden
+      expect(html).toContain('print:hidden');
+      const separatorButtons = html.match(/aria-label="[^"]*\(1\), (desplegar|plegar)"/g);
+      expect(separatorButtons).not.toBeNull();
+      // Level buttons must have class print:hidden
+      expect(html).toMatch(/class="[^"]*rounded-xl text-left transition-colors print:hidden[^"]*"/);
+
+      // Spells container should have print:pl-0 to avoid indentation on paper
+      expect(html).toMatch(/class="[^"]*print:pl-0[^"]*"/);
+
+      // Header indicates spells count in print mode
+      expect(html).toContain('Conjuros (3)');
+    });
   });
 });

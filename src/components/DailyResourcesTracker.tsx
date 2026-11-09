@@ -97,7 +97,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         >
           <span className="text-lg">⚡</span>
           <div>
-            <h3 className="text-sm font-bold tracking-wider text-slate-100 print:text-slate-900 uppercase">
+            <h3 className="text-sm font-bold tracking-wider text-slate-100 print:text-slate-900 print:text-xs uppercase">
               Recursos Diarios
             </h3>
             <p className="text-[11px] text-slate-400 print:text-slate-600 font-medium">

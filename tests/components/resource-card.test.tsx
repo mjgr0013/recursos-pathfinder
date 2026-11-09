@@ -216,4 +216,36 @@ describe('ResourceCard component', () => {
     expect(html).not.toContain('Casillas de uso:');
     expect(html).not.toContain('w-4 h-4 border-2 border-slate-900 rounded-sm');
   });
+
+  it('unifies name, level, and range into a single row in print mode', () => {
+    const spellWithRange: ResourceItem = {
+      ...leveledSpell,
+      range: '15m',
+    };
+
+    const html = renderToString(
+      <ResourceCard
+        resource={spellWithRange}
+        characterLevel={5}
+        spellSlots={defaultSlots}
+        onSpend={vi.fn()}
+        onDelete={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+      />
+    );
+
+    // Title and Badges container must be flex in print to unify the line
+    expect(html).toMatch(/class="[^"]*print:flex print:items-center print:gap-1\.5[^"]*"/);
+
+    // Title has print:order-1 to come first on the line
+    expect(html).toMatch(/class="[^"]*print:order-1[^"]*"/);
+
+    // Badges container has print:order-2 to follow the title on the same line
+    expect(html).toMatch(/class="[^"]*print:order-2[^"]*"/);
+
+    // All elements (name, level, range) are rendered together
+    expect(html).toContain('Curar Heridas Leves');
+    expect(html).toMatch(/Nivel (<!-- -->)?1/);
+    expect(html).toContain('15m');
+  });
 });

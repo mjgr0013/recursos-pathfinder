@@ -103,11 +103,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   return (
-    <article className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl p-3 shadow-sm transition-all print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none print-avoid-break">
-      <div className="flex items-start justify-between gap-2">
+    <article className="w-full bg-slate-800/80 border border-slate-700/70 rounded-xl p-3 shadow-sm transition-all print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none print-avoid-break print:p-2.5">
+      <div className="flex items-start print:items-center justify-between gap-2">
         {/* Title and Badges */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap mb-1">
+        <div className="flex-1 min-w-0 print:flex print:items-center print:gap-1.5 print:flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap mb-1 print:mb-0 print:order-2">
             <span
               className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                 isSpell
@@ -149,7 +149,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             )}
           </div>
 
-          <h4 className="text-sm font-bold text-slate-100 print:text-slate-900 truncate">{resource.name}</h4>
+          <h4 className="text-sm font-bold text-slate-100 print:text-slate-900 print:text-xs truncate print:overflow-visible print:whitespace-normal print:order-1">
+            {resource.name}
+          </h4>
         </div>
 
         {/* Action Controls: Direct "Lanzar" / "Usar" button on screen, Casillas cuadradas en papel */}
