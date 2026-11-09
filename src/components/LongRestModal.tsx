@@ -1,4 +1,5 @@
 import React from 'react';
+import { ModalOverlay } from './ModalOverlay';
 
 interface LongRestModalProps {
   isOpen: boolean;
@@ -10,8 +11,11 @@ export const LongRestModal: React.FC<LongRestModalProps> = ({ isOpen, onConfirm,
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl text-center">
+    <ModalOverlay onClose={onClose} backdropClassName="bg-black/80" aria-label="Descanso Largo">
+      <div
+        className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl text-center cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="w-14 h-14 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 border border-amber-500/40">
           🌙
         </div>
@@ -43,6 +47,6 @@ export const LongRestModal: React.FC<LongRestModalProps> = ({ isOpen, onConfirm,
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };

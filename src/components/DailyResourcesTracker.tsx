@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SpellSlotsMap, ResourceItem } from '../domain/types';
 import { getHighestSpellLevel } from '../domain/spells';
 import { getLimitedTraits } from '../domain/resources';
+import { ModalOverlay } from './ModalOverlay';
 
 interface DailyResourcesTrackerProps {
   spellSlots: SpellSlotsMap;
@@ -243,8 +244,15 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
 
       {/* Modal Editar Espacios de Conjuro (Disponibles y Máximos) */}
       {editingSlotLevel !== null && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setEditingSlotLevel(null)}
+          backdropClassName="bg-black/75"
+          aria-label={`Espacios de Magia Nivel ${editingSlotLevel}`}
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-slate-100 mb-2">
               Espacios de Magia Nivel {editingSlotLevel}
             </h4>
@@ -295,13 +303,20 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
 
       {/* Modal Editar Usos de Rasgo (Disponibles y Máximos) */}
       {editingTraitId !== null && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setEditingTraitId(null)}
+          backdropClassName="bg-black/75"
+          aria-label="Editar Usos Diarios"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-slate-100 mb-1">
               Editar Usos Diarios
             </h4>
@@ -355,7 +370,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </section>
   );

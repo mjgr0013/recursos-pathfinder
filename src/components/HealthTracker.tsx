@@ -7,6 +7,7 @@ import {
   updateMaxHp,
   getConsciousnessState,
 } from '../domain/health';
+import { ModalOverlay } from './ModalOverlay';
 
 interface HealthTrackerProps {
   health: HealthRecord;
@@ -294,8 +295,15 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
 
       {/* Modal Editar PG Máximos */}
       {isEditingMax && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setIsEditingMax(false)}
+          backdropClassName="bg-black/75"
+          aria-label="Editar PG Máximos"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-slate-100 mb-2">Editar PG Máximos</h4>
             <input
               type="number"
@@ -326,13 +334,20 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               </button>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
 
       {/* Modal Editar PG Temporales */}
       {isEditingTemp && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setIsEditingTemp(false)}
+          backdropClassName="bg-black/75"
+          aria-label="Puntos de Vida Temporales"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-cyan-300 mb-2">Puntos de Vida Temporales</h4>
             <input
               type="number"
@@ -363,7 +378,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
               </button>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </section>
   );

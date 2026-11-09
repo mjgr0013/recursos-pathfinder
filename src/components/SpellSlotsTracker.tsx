@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SpellSlotsMap } from '../domain/types';
+import { ModalOverlay } from './ModalOverlay';
 
 interface SpellSlotsTrackerProps {
   spellSlots: SpellSlotsMap;
@@ -144,8 +145,15 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
 
       {/* Modal for editing max slots of a level */}
       {editingLevel !== null && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setEditingLevel(null)}
+          backdropClassName="bg-black/75"
+          aria-label={`Espacios Máximos Nivel ${editingLevel}`}
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-slate-100 mb-2">
               Espacios Máximos Nivel {editingLevel}
             </h4>
@@ -175,7 +183,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </section>
   );

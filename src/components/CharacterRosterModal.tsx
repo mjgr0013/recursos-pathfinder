@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CharacterRosterState, MAX_CHARACTERS } from '../domain/roster';
+import { ModalOverlay } from './ModalOverlay';
 
 interface CharacterRosterModalProps {
   isOpen: boolean;
@@ -28,8 +29,11 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
   const isFull = count >= MAX_CHARACTERS;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md md:max-w-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <ModalOverlay onClose={onClose} backdropClassName="bg-black/80" aria-label="Personajes Guardados">
+      <div
+        className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md md:max-w-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header */}
         <div className="p-4 border-b border-slate-700/80 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -233,6 +237,6 @@ export const CharacterRosterModal: React.FC<CharacterRosterModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };

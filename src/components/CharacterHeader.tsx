@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { CharacterProfile } from '../domain/types';
 import { processAvatarImage } from '../storage/avatar-storage';
+import { ModalOverlay } from './ModalOverlay';
 
 interface CharacterHeaderProps {
   profile: CharacterProfile;
@@ -142,8 +143,15 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
 
       {/* Modal / Overlay de Edición */}
       {isEditing && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl">
+        <ModalOverlay
+          onClose={() => setIsEditing(false)}
+          backdropClassName="bg-black/75"
+          aria-label="Editar Datos del Personaje"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-base font-bold text-slate-100 mb-3 border-b border-slate-700 pb-2">
               Editar Datos del Personaje
             </h3>
@@ -244,7 +252,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </section>
   );

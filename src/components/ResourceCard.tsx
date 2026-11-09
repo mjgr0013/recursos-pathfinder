@@ -4,6 +4,7 @@ import { isValidHttpUrl } from '../domain/resources';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
+import { ModalOverlay } from './ModalOverlay';
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -288,8 +289,18 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
       {/* Modal Editar Detalles (URL y Descripción) */}
       {isEditingDetails && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+        <ModalOverlay
+          onClose={() => {
+            setIsEditingDetails(false);
+            setUrlError(null);
+          }}
+          backdropClassName="bg-black/75"
+          aria-label="Editar Detalles"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4 className="text-sm font-bold text-slate-100 mb-1 flex items-center gap-1.5">
               <span>✏️</span> Editar Detalles
             </h4>
@@ -413,7 +424,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </article>
   );

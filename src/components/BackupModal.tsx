@@ -6,6 +6,7 @@ import {
   validateBackupPayload,
   serializeBackupJson,
 } from '../domain/backup';
+import { ModalOverlay } from './ModalOverlay';
 
 interface BackupModalProps {
   isOpen: boolean;
@@ -96,8 +97,11 @@ export const BackupModal: React.FC<BackupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl">
+    <ModalOverlay onClose={onClose} backdropClassName="bg-black/80" aria-label="Copias de Seguridad">
+      <div
+        className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-700">
           <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
             <span>💾</span> Copias de Seguridad
@@ -193,6 +197,6 @@ export const BackupModal: React.FC<BackupModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };

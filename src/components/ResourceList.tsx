@@ -4,6 +4,7 @@ import { ResourceCard } from './ResourceCard';
 import { createResource } from '../domain/resources';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
+import { ModalOverlay } from './ModalOverlay';
 
 interface ResourceListProps {
   resources: ResourceItem[];
@@ -179,8 +180,15 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
       {/* Modal Añadir Recurso */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto">
+        <ModalOverlay
+          onClose={() => setIsModalOpen(false)}
+          backdropClassName="bg-black/75"
+          aria-label="Nuevo Conjuro o Rasgo"
+        >
+          <div
+            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-base font-bold text-slate-100 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
               <span>✨</span> Nuevo Conjuro o Rasgo
             </h3>
@@ -373,7 +381,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               </div>
             </form>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </section>
   );
