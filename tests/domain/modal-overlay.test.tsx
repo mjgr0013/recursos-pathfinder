@@ -1,6 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderToString } from 'react-dom/server';
-import { ModalOverlay, shouldCloseOnBackdropClick } from '../../src/components/ModalOverlay';
+import {
+  ModalOverlay,
+  shouldCloseOnBackdropClick,
+  lockBodyScroll,
+  unlockBodyScroll,
+  getOpenModalsCount,
+  resetBodyScrollLockForTesting,
+} from '../../src/components/ModalOverlay';
 
 describe('ModalOverlay logic & shouldCloseOnBackdropClick', () => {
   it('should return true when click is on the backdrop and pointer down did not start inside', () => {
@@ -63,5 +70,64 @@ describe('ModalOverlay logic & shouldCloseOnBackdropClick', () => {
     );
 
     expect(html).toContain('custom-overlay-class');
+  });
+
+  describe('Background Scroll Locking', () => {
+    let mockBodyStyle: { overflow: string };
+    let mockDocElementStyle: { overflow: string };
+
+    beforeEach(() => {
+      resetBodyScrollLockForTesting();
+
+      mockBodyStyle = { overflow: 'auto' };
+      mockDocElementStyle = { overflow: 'visible' };
+
+      // Ensure mock document environment
+      vi.stubGlobal('document', {
+        body: { style: mockBodyStyle },
+        documentElement: { style: mockDocElementStyle },
+      });
+    });
+
+    afterEach(() => {
+      resetBodyScrollLockForTesting();
+      vi.unstubAllGlobals();
+    });
+
+    it('locks body and documentElement scroll to hidden on first modal open', () => {
+      expect(getOpenModalsCount()).toBe(0);
+
+      lockBodyScroll();
+
+      expect(getOpenModalsCount()).toBe(1);
+      expect(mockBodyStyle.overflow).toBe('hidden');
+      expect(mockDocElementStyle.overflow).toBe('hidden');
+    });
+
+    it('keeps scroll locked when multiple modals are opened (stacked modals)', () => {
+      lockBodyScroll(); // First modal
+      lockBodyScroll(); // Nested modal
+
+      expect(getOpenModalsCount()).toBe(2);
+      expect(mockBodyStyle.overflow).toBe('hidden');
+      expect(mockDocElementStyle.overflow).toBe('hidden');
+
+      unlockBodyScroll(); // Close nested modal
+      expect(getOpenModalsCount()).toBe(1);
+      // Still hidden because 1 modal is still open!
+      expect(mockBodyStyle.overflow).toBe('hidden');
+      expect(mockDocElementStyle.overflow).toBe('hidden');
+
+      unlockBodyScroll(); // Close first modal
+      expect(getOpenModalsCount()).toBe(0);
+      // Now restored to original values!
+      expect(mockBodyStyle.overflow).toBe('auto');
+      expect(mockDocElementStyle.overflow).toBe('visible');
+    });
+
+    it('does not decrement below 0 if unlockBodyScroll is called extra times', () => {
+      unlockBodyScroll();
+      expect(getOpenModalsCount()).toBe(0);
+    });
   });
 });

@@ -21,6 +21,7 @@ import { LongRestModal } from './components/LongRestModal';
 import { BackupModal } from './components/BackupModal';
 import { CharacterRosterModal } from './components/CharacterRosterModal';
 import { FormulaGuideModal } from './components/FormulaGuideModal';
+import { TopBarActions } from './components/TopBarActions';
 import {
   spendResource,
   restoreResource,
@@ -226,50 +227,14 @@ export default function App() {
           <span>⚔️</span> Recursos Pathfinder
         </h1>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsFormulaGuideOpen(true)}
-            className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
-            title="Guía de fórmulas, variables y funciones matemáticas"
-          >
-            <span>📐</span>
-            <span className="hidden sm:inline">Fórmulas</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsRosterModalOpen(true)}
-            className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
-            title="Ver y gestionar personajes guardados (máximo 5)"
-          >
-            <span>🎭</span>
-            <span className="hidden sm:inline">Personajes</span>
-            <span className="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded text-[10px] font-black border border-amber-500/40">
-              {roster.characters.length}/5
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsBackupModalOpen(true)}
-            className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
-            title="Exportar o importar ficha JSON"
-          >
-            <span>💾</span>
-            <span>Datos</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsLongRestModalOpen(true)}
-            className="touch-btn bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/80 text-indigo-200 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
-            title="Restaurar todos los recursos diarios y puntos de vida"
-          >
-            <span>🌙</span>
-            <span>Descanso</span>
-          </button>
-        </div>
+        <TopBarActions
+          charactersCount={roster.characters.length}
+          maxCharacters={5}
+          onOpenRoster={() => setIsRosterModalOpen(true)}
+          onOpenBackup={() => setIsBackupModalOpen(true)}
+          onOpenFormulaGuide={() => setIsFormulaGuideOpen(true)}
+          onOpenLongRest={() => setIsLongRestModalOpen(true)}
+        />
       </header>
 
       <main className="w-full flex-1 flex flex-col lg:flex-row lg:items-start lg:gap-6">
