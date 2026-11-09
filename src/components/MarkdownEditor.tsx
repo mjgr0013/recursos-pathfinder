@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { CharacterVariables } from '../domain/variables';
+import { FormulaGuideModal } from './FormulaGuideModal';
 
 interface MarkdownEditorProps {
   value: string;
@@ -28,6 +29,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   variables,
 }) => {
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const applyFormatting = (prefix: string, suffix: string = '', defaultPlaceholder: string = '') => {
@@ -218,6 +220,15 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             >
               🔗 Link
             </button>
+            <button
+              type="button"
+              onClick={() => setIsGuideOpen(true)}
+              className="px-2 py-1 bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 font-bold rounded border border-amber-500/50 active:scale-95 text-[11px] flex items-center gap-1 ml-auto"
+              title="Abrir guía de fórmulas, variables y funciones (min, max...)"
+            >
+              <span>📐</span>
+              <span>Guía</span>
+            </button>
           </div>
 
           {/* Textarea */}
@@ -248,13 +259,29 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
       {/* Footer info: counter & hints */}
       <div className="flex items-center justify-between mt-1 text-[11px] text-slate-400">
-        <span className="hidden sm:inline text-slate-500">
-          Variables: &apos;{'{nivel_personaje}'}&apos;, &apos;{'{ataque_base}'}&apos;, &apos;{'{modificador_lanzador}'}&apos;
-        </span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="hidden sm:inline text-slate-500">
+            Variables: &apos;{'{nivel_personaje}'}&apos;, &apos;{'{ataque_base}'}&apos;, &apos;{'{modificador_lanzador}'}&apos;
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsGuideOpen(true)}
+            className="text-amber-400 hover:text-amber-300 underline font-semibold transition-colors"
+          >
+            Guía de fórmulas
+          </button>
+        </div>
         <span className="ml-auto">
           {value.length} / {maxLength}
         </span>
       </div>
+
+      <FormulaGuideModal
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+        variables={variables}
+        onInsert={(snippet) => applyFormatting(snippet, '', '')}
+      />
     </div>
   );
 };

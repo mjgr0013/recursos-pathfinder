@@ -20,6 +20,7 @@ import { ResourceList } from './components/ResourceList';
 import { LongRestModal } from './components/LongRestModal';
 import { BackupModal } from './components/BackupModal';
 import { CharacterRosterModal } from './components/CharacterRosterModal';
+import { FormulaGuideModal } from './components/FormulaGuideModal';
 import {
   spendResource,
   restoreResource,
@@ -43,6 +44,7 @@ export default function App() {
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isLongRestModalOpen, setIsLongRestModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isFormulaGuideOpen, setIsFormulaGuideOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const characterState = getActiveCharacter(roster);
@@ -227,6 +229,16 @@ export default function App() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setIsFormulaGuideOpen(true)}
+            className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
+            title="Guía de fórmulas, variables y funciones matemáticas"
+          >
+            <span>📐</span>
+            <span className="hidden sm:inline">Fórmulas</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsRosterModalOpen(true)}
             className="touch-btn bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors"
             title="Ver y gestionar personajes guardados (máximo 5)"
@@ -353,6 +365,25 @@ export default function App() {
         onCreateRandomCharacter={handleCreateRandomCharacterInRoster}
         onDeleteCharacter={handleDeleteCharacter}
         onClose={() => setIsRosterModalOpen(false)}
+      />
+
+      {/* Formula Guide Modal */}
+      <FormulaGuideModal
+        isOpen={isFormulaGuideOpen}
+        variables={{
+          nivel_personaje: characterState.profile.level,
+          nivel: characterState.profile.level,
+          level: characterState.profile.level,
+          ataque_base: characterState.profile.baseAttackBonus ?? 0,
+          bab: characterState.profile.baseAttackBonus ?? 0,
+          base_attack: characterState.profile.baseAttackBonus ?? 0,
+          modificador_lanzador: characterState.profile.casterModifier ?? 0,
+          mod_lanzador: characterState.profile.casterModifier ?? 0,
+          mod_conjuros: characterState.profile.casterModifier ?? 0,
+          modificador_conjuros: characterState.profile.casterModifier ?? 0,
+          caster_mod: characterState.profile.casterModifier ?? 0,
+        }}
+        onClose={() => setIsFormulaGuideOpen(false)}
       />
     </div>
   );

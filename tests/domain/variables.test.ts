@@ -45,6 +45,32 @@ describe('Safe Math & Variable Evaluator', () => {
       expect(evaluateSafeMath('round(2.6)', { nivel_personaje: 1 })).toBe(3);
     });
 
+    it('supports complex nested formulas typical in Pathfinder', () => {
+      const vars = {
+        nivel_personaje: 7,
+        ataque_base: 5,
+        modificador_lanzador: 4,
+      };
+
+      // Magic Missile count: min(5, 1 + floor((nivel - 1) / 2)) -> at lvl 7: 1 + floor(3) = 4
+      expect(evaluateSafeMath('min(5, 1 + floor((nivel_personaje - 1) / 2))', vars)).toBe(4);
+
+      // Capped healing: min(5, nivel_personaje) -> at lvl 7: 5
+      expect(evaluateSafeMath('min(5, nivel_personaje)', vars)).toBe(5);
+
+      // Channel energy DC: 10 + floor(nivel / 2) + mod_lanzador -> 10 + 3 + 4 = 17
+      expect(evaluateSafeMath('10 + floor(nivel_personaje / 2) + mod_lanzador', vars)).toBe(17);
+
+      // Channel energy dice: ceil(nivel / 2) -> ceil(3.5) = 4
+      expect(evaluateSafeMath('ceil(nivel_personaje / 2)', vars)).toBe(4);
+
+      // Daily uses: max(1, 3 + mod_lanzador) -> 3 + 4 = 7
+      expect(evaluateSafeMath('max(1, 3 + mod_lanzador)', vars)).toBe(7);
+
+      // Daily uses with negative modifier: max(1, 3 + mod_lanzador) with mod -5 -> 1
+      expect(evaluateSafeMath('max(1, 3 + mod_lanzador)', { modificador_lanzador: -5 })).toBe(1);
+    });
+
     it('safely returns NaN on malformed or malicious inputs', () => {
       expect(Number.isNaN(evaluateSafeMath('', { nivel_personaje: 1 }))).toBe(true);
       expect(Number.isNaN(evaluateSafeMath('alert(1)', { nivel_personaje: 1 }))).toBe(true);
@@ -118,6 +144,39 @@ describe('Safe Math & Variable Evaluator', () => {
       const result = interpolateVariables(md, { nivel_personaje: 5 });
       expect(result).toContain('| Nivel 5 | `5d6` |');
       expect(result).toContain('| Siguiente | `6d6` |');
+    });
+
+    it('interpolates complex pathfinder formulas in descriptions', () => {
+      const vars = {
+        nivel_personaje: 5,
+        ataque_base: 3,
+        modificador_lanzador: 4,
+      };
+
+      // Cure light wounds: 1d8 + min(5, nivel)
+      expect(
+        interpolateVariables('Cura 1d8 + {min(5, nivel_personaje)} PG.', vars)
+      ).toBe('Cura 1d8 + 5 PG.');
+
+      // Fireball: min(10, nivel)d6
+      expect(
+        interpolateVariables('Daño de `{min(10, nivel_personaje)}d6` de fuego.', vars)
+      ).toBe('Daño de `5d6` de fuego.');
+
+      // Spell save DC: CD 10 + spell level + mod
+      expect(
+        interpolateVariables('Salvación: CD {10 + 3 + mod_lanzador} Reflejos.', vars)
+      ).toBe('Salvación: CD 17 Reflejos.');
+
+      // Channel energy
+      expect(
+        interpolateVariables('Canaliza {ceil(nivel_personaje / 2)}d6. CD {10 + floor(nivel_personaje / 2) + mod_lanzador}.', vars)
+      ).toBe('Canaliza 3d6. CD 16.');
+
+      // Daily uses with max
+      expect(
+        interpolateVariables('Disponible {max(1, 3 + mod_lanzador)} veces al día.', vars)
+      ).toBe('Disponible 7 veces al día.');
     });
 
     it('updates dynamically when level changes from 1 to 7', () => {
