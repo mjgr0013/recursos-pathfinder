@@ -1,5 +1,5 @@
 import { ResourceItem, ResourceCategory, UsageMode, CharacterState } from './types';
-import { resetAllSpellSlots } from './spells';
+import { resetAllSpellSlots, compareSpellsByLevel } from './spells';
 
 /**
  * Valida si una cadena es una URL con protocolo http o https.
@@ -225,4 +225,27 @@ export function applyLongRest(state: CharacterState): CharacterState {
       updatedAt: new Date().toISOString(),
     },
   };
+}
+
+/**
+ * Ordena una colección de recursos garantizando que:
+ * 1. Los conjuros van primero, ordenados siempre por su nivel de conjuro (0 a 9) y alfabéticamente.
+ * 2. Los rasgos/dotes van después, ordenados por su sortOrder original y alfabéticamente.
+ */
+export function sortResources(resources: ResourceItem[]): ResourceItem[] {
+  return [...resources].sort((a, b) => {
+    if (a.category === 'spell' && b.category !== 'spell') {
+      return -1;
+    }
+    if (a.category !== 'spell' && b.category === 'spell') {
+      return 1;
+    }
+    if (a.category === 'spell' && b.category === 'spell') {
+      return compareSpellsByLevel(a, b);
+    }
+    if ((a.sortOrder ?? 0) !== (b.sortOrder ?? 0)) {
+      return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    }
+    return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+  });
 }

@@ -10,6 +10,7 @@ import {
   updateResourceMaxUses,
   updateResourceUses,
   updateResourceDetails,
+  sortResources,
 } from '../../src/domain/resources';
 import { createDefaultSpellSlots } from '../../src/domain/spells';
 
@@ -471,6 +472,111 @@ describe('Resource Domain Calculations (Pathfinder Rules)', () => {
       });
 
       expect(updated[0]).toEqual(baseItem);
+    });
+  });
+
+  describe('sortResources', () => {
+    const cantrip: ResourceItem = {
+      id: 'res-cantrip',
+      name: 'Luz',
+      category: 'spell',
+      usageMode: 'unlimited',
+      spellLevel: 0,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 4,
+    };
+
+    const spellLvl1: ResourceItem = {
+      id: 'res-spell-1',
+      name: 'Curar Heridas Leves',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 1,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 2,
+    };
+
+    const spellLvl2: ResourceItem = {
+      id: 'res-spell-2',
+      name: 'Arma Espiritual',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 2,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 0,
+    };
+
+    const featA: ResourceItem = {
+      id: 'res-feat-1',
+      name: 'Canalizar Energía',
+      category: 'feat_trait',
+      usageMode: 'limited',
+      spellLevel: null,
+      maxUses: 4,
+      availableUses: 4,
+      description: '',
+      sortOrder: 1,
+    };
+
+    const featB: ResourceItem = {
+      id: 'res-feat-2',
+      name: 'Ataque Poderoso',
+      category: 'feat_trait',
+      usageMode: 'unlimited',
+      spellLevel: null,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 0,
+    };
+
+    it('groups all spells first sorted strictly by level, followed by traits', () => {
+      // Intermixed array with out-of-order spells and traits
+      const mixed = [featA, spellLvl2, featB, cantrip, spellLvl1];
+      const sorted = sortResources(mixed);
+
+      expect(sorted.map((r) => r.id)).toEqual([
+        'res-cantrip', // Nivel 0
+        'res-spell-1', // Nivel 1
+        'res-spell-2', // Nivel 2
+        'res-feat-2',  // Feat (sortOrder 0)
+        'res-feat-1',  // Feat (sortOrder 1)
+      ]);
+    });
+
+    it('sorts spells by level even if spells array contains only spells in wrong order', () => {
+      const spells = [spellLvl2, cantrip, spellLvl1];
+      const sorted = sortResources(spells);
+
+      expect(sorted.map((s) => s.id)).toEqual([
+        'res-cantrip',
+        'res-spell-1',
+        'res-spell-2',
+      ]);
+    });
+
+    it('preserves feat sortOrder when no spells exist', () => {
+      const feats = [featA, featB];
+      const sorted = sortResources(feats);
+
+      expect(sorted.map((f) => f.id)).toEqual(['res-feat-2', 'res-feat-1']);
+    });
+
+    it('handles empty list without error', () => {
+      expect(sortResources([])).toEqual([]);
+    });
+
+    it('does not mutate original resources list', () => {
+      const list = [featA, spellLvl2];
+      const copy = [...list];
+      sortResources(list);
+      expect(list).toEqual(copy);
     });
   });
 });

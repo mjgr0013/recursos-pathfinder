@@ -31,6 +31,7 @@ import {
   updateResourceUses,
   updateResourceDetails,
   UpdateResourceDetailsInput,
+  sortResources,
 } from './domain/resources';
 import {
   spendSpellSlot,
@@ -94,7 +95,7 @@ export default function App() {
   const handleAddResource = (newResource: ResourceItem) => {
     setCharacterState((prev) => ({
       ...prev,
-      resources: [...prev.resources, newResource],
+      resources: sortResources([...prev.resources, newResource]),
     }));
     showToast('Recurso añadido');
   };
@@ -160,7 +161,10 @@ export default function App() {
   };
 
   const handleImportCharacter = (importedState: CharacterState) => {
-    setCharacterState(importedState);
+    setCharacterState({
+      ...importedState,
+      resources: sortResources(importedState.resources),
+    });
     showToast(`Ficha de "${importedState.profile.name}" cargada`);
   };
 

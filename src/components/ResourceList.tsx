@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ResourceItem, ResourceCategory, UsageMode, SpellSlotsMap } from '../domain/types';
 import { ResourceCard } from './ResourceCard';
-import { createResource } from '../domain/resources';
+import { createResource, sortResources } from '../domain/resources';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
 import { ModalOverlay } from './ModalOverlay';
@@ -54,10 +54,12 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const [maxUses, setMaxUses] = useState<number | ''>(3);
   const [description, setDescription] = useState('');
 
-  const filteredResources = resources.filter((res) => {
-    if (activeTab === 'all') return true;
-    return res.category === activeTab;
-  });
+  const sortedResources = useMemo(() => sortResources(resources), [resources]);
+
+  const filteredResources = useMemo(() => {
+    if (activeTab === 'all') return sortedResources;
+    return sortedResources.filter((res) => res.category === activeTab);
+  }, [sortedResources, activeTab]);
 
   const spellsCount = resources.filter((r) => r.category === 'spell').length;
   const featsCount = resources.filter((r) => r.category === 'feat_trait').length;

@@ -182,18 +182,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             </button>
           )}
 
-          {isCantrip && (
-            <button
-              type="button"
-              onClick={handleSpendClick}
-              className="touch-btn min-h-[44px] px-3 bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white font-black text-xs rounded-lg shadow-md active:scale-95 transition-all flex items-center gap-1.5"
-              title="Lanzar truco a voluntad"
-            >
-              <span>✨</span>
-              <span>Lanzar</span>
-            </button>
-          )}
-
           {isLimitedFeat && (
             <button
               type="button"

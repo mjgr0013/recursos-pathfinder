@@ -1,5 +1,6 @@
 import { CharacterState, ResourceItem, SpellSlotsMap } from './types';
 import { createDefaultSpellSlots } from './spells';
+import { sortResources } from './resources';
 
 function createSvgAvatar(bgColor: string, accentColor: string, symbol: string): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
@@ -630,11 +631,13 @@ export function generateRandomCharacter(seedIndex?: number): CharacterState {
   }
 
   // Build resource items with IDs and sortOrder
-  const resources: ResourceItem[] = tpl.resources.map((item, idx) => ({
-    ...item,
-    id: `res-${id}-${idx + 1}`,
-    sortOrder: idx,
-  }));
+  const resources: ResourceItem[] = sortResources(
+    tpl.resources.map((item, idx) => ({
+      ...item,
+      id: `res-${id}-${idx + 1}`,
+      sortOrder: idx,
+    }))
+  );
 
   return {
     profile: {

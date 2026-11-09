@@ -148,15 +148,15 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   return (
                     <div
                       key={`slot-dyn-lvl-${lvl}`}
-                      className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
+                      className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <span className="text-xs font-black text-purple-300">
-                          Nivel {lvl}
+                          {lvl}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="text-right">
                           <span
                             className={`text-sm font-extrabold ${
@@ -165,13 +165,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                           >
                             {slot.available}
                           </span>
-                          <span className="text-xs text-slate-500 font-bold"> / {slot.max} espacios</span>
+                          <span className="text-xs text-slate-500 font-bold">/{slot.max}</span>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleOpenEditSlot(lvl)}
-                          className="touch-btn w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-amber-400 rounded-lg text-xs"
+                          className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
                           title={`Editar espacios nivel ${lvl}`}
                           aria-label={`Editar espacios nivel ${lvl}`}
                         >
@@ -203,15 +203,15 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   return (
                     <div
                       key={`trait-daily-${trait.id}`}
-                      className="w-full flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700/80"
+                      className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
                     >
-                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                      <div className="flex items-center gap-1.5 min-w-0 pr-2">
                         <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>
                           {trait.name}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <div className="text-right">
                           <span
                             className={`text-sm font-extrabold ${
@@ -220,13 +220,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                           >
                             {available}
                           </span>
-                          <span className="text-xs text-slate-500 font-bold"> / {max} usos</span>
+                          <span className="text-xs text-slate-500 font-bold">/{max}</span>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleOpenEditTrait(trait)}
-                          className="touch-btn w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-amber-400 rounded-lg text-xs"
+                          className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
                           title={`Editar usos de ${trait.name}`}
                           aria-label={`Editar usos de ${trait.name}`}
                         >

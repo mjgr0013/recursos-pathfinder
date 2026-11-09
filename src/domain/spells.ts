@@ -156,3 +156,29 @@ export function resetAllSpellSlots(slots: SpellSlotsMap): SpellSlotsMap {
   }
   return updated;
 }
+
+/**
+ * Compara dos conjuros para determinar su orden:
+ * 1. Nivel de conjuro ascendente (0 a 9). Los trucos (nivel 0) van primero.
+ * 2. En caso de igual nivel, orden alfabético por nombre.
+ * 3. En caso de igual nombre, por sortOrder.
+ */
+export function compareSpellsByLevel(a: ResourceItem, b: ResourceItem): number {
+  const levelA = typeof a.spellLevel === 'number' ? a.spellLevel : 0;
+  const levelB = typeof b.spellLevel === 'number' ? b.spellLevel : 0;
+  if (levelA !== levelB) {
+    return levelA - levelB;
+  }
+  const nameComp = a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+  if (nameComp !== 0) {
+    return nameComp;
+  }
+  return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+}
+
+/**
+ * Ordena una lista de conjuros siempre por nivel ascendente (0 a 9) y luego alfabéticamente.
+ */
+export function sortSpells(spells: ResourceItem[]): ResourceItem[] {
+  return [...spells].sort(compareSpellsByLevel);
+}

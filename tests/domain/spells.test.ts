@@ -8,6 +8,8 @@ import {
   resetAllSpellSlots,
   getMaxActiveSpellLevel,
   getHighestSpellLevel,
+  compareSpellsByLevel,
+  sortSpells,
 } from '../../src/domain/spells';
 import { ResourceItem } from '../../src/domain/types';
 
@@ -217,6 +219,115 @@ describe('Spell Slots Domain Calculations (Pathfinder Rules)', () => {
         },
       ];
       expect(getHighestSpellLevel(resources)).toBe(3);
+    });
+  });
+
+  describe('compareSpellsByLevel and sortSpells', () => {
+    const cantrip1: ResourceItem = {
+      id: 'spell-c1',
+      name: 'Luz',
+      category: 'spell',
+      usageMode: 'unlimited',
+      spellLevel: 0,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 1,
+    };
+
+    const cantrip2: ResourceItem = {
+      id: 'spell-c2',
+      name: 'Detectar Magia',
+      category: 'spell',
+      usageMode: 'unlimited',
+      spellLevel: 0,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 2,
+    };
+
+    const lvl1Spell: ResourceItem = {
+      id: 'spell-1',
+      name: 'Curar Heridas Leves',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 1,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 0,
+    };
+
+    const lvl2Spell: ResourceItem = {
+      id: 'spell-2',
+      name: 'Arma Espiritual',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 2,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 0,
+    };
+
+    const lvl3Spell: ResourceItem = {
+      id: 'spell-3',
+      name: 'Bola de Fuego',
+      category: 'spell',
+      usageMode: 'limited',
+      spellLevel: 3,
+      maxUses: null,
+      availableUses: null,
+      description: '',
+      sortOrder: 0,
+    };
+
+    it('places level 0 cantrip before level 1 spell in comparison', () => {
+      expect(compareSpellsByLevel(cantrip1, lvl1Spell)).toBeLessThan(0);
+      expect(compareSpellsByLevel(lvl1Spell, cantrip1)).toBeGreaterThan(0);
+    });
+
+    it('orders spells by ascending spell level', () => {
+      expect(compareSpellsByLevel(lvl1Spell, lvl2Spell)).toBeLessThan(0);
+      expect(compareSpellsByLevel(lvl2Spell, lvl3Spell)).toBeLessThan(0);
+      expect(compareSpellsByLevel(lvl3Spell, lvl1Spell)).toBeGreaterThan(0);
+    });
+
+    it('orders spells alphabetically when spell levels are equal', () => {
+      // 'Detectar Magia' should come before 'Luz'
+      expect(compareSpellsByLevel(cantrip2, cantrip1)).toBeLessThan(0);
+      expect(compareSpellsByLevel(cantrip1, cantrip2)).toBeGreaterThan(0);
+    });
+
+    it('falls back to sortOrder when levels and names are identical', () => {
+      const spellA = { ...lvl1Spell, sortOrder: 1 };
+      const spellB = { ...lvl1Spell, sortOrder: 3 };
+      expect(compareSpellsByLevel(spellA, spellB)).toBe(-2);
+    });
+
+    it('sorts a scrambled array of spells strictly by level, then name', () => {
+      const scrambled = [lvl3Spell, cantrip1, lvl2Spell, cantrip2, lvl1Spell];
+      const sorted = sortSpells(scrambled);
+
+      expect(sorted.map((s) => s.id)).toEqual([
+        'spell-c2', // Detectar Magia (0)
+        'spell-c1', // Luz (0)
+        'spell-1',  // Curar Heridas Leves (1)
+        'spell-2',  // Arma Espiritual (2)
+        'spell-3',  // Bola de Fuego (3)
+      ]);
+    });
+
+    it('handles empty arrays without errors', () => {
+      expect(sortSpells([])).toEqual([]);
+    });
+
+    it('does not mutate original array when sorting', () => {
+      const original = [lvl3Spell, cantrip1];
+      const copy = [...original];
+      sortSpells(original);
+      expect(original).toEqual(copy);
     });
   });
 });
