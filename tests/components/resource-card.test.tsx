@@ -166,16 +166,53 @@ describe('ResourceCard component', () => {
       />
     );
 
-    // Button should offer to see description
-    expect(html).toContain('▼ Ver descripción');
-    expect(html).not.toContain('▲ Ocultar reglas');
+    // Button should offer to see more (Ver más)
+    expect(html).toContain('▼ Ver más');
+    expect(html).not.toContain('▲ Ver menos');
 
     // Interactive screen drawer (with max-h-[350px]) should NOT be rendered in DOM by default
     expect(html).not.toContain('max-h-[350px]');
 
     // Print drawer should be present with print:block so PDF / paper export includes it
     expect(html).toContain('hidden print:block');
+    expect(html).toContain('print-description');
+    expect(html).toMatch(/print:text-\[12px\]/);
     expect(html).toContain('Otorga +1 a una tirada');
+  });
+
+  it('renders url, pencil, and trash action buttons with unified bordered format aligned to the right alongside Ver más', () => {
+    const spellWithUrl: ResourceItem = {
+      ...leveledSpell,
+      url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds',
+    };
+
+    const html = renderToString(
+      <ResourceCard
+        resource={spellWithUrl}
+        spellSlots={defaultSlots}
+        onSpend={vi.fn()}
+        onDelete={vi.fn()}
+        onSpendSpellSlot={vi.fn()}
+      />
+    );
+
+    // All 3 action buttons must be present
+    expect(html).toContain('🌐');
+    expect(html).toContain('✏️');
+    expect(html).toContain('🗑️');
+
+    // All 3 must share bordered button styling
+    const borderedButtons = html.match(/border border-slate-700\/80 bg-slate-900\/80/g);
+    expect(borderedButtons).not.toBeNull();
+    // 3 action buttons (url, pencil, trash)
+    expect(borderedButtons?.length).toBeGreaterThanOrEqual(3);
+
+    // "Ver más" description toggle is present in the same action bar
+    expect(html).toContain('▼ Ver más');
+
+    // The action bar wrapper aligns toggle and actions using justify-between and ml-auto
+    expect(html).toMatch(/class="[^"]*flex items-center justify-between gap-2 text-xs text-slate-400 print:hidden[^"]*"/);
+    expect(html).toMatch(/class="[^"]*flex items-center gap-1\.5 ml-auto[^"]*"/);
   });
 
   it('transforms counters into squares for paper export and hides action buttons in print', () => {

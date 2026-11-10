@@ -527,7 +527,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRange('corto (25 pies + 5 pies/2 nivel personaje)')}
+                      onClick={() => setRange('Corto (25 pies + 5 pies/2 nivel personaje)')}
                       className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
                       title="25 pies + 5 pies cada 2 niveles"
                     >
@@ -535,7 +535,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRange('medio (100 pies + 10 pies/nivel personaje)')}
+                      onClick={() => setRange('Medio (100 pies + 10 pies/nivel personaje)')}
                       className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
                       title="100 pies + 10 pies por nivel"
                     >
@@ -543,7 +543,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRange('largo (400 pies + 40 pies/nivel personaje)')}
+                      onClick={() => setRange('Largo (400 pies + 40 pies/nivel personaje)')}
                       className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
                       title="400 pies + 40 pies por nivel"
                     >
