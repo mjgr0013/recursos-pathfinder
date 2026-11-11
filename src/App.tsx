@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CharacterState, ResourceItem } from './domain/types';
 import {
   loadCharacterRoster,
   saveCharacterRoster,
 } from './storage/local-storage';
+import { CharacterVariables } from './domain/variables';
 import {
   CharacterRosterState,
   createBlankCharacter,
@@ -12,6 +13,7 @@ import {
   deleteCharacterFromRoster,
   updateActiveCharacterInRoster,
   getActiveCharacter,
+  MAX_CHARACTERS,
 } from './domain/roster';
 import { CharacterHeader } from './components/CharacterHeader';
 import { HealthTracker } from './components/HealthTracker';
@@ -57,6 +59,7 @@ export default function App() {
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isFormulaGuideOpen, setIsFormulaGuideOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const characterState = getActiveCharacter(roster);
 
@@ -72,31 +75,39 @@ export default function App() {
   };
 
   const handleToggleTheme = () => {
-    setTheme((prev) => {
-      const next = toggleTheme(prev);
-      const config = AVAILABLE_THEMES.find((t) => t.id === next);
-      showToast(`Tema cambiado a ${config ? `${config.name} ${config.icon}` : next}`);
-      return next;
-    });
+    handleSelectTheme(toggleTheme(theme));
   };
+
+  // Único punto de persistencia: cualquier cambio del roster se guarda aquí.
+  useEffect(() => {
+    saveCharacterRoster(roster);
+  }, [roster]);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, []);
 
   const setCharacterState = (updater: CharacterState | ((prev: CharacterState) => CharacterState)) => {
     setRoster((prevRoster) => {
       const currentActive = getActiveCharacter(prevRoster);
       const updated = typeof updater === 'function' ? updater(currentActive) : updater;
-      const updatedRoster = updateActiveCharacterInRoster(prevRoster, updated);
-      saveCharacterRoster(updatedRoster);
-      return updatedRoster;
+      return updateActiveCharacterInRoster(prevRoster, updated);
     });
   };
 
-  useEffect(() => {
-    saveCharacterRoster(roster);
-  }, [roster]);
-
   const showToast = (msg: string) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    toastTimeoutRef.current = setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  // Los alias (nivel, bab, caster_mod…) los genera buildNormalizedVariables.
+  const characterVariables: CharacterVariables = {
+    nivel_personaje: characterState.profile.level,
+    ataque_base: characterState.profile.baseAttackBonus ?? 0,
+    modificador_lanzador: characterState.profile.casterModifier ?? 0,
   };
 
   const handleSpendResource = (id: string) => {
@@ -207,7 +218,6 @@ export default function App() {
     const res = switchActiveCharacter(roster, id);
     if (res.success) {
       setRoster(res.roster);
-      saveCharacterRoster(res.roster);
       const active = getActiveCharacter(res.roster);
       showToast(`Cargado: "${active.profile.name}"`);
     }
@@ -218,7 +228,6 @@ export default function App() {
     const res = addCharacterToRoster(roster, blank);
     if (res.success) {
       setRoster(res.roster);
-      saveCharacterRoster(res.roster);
       showToast('¡Nuevo personaje creado! Puedes personalizarlo.');
     } else if (res.error) {
       showToast(res.error);
@@ -230,7 +239,6 @@ export default function App() {
     const res = addCharacterToRoster(roster, randomChar);
     if (res.success) {
       setRoster(res.roster);
-      saveCharacterRoster(res.roster);
       showToast(`¡Personaje "${randomChar.profile.name}" añadido en nueva ranura!`);
     } else if (res.error) {
       showToast(res.error);
@@ -240,7 +248,6 @@ export default function App() {
   const handleDeleteCharacter = (id: string) => {
     const updated = deleteCharacterFromRoster(roster, id);
     setRoster(updated);
-    saveCharacterRoster(updated);
     const active = getActiveCharacter(updated);
     showToast(`Personaje eliminado. Activo: "${active.profile.name}"`);
   };
@@ -262,7 +269,7 @@ export default function App() {
 
         <TopBarActions
           charactersCount={roster.characters.length}
-          maxCharacters={5}
+          maxCharacters={MAX_CHARACTERS}
           currentTheme={theme}
           onSelectTheme={handleSelectTheme}
           onToggleTheme={handleToggleTheme}
@@ -336,19 +343,7 @@ export default function App() {
             resources={characterState.resources}
             spellSlots={characterState.spellSlots}
             characterLevel={characterState.profile.level}
-            characterVariables={{
-              nivel_personaje: characterState.profile.level,
-              nivel: characterState.profile.level,
-              level: characterState.profile.level,
-              ataque_base: characterState.profile.baseAttackBonus ?? 0,
-              bab: characterState.profile.baseAttackBonus ?? 0,
-              base_attack: characterState.profile.baseAttackBonus ?? 0,
-              modificador_lanzador: characterState.profile.casterModifier ?? 0,
-              mod_lanzador: characterState.profile.casterModifier ?? 0,
-              mod_conjuros: characterState.profile.casterModifier ?? 0,
-              modificador_conjuros: characterState.profile.casterModifier ?? 0,
-              caster_mod: characterState.profile.casterModifier ?? 0,
-            }}
+            characterVariables={characterVariables}
             onSpendResource={handleSpendResource}
             onRestoreResource={handleRestoreResource}
             onDeleteResource={handleDeleteResource}
@@ -390,19 +385,7 @@ export default function App() {
       {/* Formula Guide Modal */}
       <FormulaGuideModal
         isOpen={isFormulaGuideOpen}
-        variables={{
-          nivel_personaje: characterState.profile.level,
-          nivel: characterState.profile.level,
-          level: characterState.profile.level,
-          ataque_base: characterState.profile.baseAttackBonus ?? 0,
-          bab: characterState.profile.baseAttackBonus ?? 0,
-          base_attack: characterState.profile.baseAttackBonus ?? 0,
-          modificador_lanzador: characterState.profile.casterModifier ?? 0,
-          mod_lanzador: characterState.profile.casterModifier ?? 0,
-          mod_conjuros: characterState.profile.casterModifier ?? 0,
-          modificador_conjuros: characterState.profile.casterModifier ?? 0,
-          caster_mod: characterState.profile.casterModifier ?? 0,
-        }}
+        variables={characterVariables}
         onClose={() => setIsFormulaGuideOpen(false)}
       />
     </div>

@@ -5,6 +5,44 @@ import { CharacterRosterState, MAX_CHARACTERS } from '../domain/roster';
 export const STORAGE_KEY = 'pathfinder_character_v1';
 export const ROSTER_STORAGE_KEY = 'pathfinder_characters_roster_v1';
 export const ACTIVE_ID_STORAGE_KEY = 'pathfinder_active_character_id_v1';
+export const CORRUPT_ROSTER_BACKUP_KEY = 'pathfinder_characters_roster_v1_corrupt_backup';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Comprobación estructural mínima de un personaje leído de localStorage.
+ * Garantiza los campos de los que depende el renderizado para no romper la app.
+ */
+export function isStoredCharacter(value: unknown): value is CharacterState {
+  if (!isRecord(value)) return false;
+  const { profile, health, resources } = value;
+  if (!isRecord(profile) || typeof profile.id !== 'string' || !profile.id) return false;
+  if (typeof profile.name !== 'string' || typeof profile.level !== 'number') return false;
+  if (
+    !isRecord(health) ||
+    typeof health.maxHp !== 'number' ||
+    typeof health.currentHp !== 'number' ||
+    typeof health.tempHp !== 'number'
+  ) {
+    return false;
+  }
+  if (!Array.isArray(resources)) return false;
+  return resources.every((r) => isRecord(r) && typeof r.id === 'string' && typeof r.name === 'string');
+}
+
+/**
+ * Guarda el contenido original en una clave aparte antes de descartarlo,
+ * para que los datos dañados puedan recuperarse manualmente.
+ */
+function preserveCorruptRoster(raw: string): void {
+  try {
+    localStorage.setItem(CORRUPT_ROSTER_BACKUP_KEY, raw);
+  } catch (error) {
+    console.error('No se pudo conservar la copia de la lista de personajes dañada:', error);
+  }
+}
 
 export function createDefaultCharacterState(): CharacterState {
   const now = new Date().toISOString();
@@ -38,8 +76,8 @@ export function loadCharacterState(): CharacterState {
     if (!raw) {
       return createDefaultCharacterState();
     }
-    const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.profile || !parsed.health || !Array.isArray(parsed.resources)) {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isStoredCharacter(parsed)) {
       return createDefaultCharacterState();
     }
 
@@ -80,11 +118,22 @@ export function loadCharacterRoster(): CharacterRosterState {
     const activeId = localStorage.getItem(ACTIVE_ID_STORAGE_KEY) || '';
 
     if (rawRoster) {
-      const parsed = JSON.parse(rawRoster);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // Normalize each character
+      let parsed: unknown = null;
+      try {
+        parsed = JSON.parse(rawRoster);
+      } catch (error) {
+        console.error('La lista de personajes guardada no es JSON válido:', error);
+      }
+
+      const validEntries = Array.isArray(parsed) ? parsed.filter(isStoredCharacter) : [];
+      if (!Array.isArray(parsed) || validEntries.length < parsed.length) {
+        console.warn('Se descartaron personajes dañados; copia original guardada en', CORRUPT_ROSTER_BACKUP_KEY);
+        preserveCorruptRoster(rawRoster);
+      }
+
+      if (validEntries.length > 0) {
         const defaultSlots = createDefaultSpellSlots();
-        const characters: CharacterState[] = parsed.slice(0, MAX_CHARACTERS).map((c) => ({
+        const characters: CharacterState[] = validEntries.slice(0, MAX_CHARACTERS).map((c) => ({
           ...c,
           spellSlots: { ...defaultSlots, ...(c.spellSlots || {}) },
         }));
@@ -121,12 +170,6 @@ export function saveCharacterRoster(roster: CharacterRosterState): void {
     const trimmedList = roster.characters.slice(0, MAX_CHARACTERS);
     localStorage.setItem(ROSTER_STORAGE_KEY, JSON.stringify(trimmedList));
     localStorage.setItem(ACTIVE_ID_STORAGE_KEY, roster.activeId);
-
-    // Keep active character synced in legacy key
-    const active = trimmedList.find((c) => c.profile.id === roster.activeId) || trimmedList[0];
-    if (active) {
-      saveCharacterState(active);
-    }
   } catch (error) {
     console.error('Error guardando lista de personajes:', error);
   }
