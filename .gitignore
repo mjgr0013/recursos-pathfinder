@@ -32,3 +32,7 @@ Thumbs.db
 .vscode/
 
 .gemini
+
+# Lockfiles of other package managers (project uses npm)
+yarn.lock
+pnpm-lock.yaml
