@@ -37,24 +37,27 @@ describe('TopBarActions component', () => {
     expect(html).toContain('1/5');
   });
 
-  it('renders theme dropdown selector with light, warm, and dark indications', () => {
-    const lightHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="light" />);
-    expect(lightHtml).toContain('☀️');
-    expect(lightHtml).toContain('Claro');
-    expect(lightHtml).toContain('Seleccionar tema visual');
-
-    const warmHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="warm" />);
-    expect(warmHtml).toContain('📜');
-    expect(warmHtml).toContain('Cálido');
-
-    const darkHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="dark" />);
-    expect(darkHtml).toContain('🌙');
-    expect(darkHtml).toContain('Oscuro');
+  it('does not render the theme selector directly on the navigation bar', () => {
+    const html = renderToString(<TopBarActions {...defaultProps} />);
+    expect(html).not.toContain('Seleccionar tema visual');
+    expect(html).toContain('Menú');
   });
 
-  it('has accessible popup dropdown attributes on theme selector', () => {
-    const html = renderToString(<TopBarActions {...defaultProps} />);
-    expect(html).toContain('aria-haspopup="true"');
-    expect(html).toContain('aria-expanded="false"');
+  it('renders theme selector options inside the collapsed menu', () => {
+    const openMenuHtml = renderToString(<TopBarActions {...defaultProps} initialMenuOpen={true} />);
+    expect(openMenuHtml).toContain('Tema Visual');
+    expect(openMenuHtml).toContain('☀️');
+    expect(openMenuHtml).toContain('Claro');
+    expect(openMenuHtml).toContain('📜');
+    expect(openMenuHtml).toContain('Cálido');
+    expect(openMenuHtml).toContain('🌙');
+    expect(openMenuHtml).toContain('Oscuro');
+  });
+
+  it('highlights the active theme button inside the collapsed menu', () => {
+    const warmMenuHtml = renderToString(
+      <TopBarActions {...defaultProps} currentTheme="warm" initialMenuOpen={true} />
+    );
+    expect(warmMenuHtml).toContain('bg-amber-500');
   });
 });

@@ -12,6 +12,7 @@ interface TopBarActionsProps {
   onOpenFormulaGuide: () => void;
   onOpenLongRest: () => void;
   onExportPdf?: () => void;
+  initialMenuOpen?: boolean;
 }
 
 export const TopBarActions: React.FC<TopBarActionsProps> = ({
@@ -25,15 +26,11 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
   onOpenFormulaGuide,
   onOpenLongRest,
   onExportPdf,
+  initialMenuOpen = false,
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(initialMenuOpen);
 
   const menuRef = useRef<HTMLDivElement>(null);
-  const themeDropdownRef = useRef<HTMLDivElement>(null);
-
-  const activeThemeConfig =
-    AVAILABLE_THEMES.find((t) => t.id === currentTheme) ?? AVAILABLE_THEMES[0];
 
   // Close menus on click outside
   useEffect(() => {
@@ -41,9 +38,6 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
       const target = e.target as Node;
       if (menuRef.current && !menuRef.current.contains(target)) {
         setIsMenuOpen(false);
-      }
-      if (themeDropdownRef.current && !themeDropdownRef.current.contains(target)) {
-        setIsThemeDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleDocumentClick);
@@ -59,7 +53,6 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsMenuOpen(false);
-        setIsThemeDropdownOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -77,100 +70,16 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
     } else if (onToggleTheme) {
       onToggleTheme();
     }
-    setIsThemeDropdownOpen(false);
   };
 
   return (
     <div className="flex items-center gap-2 print:hidden">
-      {/* Theme Selector Dropdown */}
-      <div className="relative" ref={themeDropdownRef}>
-        <button
-          type="button"
-          onClick={() => {
-            setIsThemeDropdownOpen((prev) => !prev);
-            setIsMenuOpen(false);
-          }}
-          className={`touch-btn border text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors ${
-            isThemeDropdownOpen
-              ? 'bg-slate-100 border-amber-500 text-slate-900 ring-2 ring-amber-400/30 dark:bg-slate-700 dark:border-amber-400 dark:text-slate-100 dark:ring-amber-400/20'
-              : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 dark:text-slate-200'
-          }`}
-          aria-expanded={isThemeDropdownOpen}
-          aria-haspopup="true"
-          aria-label={`Seleccionar tema visual (actual: ${activeThemeConfig.name})`}
-          title={`Tema actual: ${activeThemeConfig.name}. Clic para cambiar`}
-        >
-          <span className="text-sm">{activeThemeConfig.icon}</span>
-          <span className="hidden xs:inline">{activeThemeConfig.name}</span>
-          <span
-            className={`text-[9px] text-slate-400 transition-transform duration-150 ${
-              isThemeDropdownOpen ? 'rotate-180 text-amber-500 dark:text-amber-400' : ''
-            }`}
-          >
-            ▼
-          </span>
-        </button>
-
-        {/* Theme Dropdown Popover */}
-        {isThemeDropdownOpen && (
-          <div
-            className="absolute right-0 top-full mt-2 w-56 sm:w-64 bg-white border border-slate-200 rounded-xl shadow-2xl p-1.5 flex flex-col gap-1 z-40 backdrop-blur-md dark:bg-slate-900 dark:border-slate-700/90 text-slate-800 dark:text-slate-200"
-            role="menu"
-            aria-orientation="vertical"
-          >
-            <div className="px-3 py-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 mb-0.5">
-              🎨 Seleccionar Tema
-            </div>
-
-            {AVAILABLE_THEMES.map((theme) => {
-              const isSelected = currentTheme === theme.id;
-              return (
-                <button
-                  key={theme.id}
-                  type="button"
-                  onClick={() => handleThemeSelect(theme.id)}
-                  className={`w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors touch-btn ${
-                    isSelected
-                      ? 'bg-amber-50 text-amber-900 dark:bg-amber-500/10 dark:text-amber-300 font-bold border border-amber-300/60 dark:border-amber-500/30'
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
-                  }`}
-                  role="menuitem"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-base shrink-0">{theme.icon}</span>
-                    <div className="min-w-0">
-                      <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                        <span>{theme.name}</span>
-                        {isSelected && (
-                          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
-                            (activo)
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                        {theme.description}
-                      </div>
-                    </div>
-                  </div>
-                  {isSelected && (
-                    <span className="text-amber-600 dark:text-amber-400 font-bold text-sm shrink-0 ml-1">
-                      ✓
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
       {/* Main Settings Menu */}
       <div className="relative" ref={menuRef}>
         <button
           type="button"
           onClick={() => {
             setIsMenuOpen((prev) => !prev);
-            setIsThemeDropdownOpen(false);
           }}
           className={`touch-btn border text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors ${
             isMenuOpen
