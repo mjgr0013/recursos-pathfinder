@@ -13,6 +13,7 @@ import {
   deleteCharacterFromRoster,
   updateActiveCharacterInRoster,
   getActiveCharacter,
+  replaceActiveCharacter,
   MAX_CHARACTERS,
 } from './domain/roster';
 import { CharacterHeader } from './components/CharacterHeader';
@@ -201,16 +202,17 @@ export default function App() {
   };
 
   const handleImportCharacter = (importedState: CharacterState) => {
-    setCharacterState({
-      ...importedState,
-      resources: sortResources(importedState.resources),
-    });
+    setRoster((prev) =>
+      replaceActiveCharacter(prev, {
+        ...importedState,
+        resources: sortResources(importedState.resources),
+      })
+    );
     showToast(`Ficha de "${importedState.profile.name}" cargada`);
   };
 
   const handleResetCharacter = () => {
-    const fresh = createBlankCharacter();
-    setCharacterState(fresh);
+    setRoster((prev) => replaceActiveCharacter(prev, createBlankCharacter()));
     showToast('Ficha reiniciada');
   };
 

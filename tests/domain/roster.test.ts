@@ -7,6 +7,7 @@ import {
   deleteCharacterFromRoster,
   updateActiveCharacterInRoster,
   getActiveCharacter,
+  replaceActiveCharacter,
   CharacterRosterState,
 } from '../../src/domain/roster';
 
@@ -134,5 +135,45 @@ describe('Character Roster Domain Logic', () => {
 
     const active = getActiveCharacter(updated);
     expect(active.profile.name).toBe('Valeros Legendario');
+  });
+
+  describe('replaceActiveCharacter (reiniciar / importar)', () => {
+    const rosterOf = (...names: string[]): CharacterRosterState => {
+      const characters = names.map((n) => createBlankCharacter(n));
+      return { characters, activeId: characters[0].profile.id };
+    };
+
+    it('reiniciar varias veces no añade personajes', () => {
+      let roster = rosterOf('A', 'B');
+      const activeId = roster.activeId;
+      for (let i = 0; i < 3; i++) roster = replaceActiveCharacter(roster, createBlankCharacter());
+
+      expect(roster.characters).toHaveLength(2);
+      expect(roster.activeId).toBe(activeId);
+      expect(getActiveCharacter(roster).profile.name).toBe('Nuevo Héroe');
+      expect(roster.characters[1].profile.name).toBe('Nuevo Héroe (B)');
+    });
+
+    it('importar reemplaza al activo y conserva su id', () => {
+      const roster = rosterOf('A', 'B');
+      const imported = { ...createBlankCharacter(), profile: { ...createBlankCharacter().profile, name: 'Importado' } };
+
+      const updated = replaceActiveCharacter(roster, imported);
+
+      expect(updated.characters).toHaveLength(2);
+      expect(getActiveCharacter(updated).profile.name).toBe('Importado');
+      expect(getActiveCharacter(updated).profile.id).toBe(roster.activeId);
+    });
+
+    it('importar con el id de otro personaje no lo sobrescribe', () => {
+      const roster = rosterOf('A', 'B');
+      const other = roster.characters[1];
+      const imported = { ...other, profile: { ...other.profile, name: 'Copia de B' } };
+
+      const updated = replaceActiveCharacter(roster, imported);
+
+      expect(updated.characters.map((c) => c.profile.name)).toEqual(['Copia de B', 'Nuevo Héroe (B)']);
+      expect(new Set(updated.characters.map((c) => c.profile.id)).size).toBe(2);
+    });
   });
 });

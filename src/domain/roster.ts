@@ -167,6 +167,31 @@ export function updateActiveCharacterInRoster(
 }
 
 /**
+ * Replaces the active character's data in place (reset or backup import).
+ * The replacement keeps the active slot's id, so it never adds a new roster entry
+ * nor collides with another character that shares the incoming id.
+ */
+export function replaceActiveCharacter(
+  roster: CharacterRosterState,
+  replacement: CharacterState
+): CharacterRosterState {
+  const activeId = getActiveCharacter(roster).profile.id;
+  const next: CharacterState = {
+    ...replacement,
+    profile: { ...replacement.profile, id: activeId, updatedAt: new Date().toISOString() },
+  };
+
+  if (!roster.characters.some((c) => c.profile.id === activeId)) {
+    return { characters: [next], activeId };
+  }
+
+  return {
+    characters: roster.characters.map((c) => (c.profile.id === activeId ? next : c)),
+    activeId,
+  };
+}
+
+/**
  * Returns the currently active character from the roster.
  */
 export function getActiveCharacter(roster: CharacterRosterState): CharacterState {
