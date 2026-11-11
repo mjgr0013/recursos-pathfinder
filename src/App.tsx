@@ -40,8 +40,17 @@ import {
   updateSpellSlotValues,
 } from './domain/spells';
 import { generateRandomCharacter } from './domain/generator';
+import {
+  ThemeId,
+  AVAILABLE_THEMES,
+  getStoredTheme,
+  saveTheme,
+  applyThemeToDocument,
+  toggleTheme,
+} from './domain/theme';
 
 export default function App() {
+  const [theme, setTheme] = useState<ThemeId>(() => getStoredTheme());
   const [roster, setRoster] = useState<CharacterRosterState>(() => loadCharacterRoster());
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isLongRestModalOpen, setIsLongRestModalOpen] = useState(false);
@@ -50,6 +59,26 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const characterState = getActiveCharacter(roster);
+
+  useEffect(() => {
+    applyThemeToDocument(theme);
+    saveTheme(theme);
+  }, [theme]);
+
+  const handleSelectTheme = (newTheme: ThemeId) => {
+    setTheme(newTheme);
+    const config = AVAILABLE_THEMES.find((t) => t.id === newTheme);
+    showToast(`Tema cambiado a ${config ? `${config.name} ${config.icon}` : newTheme}`);
+  };
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => {
+      const next = toggleTheme(prev);
+      const config = AVAILABLE_THEMES.find((t) => t.id === next);
+      showToast(`Tema cambiado a ${config ? `${config.name} ${config.icon}` : next}`);
+      return next;
+    });
+  };
 
   const setCharacterState = (updater: CharacterState | ((prev: CharacterState) => CharacterState)) => {
     setRoster((prevRoster) => {
@@ -217,7 +246,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center px-3 py-3 md:px-6 md:py-5 max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full pb-16 print:min-h-0 print:bg-white print:text-slate-900 print:p-0 print:max-w-none print:pb-0">
+    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100 flex flex-col items-center px-3 py-3 md:px-6 md:py-5 max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full pb-16 transition-colors duration-150 print:min-h-0 print:bg-white print:text-slate-900 print:p-0 print:max-w-none print:pb-0">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-3 z-50 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg animate-bounce print:hidden">
@@ -226,14 +255,17 @@ export default function App() {
       )}
 
       {/* Main App Bar (Solo en pantalla) */}
-      <header className="w-full flex items-center justify-between pb-3 mb-4 border-b border-slate-800 print:hidden">
-        <h1 className="text-base md:text-lg font-bold tracking-wide text-amber-400 flex items-center gap-1.5">
+      <header className="w-full flex items-center justify-between pb-3 mb-4 border-b border-slate-200 dark:border-slate-800 print:hidden">
+        <h1 className="text-base md:text-lg font-bold tracking-wide text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
           <span>⚔️</span> Recursos Pathfinder
         </h1>
 
         <TopBarActions
           charactersCount={roster.characters.length}
           maxCharacters={5}
+          currentTheme={theme}
+          onSelectTheme={handleSelectTheme}
+          onToggleTheme={handleToggleTheme}
           onOpenRoster={() => setIsRosterModalOpen(true)}
           onOpenBackup={() => setIsBackupModalOpen(true)}
           onOpenFormulaGuide={() => setIsFormulaGuideOpen(true)}

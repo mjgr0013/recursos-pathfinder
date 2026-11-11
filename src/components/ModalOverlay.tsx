@@ -85,7 +85,7 @@ export function shouldCloseOnBackdropClick(
 export const ModalOverlay: React.FC<ModalOverlayProps> = ({
   onClose,
   children,
-  backdropClassName = 'bg-black/80',
+  backdropClassName = 'bg-black/60 dark:bg-black/80',
   className = '',
   'aria-label': ariaLabel,
 }) => {

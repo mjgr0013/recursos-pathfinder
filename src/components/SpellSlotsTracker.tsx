@@ -40,7 +40,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md mb-3">
+    <section className="w-full bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3 shadow-sm mb-3">
       {/* Header with expand/collapse */}
       <div className="flex items-center justify-between">
         <button
@@ -50,10 +50,10 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
         >
           <span className="text-base">🔮</span>
           <div>
-            <h3 className="text-sm font-bold tracking-wider text-slate-200 uppercase">
+            <h3 className="text-sm font-bold tracking-wider text-slate-900 dark:text-slate-200 uppercase">
               Espacios de Conjuros (1-9)
             </h3>
-            <p className="text-[11px] text-purple-300 font-semibold">
+            <p className="text-[11px] text-purple-700 dark:text-purple-300 font-semibold">
               Disponibles: {totalAvailable} / {totalMax}
             </p>
           </div>
@@ -62,7 +62,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="touch-btn text-xs text-slate-400 hover:text-amber-400 font-bold px-2"
+          className="touch-btn text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-amber-400 font-bold px-2 transition-colors"
           aria-label={isExpanded ? 'Plegar panel de espacios' : 'Desplegar panel de espacios'}
         >
           {isExpanded ? '▲ Plegar' : '▼ Ver niveles'}
@@ -71,7 +71,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
 
       {/* Grid of spell levels */}
       {isExpanded && (
-        <div className="mt-3 space-y-2 border-t border-slate-700/60 pt-3">
+        <div className="mt-3 space-y-2 border-t border-slate-200 dark:border-slate-700/60 pt-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {levels.map((lvl) => {
               const slot = spellSlots[lvl] ?? { level: lvl, max: 0, available: 0 };
@@ -83,19 +83,19 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                   key={`slot-lvl-${lvl}`}
                   className={`flex items-center justify-between p-2 rounded-lg border transition-all ${
                     isConfigured
-                      ? 'bg-slate-900 border-slate-700'
-                      : 'bg-slate-900/40 border-slate-800/80 opacity-70'
+                      ? 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'
+                      : 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/80 opacity-70'
                   }`}
                 >
                   {/* Level title and max editor button */}
                   <div className="flex items-center gap-1.5 min-w-[72px]">
-                    <span className="text-xs font-black text-purple-300">
+                    <span className="text-xs font-black text-purple-700 dark:text-purple-300">
                       Niv {lvl}
                     </span>
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(lvl)}
-                      className="text-[10px] text-slate-400 hover:text-amber-400 touch-btn p-1"
+                      className="text-[10px] text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 touch-btn p-1"
                       title={`Configurar espacios máximos para nivel ${lvl}`}
                     >
                       ✏️
@@ -106,12 +106,12 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                   <div className="px-1 text-center">
                     <span
                       className={`text-sm font-extrabold ${
-                        isOutOfSlots ? 'text-rose-400' : isConfigured ? 'text-slate-100' : 'text-slate-500'
+                        isOutOfSlots ? 'text-rose-600 dark:text-rose-400' : isConfigured ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'
                       }`}
                     >
                       {slot.available}
                     </span>
-                    <span className="text-xs text-slate-500 font-bold">/{slot.max}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">/{slot.max}</span>
                   </div>
 
                   {/* Quick -1 and +1 actions */}
@@ -120,7 +120,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                       type="button"
                       disabled={slot.available === 0}
                       onClick={() => onSpendSlot(lvl)}
-                      className="touch-btn w-10 h-10 bg-purple-950/90 hover:bg-purple-900 border border-purple-800 text-purple-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95"
+                      className="touch-btn w-10 h-10 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/90 dark:hover:bg-purple-900 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95 shadow-sm transition-colors"
                       title={`Gastar 1 espacio de nivel ${lvl}`}
                     >
                       -1
@@ -130,7 +130,7 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                       type="button"
                       disabled={slot.available >= slot.max}
                       onClick={() => onRestoreSlot(lvl)}
-                      className="touch-btn w-10 h-10 bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-800 text-emerald-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95"
+                      className="touch-btn w-10 h-10 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/90 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 font-black text-xs rounded-md disabled:opacity-20 disabled:pointer-events-none active:scale-95 shadow-sm transition-colors"
                       title={`Recuperar 1 espacio de nivel ${lvl}`}
                     >
                       +1
@@ -147,14 +147,14 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
       {editingLevel !== null && (
         <ModalOverlay
           onClose={() => setEditingLevel(null)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label={`Espacios Máximos Nivel ${editingLevel}`}
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="text-sm font-bold text-slate-100 mb-2">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
               Espacios Máximos Nivel {editingLevel}
             </h4>
             <form onSubmit={handleSaveMax}>
@@ -163,20 +163,20 @@ export const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
                 min={0}
                 value={editingMaxVal}
                 onChange={(e) => setEditingMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-purple-400"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-purple-500"
                 required
               />
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingLevel(null)}
-                  className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-xs transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-bold py-2 rounded-lg touch-btn text-xs shadow-sm transition-colors"
                 >
                   Guardar
                 </button>

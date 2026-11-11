@@ -6,8 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="description" content="Gestor de recursos y puntos de vida en tiempo real para personajes de Pathfinder" />
     <title>Recursos Pathfinder</title>
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem('pathfinder_theme_v1') || 'light';
+          var root = document.documentElement;
+          root.classList.remove('light', 'warm', 'dark', 'arcane', 'forge');
+          if (['light', 'warm', 'dark', 'arcane', 'forge'].indexOf(theme) !== -1) {
+            root.classList.add(theme);
+          } else {
+            root.classList.add('light');
+          }
+          if (theme === 'dark' || theme === 'arcane' || theme === 'forge') {
+            root.classList.add('dark');
+          }
+          root.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
-  <body class="bg-slate-900 text-slate-100 min-h-screen antialiased select-none touch-manipulation">
+  <body class="bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100 min-h-screen antialiased select-none touch-manipulation transition-colors duration-150">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

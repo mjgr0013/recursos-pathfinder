@@ -87,7 +87,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
   };
 
   return (
-    <section className={`w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none ${maxActiveLevel === 0 ? 'print:hidden' : ''}`}>
+    <section className={`w-full bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3 shadow-sm print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none ${maxActiveLevel === 0 ? 'print:hidden' : ''}`}>
       {/* Panel Header */}
       <div className="flex items-center justify-between">
         <button
@@ -97,10 +97,10 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         >
           <span className="text-lg">⚡</span>
           <div>
-            <h3 className="text-sm font-bold tracking-wider text-slate-100 print:text-slate-900 print:text-xs uppercase">
+            <h3 className="text-sm font-bold tracking-wider text-slate-900 dark:text-slate-100 print:text-slate-900 print:text-xs uppercase">
               Recursos Diarios
             </h3>
-            <p className="text-[11px] text-slate-400 print:text-slate-600 font-medium">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 print:text-slate-600 font-medium">
               {maxActiveLevel === 0 && limitedTraits.length === 0 && (
                 <>Sin recursos diarios activos</>
               )}
@@ -111,19 +111,19 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="touch-btn text-xs text-slate-400 hover:text-amber-400 font-bold px-2 shrink-0 print:hidden"
+          className="touch-btn text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-amber-400 font-bold px-2 shrink-0 print:hidden transition-colors"
           aria-label={isExpanded ? 'Plegar recursos diarios' : 'Desplegar recursos diarios'}
         >
           {isExpanded ? '▲ Plegar' : '▼ Ver todo'}
         </button>
       </div>
 
-      <div className={`mt-3 space-y-4 border-t border-slate-700/60 print:border-slate-300 pt-3 ${isExpanded ? 'block' : 'hidden print:block'}`}>
+      <div className={`mt-3 space-y-4 border-t border-slate-200 dark:border-slate-700/60 print:border-slate-300 pt-3 ${isExpanded ? 'block' : 'hidden print:block'}`}>
         {/* Si no hay magia ni rasgos limitados */}
         {maxActiveLevel === 0 && limitedTraits.length === 0 && (
-          <div className="p-4 bg-slate-900/40 print:bg-slate-50 rounded-lg border border-dashed border-slate-700/70 print:border-slate-300 text-center text-xs text-slate-400 print:text-slate-600">
+          <div className="p-4 bg-slate-50 dark:bg-slate-900/40 print:bg-slate-50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700/70 print:border-slate-300 text-center text-xs text-slate-500 dark:text-slate-400 print:text-slate-600">
             <p className="text-base mb-1">🛡️</p>
-            <p className="font-semibold text-slate-300 print:text-slate-800">Sin recursos diarios activos</p>
+            <p className="font-semibold text-slate-800 dark:text-slate-300 print:text-slate-800">Sin recursos diarios activos</p>
             <p className="text-slate-500 print:text-slate-600 mt-1">
               Añade conjuros o rasgos de uso limitado desde el catálogo inferior para gestionarlos aquí.
             </p>
@@ -134,7 +134,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         {maxActiveLevel > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-purple-300 print:text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+              <span className="text-xs font-bold text-purple-700 dark:text-purple-300 print:text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
                 <span>🔮</span> Espacios de Magia (Niveles 1 a {maxActiveLevel})
               </span>
             </div>
@@ -147,10 +147,10 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 return (
                   <div
                     key={`slot-dyn-lvl-${lvl}`}
-                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80 print:bg-slate-50 print:border-slate-300"
+                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 print:bg-slate-50 print:border-slate-300"
                   >
                     <div className="flex items-center gap-1.5 print:text-slate-900">
-                      <span className="text-xs font-black text-purple-300">
+                      <span className="text-xs font-black text-purple-700 dark:text-purple-300">
                         {lvl}
                       </span>
                     </div>
@@ -160,18 +160,18 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                       <div className="text-right">
                         <span
                           className={`text-sm font-extrabold ${
-                            isOutOfSlots ? 'text-rose-400' : 'text-slate-100'
+                            isOutOfSlots ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'
                           }`}
                         >
                           {slot.available}
                         </span>
-                        <span className="text-xs text-slate-500 font-bold">/{slot.max}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">/{slot.max}</span>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => handleOpenEditSlot(lvl)}
-                        className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
+                        className="w-7 h-7 flex items-center justify-center bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 rounded-md text-xs transition-colors shrink-0 shadow-sm"
                         title={`Editar espacios nivel ${lvl}`}
                         aria-label={`Editar espacios nivel ${lvl}`}
                       >
@@ -204,7 +204,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
         {limitedTraits.length > 0 && (
           <div className="print:hidden">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
                 <span>⚔️</span> Rasgos y Dotes (Usos Diarios)
               </span>
             </div>
@@ -218,10 +218,10 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 return (
                   <div
                     key={`trait-daily-${trait.id}`}
-                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700/80"
+                    className="w-full flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80"
                   >
                     <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                      <span className="text-xs font-bold text-amber-200 truncate" title={trait.name}>
+                      <span className="text-xs font-bold text-slate-800 dark:text-amber-200 truncate" title={trait.name}>
                         {trait.name}
                       </span>
                     </div>
@@ -231,18 +231,18 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                       <div className="text-right">
                         <span
                           className={`text-sm font-extrabold ${
-                            isOutOfUses ? 'text-rose-400' : 'text-slate-100'
+                            isOutOfUses ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'
                           }`}
                         >
                           {available}
                         </span>
-                        <span className="text-xs text-slate-500 font-bold">/{max}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">/{max}</span>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => handleOpenEditTrait(trait)}
-                        className="w-7 h-7 flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 hover:text-amber-400 rounded-md text-xs transition-colors shrink-0"
+                        className="w-7 h-7 flex items-center justify-center bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 rounded-md text-xs transition-colors shrink-0 shadow-sm"
                         title={`Editar usos de ${trait.name}`}
                         aria-label={`Editar usos de ${trait.name}`}
                       >
@@ -261,19 +261,19 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
       {editingSlotLevel !== null && (
         <ModalOverlay
           onClose={() => setEditingSlotLevel(null)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label={`Espacios de Magia Nivel ${editingSlotLevel}`}
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="text-sm font-bold text-slate-100 mb-2">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
               Espacios de Magia Nivel {editingSlotLevel}
             </h4>
             <form onSubmit={handleSaveSlot} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Espacios Disponibles (Actuales)
                 </label>
                 <input
@@ -282,13 +282,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   max={editingSlotMaxVal === '' ? undefined : Math.max(0, editingSlotMaxVal)}
                   value={editingSlotAvailVal}
                   onChange={(e) => setEditingSlotAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-purple-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Espacios Máximos
                 </label>
                 <input
@@ -296,7 +296,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   min={0}
                   value={editingSlotMaxVal}
                   onChange={(e) => setEditingSlotMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-purple-500"
                   required
                 />
               </div>
@@ -305,13 +305,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 <button
                   type="button"
                   onClick={() => setEditingSlotLevel(null)}
-                  className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-xs transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-bold py-2 rounded-lg touch-btn text-xs shadow-sm transition-colors"
                 >
                   Guardar
                 </button>
@@ -325,22 +325,22 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
       {editingTraitId !== null && (
         <ModalOverlay
           onClose={() => setEditingTraitId(null)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label="Editar Usos Diarios"
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="text-sm font-bold text-slate-100 mb-1">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">
               Editar Usos Diarios
             </h4>
-            <p className="text-xs text-amber-300 font-semibold mb-3 truncate">
+            <p className="text-xs text-amber-600 dark:text-amber-300 font-semibold mb-3 truncate">
               {editingTraitName}
             </p>
             <form onSubmit={handleSaveTrait} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Usos Disponibles (Actuales)
                 </label>
                 <input
@@ -349,13 +349,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   max={editingTraitMaxVal === '' ? undefined : Math.max(1, editingTraitMaxVal)}
                   value={editingTraitAvailVal}
                   onChange={(e) => setEditingTraitAvailVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Usos Máximos Diarios
                 </label>
                 <input
@@ -363,7 +363,7 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                   min={1}
                   value={editingTraitMaxVal}
                   onChange={(e) => setEditingTraitMaxVal(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -372,13 +372,13 @@ export const DailyResourcesTracker: React.FC<DailyResourcesTrackerProps> = ({
                 <button
                   type="button"
                   onClick={() => setEditingTraitId(null)}
-                  className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-xs transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"
+                  className="flex-1 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs shadow-sm transition-colors"
                 >
                   Guardar
                 </button>

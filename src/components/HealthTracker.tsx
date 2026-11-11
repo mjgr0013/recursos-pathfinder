@@ -87,7 +87,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
   const consciousness = getConsciousnessState(health);
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md transition-all print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none">
+    <section className="w-full bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3 shadow-sm transition-all print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none">
       {/* VISTA PARA IMPRESIÓN EN PAPEL (Sin botones de sumar/quitar vida y con casilla en blanco para PG actuales) */}
       <div className="hidden print:block space-y-2">
         <div className="flex items-center justify-between border-b border-slate-300 pb-1.5">
@@ -129,14 +129,14 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
         {/* Header with Title, Consciousness State, and Compact Toggle */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-1.5">
+            <h3 className="text-sm font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase flex items-center gap-1.5">
               <span>❤️</span> (PG)
             </h3>
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                 consciousness === 'conscious'
-                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-700/60'
-                  : 'bg-rose-950 text-rose-400 border border-rose-700/60 animate-pulse'
+                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60'
+                  : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-400 border border-rose-300 dark:border-rose-700/60 animate-pulse'
               }`}
             >
               {consciousness === 'conscious' ? 'Consciente' : 'Inconsciente (0 PG)'}
@@ -146,7 +146,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
           <button
             type="button"
             onClick={toggleCompact}
-            className="touch-btn text-xs text-slate-400 hover:text-amber-400 font-bold px-2 shrink-0 flex items-center gap-1"
+            className="touch-btn text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-amber-400 font-bold px-2 shrink-0 flex items-center gap-1 transition-colors"
             aria-label={isCompact ? 'Desplegar controles de combate' : 'Plegar controles de combate'}
           >
             <span>{isCompact ? '▼ Controles' : '▲ Plegar'}</span>
@@ -157,31 +157,31 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
         {isCompact ? (
           <div
             onClick={toggleCompact}
-            className="cursor-pointer bg-slate-900/90 border border-slate-700/80 hover:border-slate-600 rounded-xl p-2.5 transition-all"
+            className="cursor-pointer bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl p-2.5 transition-all"
             title="Toca para desplegar los controles de combate"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-black text-slate-100">
+                <span className="text-2xl font-black text-slate-900 dark:text-slate-100">
                   {health.currentHp}
                 </span>
-                <span className="text-sm font-bold text-slate-400">
+                <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
                   / {health.maxHp} PG
                 </span>
                 {health.tempHp > 0 && (
-                  <span className="text-xs font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-700 ml-1">
+                  <span className="text-xs font-bold text-cyan-800 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-200 dark:border-cyan-700 ml-1">
                     +{health.tempHp} temp
                   </span>
                 )}
               </div>
 
-              <span className="text-[11px] text-slate-400 font-medium">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 Toca para abrir daño/cura
               </span>
             </div>
 
             {/* Mini barra de vida */}
-            <div className="w-full bg-slate-950 rounded-full h-1.5 mt-2 overflow-hidden border border-slate-800">
+            <div className="w-full bg-slate-200 dark:bg-slate-950 rounded-full h-1.5 mt-2 overflow-hidden border border-slate-300 dark:border-slate-800">
               <div
                 className={`h-full rounded-full transition-all duration-200 ${
                   hpPercent > 50
@@ -199,16 +199,16 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
           <>
             {/* Main HP Display Box */}
             <div
-              className={`bg-slate-900 border rounded-xl p-3 mb-3 text-center transition-colors duration-150 ${
+              className={`bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 mb-3 text-center transition-colors duration-150 ${
                 feedbackEffect === 'damage'
-                  ? 'border-rose-500 bg-rose-950/20'
+                  ? 'border-rose-500 bg-rose-50 dark:bg-rose-950/20'
                   : feedbackEffect === 'heal'
-                  ? 'border-emerald-500 bg-emerald-950/20'
-                  : 'border-slate-700/60'
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20'
+                  : 'border-slate-200 dark:border-slate-700/60'
               }`}
             >
               <div className="flex items-baseline justify-center gap-1.5">
-                <span className="text-4xl xs:text-5xl font-black tracking-tight text-slate-100">
+                <span className="text-4xl xs:text-5xl font-black tracking-tight text-slate-900 dark:text-slate-100">
                   {health.currentHp}
                 </span>
                 <span className="text-xl font-bold text-slate-400">/</span>
@@ -218,7 +218,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                     setEditingMaxHp(health.maxHp);
                     setIsEditingMax(true);
                   }}
-                  className="text-2xl font-bold text-slate-400 hover:text-amber-400 touch-btn p-1 transition-colors"
+                  className="text-2xl font-bold text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 touch-btn p-1 transition-colors"
                   title="Editar PG Máximos"
                 >
                   {health.maxHp}
@@ -235,18 +235,18 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                   }}
                   className={`text-xs px-2.5 py-1 rounded-md border font-medium flex items-center gap-1 touch-btn transition-colors ${
                     health.tempHp > 0
-                      ? 'bg-cyan-950/80 border-cyan-600 text-cyan-300'
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-cyan-300'
+                      ? 'bg-cyan-50 dark:bg-cyan-950/80 border-cyan-300 dark:border-cyan-600 text-cyan-800 dark:text-cyan-300'
+                      : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-300'
                   }`}
                   title="Puntos de Vida Temporales"
                 >
                   <span>🛡️ Temporales:</span>
-                  <span className="font-bold text-cyan-200">+{health.tempHp}</span>
+                  <span className="font-bold text-cyan-800 dark:text-cyan-200">+{health.tempHp}</span>
                 </button>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-950 rounded-full h-2.5 mt-3 overflow-hidden p-0.5 border border-slate-800">
+              <div className="w-full bg-slate-200 dark:bg-slate-950 rounded-full h-2.5 mt-3 overflow-hidden p-0.5 border border-slate-300 dark:border-slate-800">
                 <div
                   className={`h-full rounded-full transition-all duration-200 ${
                     hpPercent > 50
@@ -264,7 +264,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
             <div className="space-y-2">
               {/* Quick Damage (-1, -5, -10) */}
               <div>
-                <span className="text-[11px] font-semibold text-rose-400/90 uppercase tracking-wider block mb-1">
+                <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400/90 uppercase tracking-wider block mb-1">
                   Aplicar Daño
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -273,7 +273,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                       key={`dmg-${amt}`}
                       type="button"
                       onClick={() => handleDamage(amt)}
-                      className="touch-btn bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/80 text-rose-200 font-bold rounded-lg text-sm shadow-sm active:bg-rose-800"
+                      className="touch-btn bg-rose-50 hover:bg-rose-100 active:bg-rose-200 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 border border-rose-200 dark:border-rose-800/80 text-rose-700 dark:text-rose-200 font-bold rounded-lg text-sm shadow-sm transition-colors"
                     >
                       -{amt}
                     </button>
@@ -283,7 +283,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
 
               {/* Quick Heal (+1, +5, +10) */}
               <div>
-                <span className="text-[11px] font-semibold text-emerald-400/90 uppercase tracking-wider block mb-1">
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400/90 uppercase tracking-wider block mb-1">
                   Aplicar Curación
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -292,7 +292,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                       key={`heal-${amt}`}
                       type="button"
                       onClick={() => handleHeal(amt)}
-                      className="touch-btn bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-800/80 text-emerald-200 font-bold rounded-lg text-sm shadow-sm active:bg-emerald-800"
+                      className="touch-btn bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-200 font-bold rounded-lg text-sm shadow-sm transition-colors"
                     >
                       +{amt}
                     </button>
@@ -308,13 +308,13 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                   placeholder="Cant."
                   value={customValue}
                   onChange={(e) => setCustomValue(e.target.value)}
-                  className="w-24 bg-slate-900 border border-slate-700 rounded-lg px-2 text-center text-sm font-semibold text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  className="w-24 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 text-center text-sm font-semibold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                 />
                 <button
                   type="button"
                   disabled={!customValue}
                   onClick={() => handleCustomAction('damage')}
-                  className="flex-1 touch-btn bg-rose-900/70 hover:bg-rose-900 border border-rose-700 text-rose-100 font-bold rounded-lg text-xs disabled:opacity-40 disabled:pointer-events-none"
+                  className="flex-1 touch-btn bg-rose-600 hover:bg-rose-700 active:bg-rose-800 border border-rose-700 text-white font-bold rounded-lg text-xs disabled:opacity-40 disabled:pointer-events-none shadow-sm transition-colors"
                 >
                   Daño
                 </button>
@@ -322,7 +322,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                   type="button"
                   disabled={!customValue}
                   onClick={() => handleCustomAction('heal')}
-                  className="flex-1 touch-btn bg-emerald-900/70 hover:bg-emerald-900 border border-emerald-700 text-emerald-100 font-bold rounded-lg text-xs disabled:opacity-40 disabled:pointer-events-none"
+                  className="flex-1 touch-btn bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 border border-emerald-700 text-white font-bold rounded-lg text-xs disabled:opacity-40 disabled:pointer-events-none shadow-sm transition-colors"
                 >
                   Cura
                 </button>
@@ -336,27 +336,27 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
       {isEditingMax && (
         <ModalOverlay
           onClose={() => setIsEditingMax(false)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label="Editar PG Máximos"
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="text-sm font-bold text-slate-100 mb-2">Editar PG Máximos</h4>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">Editar PG Máximos</h4>
             <input
               type="number"
               min={1}
               value={editingMaxHp}
               onChange={(e) => setEditingMaxHp(e.target.value === '' ? '' : Number(e.target.value))}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-amber-400"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch mb-3 focus:outline-none focus:border-amber-500"
               required
             />
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setIsEditingMax(false)}
-                className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-xs transition-colors"
               >
                 Cancelar
               </button>
@@ -367,7 +367,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                   onUpdateHealth(updateMaxHp(health, newMax));
                   setIsEditingMax(false);
                 }}
-                className="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"
+                className="flex-1 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs shadow-sm transition-colors"
               >
                 Guardar
               </button>
@@ -380,27 +380,27 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
       {isEditingTemp && (
         <ModalOverlay
           onClose={() => setIsEditingTemp(false)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label="Puntos de Vida Temporales"
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-xs p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 className="text-sm font-bold text-cyan-300 mb-2">Puntos de Vida Temporales</h4>
+            <h4 className="text-sm font-bold text-cyan-800 dark:text-cyan-300 mb-2">Puntos de Vida Temporales</h4>
             <input
               type="number"
               min={0}
               value={editingTempHp}
               onChange={(e) => setEditingTempHp(e.target.value === '' ? '' : Number(e.target.value))}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-center text-lg font-bold text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-cyan-500"
               required
             />
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setIsEditingTemp(false)}
-                className="flex-1 bg-slate-700 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-xs"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-xs transition-colors"
               >
                 Cancelar
               </button>
@@ -411,7 +411,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ health, onUpdateHe
                   onUpdateHealth(setTempHp(health, newTemp));
                   setIsEditingTemp(false);
                 }}
-                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 rounded-lg touch-btn text-xs"
+                className="flex-1 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-2 rounded-lg touch-btn text-xs shadow-sm transition-colors"
               >
                 Guardar
               </button>

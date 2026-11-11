@@ -12,11 +12,11 @@ interface MarkdownRendererProps {
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
   className = '',
-  emptyPlaceholder = <span className="italic text-slate-400">Sin descripción registrada.</span>,
+  emptyPlaceholder = <span className="italic text-slate-500 dark:text-slate-400">Sin descripción registrada.</span>,
   variables,
 }) => {
   if (!content || !content.trim()) {
-    return <div className={`text-xs text-slate-400 ${className}`}>{emptyPlaceholder}</div>;
+    return <div className={`text-xs text-slate-500 dark:text-slate-400 ${className}`}>{emptyPlaceholder}</div>;
   }
 
   const resolvedContent = variables ? interpolateVariables(content, variables) : content;
@@ -40,25 +40,25 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
         case 'bold':
           return (
-            <strong key={idx} className="font-bold text-slate-100 print:text-slate-950">
+            <strong key={idx} className="font-bold text-slate-900 dark:text-slate-100 print:text-slate-950">
               {renderInline(token.content)}
             </strong>
           );
         case 'italic':
           return (
-            <em key={idx} className="italic text-slate-200 print:text-slate-800">
+            <em key={idx} className="italic text-slate-800 dark:text-slate-200 print:text-slate-800">
               {renderInline(token.content)}
             </em>
           );
         case 'bold_italic':
           return (
-            <strong key={idx} className="font-bold italic text-slate-100 print:text-slate-950">
+            <strong key={idx} className="font-bold italic text-slate-900 dark:text-slate-100 print:text-slate-950">
               {renderInline(token.content)}
             </strong>
           );
         case 'strikethrough':
           return (
-            <del key={idx} className="line-through text-slate-500 print:text-slate-400">
+            <del key={idx} className="line-through text-slate-400 dark:text-slate-500 print:text-slate-400">
               {renderInline(token.content)}
             </del>
           );
@@ -66,7 +66,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <code
               key={idx}
-              className="bg-slate-950 print:bg-slate-100 text-amber-300 print:text-slate-900 px-1.5 py-0.5 rounded border border-slate-700/80 print:border-slate-300 font-mono text-[11px] font-semibold"
+              className="bg-slate-100 dark:bg-slate-950 print:bg-slate-100 text-amber-900 dark:text-amber-300 print:text-slate-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700/80 print:border-slate-300 font-mono text-[11px] font-semibold"
             >
               {token.content}
             </code>
@@ -79,7 +79,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-cyan-400 print:text-slate-900 hover:text-cyan-300 underline font-medium inline-flex items-center gap-0.5"
+              className="text-blue-600 hover:text-blue-700 dark:text-cyan-400 dark:hover:text-cyan-300 print:text-slate-900 underline font-medium inline-flex items-center gap-0.5"
             >
               {token.text}
             </a>
@@ -95,7 +95,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <h2
               key={idx}
-              className="text-sm font-black text-amber-400 print:text-slate-950 print:text-[12px] mt-2 mb-1 border-b border-slate-700/60 print:border-slate-300 pb-1"
+              className="text-sm font-black text-amber-700 dark:text-amber-400 print:text-slate-950 print:text-[12px] mt-2 mb-1 border-b border-slate-200 dark:border-slate-700/60 print:border-slate-300 pb-1"
             >
               {renderInline(block.tokens)}
             </h2>
@@ -103,7 +103,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
         if (block.level === 2) {
           return (
-            <h3 key={idx} className="text-xs font-black text-amber-300 print:text-slate-900 print:text-[12px] mt-2 mb-1">
+            <h3 key={idx} className="text-xs font-black text-amber-800 dark:text-amber-300 print:text-slate-900 print:text-[12px] mt-2 mb-1">
               {renderInline(block.tokens)}
             </h3>
           );
@@ -111,7 +111,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         return (
           <h4
             key={idx}
-            className="text-[11px] font-bold text-slate-200 print:text-slate-800 print:text-[12px] mt-1.5 mb-1 uppercase tracking-wide"
+            className="text-[11px] font-bold text-slate-900 dark:text-slate-200 print:text-slate-800 print:text-[12px] mt-1.5 mb-1 uppercase tracking-wide"
           >
             {renderInline(block.tokens)}
           </h4>
@@ -119,13 +119,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       }
       case 'paragraph':
         return (
-          <p key={idx} className="my-1.5 leading-relaxed text-xs text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug">
+          <p key={idx} className="my-1.5 leading-relaxed text-xs text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug">
             {renderInline(block.tokens)}
           </p>
         );
       case 'unordered_list':
         return (
-          <ul key={idx} className="list-disc list-inside space-y-1 my-1.5 text-xs text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug pl-1">
+          <ul key={idx} className="list-disc list-inside space-y-1 my-1.5 text-xs text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug pl-1">
             {block.items.map((item, itemIdx) => (
               <li key={itemIdx} className="leading-relaxed print:leading-snug">
                 {renderInline(item)}
@@ -137,7 +137,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         return (
           <ol
             key={idx}
-            className="list-decimal list-inside space-y-1 my-1.5 text-xs text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug pl-1"
+            className="list-decimal list-inside space-y-1 my-1.5 text-xs text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug pl-1"
           >
             {block.items.map((item, itemIdx) => (
               <li key={itemIdx} className="leading-relaxed print:leading-snug">
@@ -150,7 +150,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         return (
           <blockquote
             key={idx}
-            className="border-l-2 border-amber-500/70 print:border-slate-400 pl-2.5 py-1 my-1.5 text-xs text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug italic bg-slate-950/40 print:bg-slate-50 rounded-r"
+            className="border-l-2 border-amber-500 print:border-slate-400 pl-2.5 py-1 my-1.5 text-xs text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px] print:leading-snug italic bg-amber-50/50 dark:bg-slate-950/40 print:bg-slate-50 rounded-r"
           >
             {renderInline(block.tokens)}
           </blockquote>
@@ -159,16 +159,16 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         return (
           <pre
             key={idx}
-            className="bg-slate-950 print:bg-slate-50 p-2.5 rounded-lg border border-slate-800 print:border-slate-300 font-mono text-[11px] print:text-[12px] text-amber-300 print:text-slate-900 overflow-x-auto my-1.5 whitespace-pre"
+            className="bg-slate-100 dark:bg-slate-950 print:bg-slate-50 p-2.5 rounded-lg border border-slate-300 dark:border-slate-800 print:border-slate-300 font-mono text-[11px] print:text-[12px] text-amber-900 dark:text-amber-300 print:text-slate-900 overflow-x-auto my-1.5 whitespace-pre"
           >
             <code>{block.content}</code>
           </pre>
         );
       case 'table':
         return (
-          <div key={idx} className="overflow-x-auto my-2 rounded border border-slate-700/80 print:border-slate-300">
-            <table className="w-full text-left text-[11px] print:text-[12px] divide-y divide-slate-700/80 print:divide-slate-300">
-              <thead className="bg-slate-950 print:bg-slate-100 text-slate-200 print:text-slate-900 font-bold">
+          <div key={idx} className="overflow-x-auto my-2 rounded border border-slate-200 dark:border-slate-700/80 print:border-slate-300">
+            <table className="w-full text-left text-[11px] print:text-[12px] divide-y divide-slate-200 dark:divide-slate-700/80 print:divide-slate-300">
+              <thead className="bg-slate-100 dark:bg-slate-950 print:bg-slate-100 text-slate-900 dark:text-slate-200 font-bold">
                 <tr>
                   {block.headers.map((h, hIdx) => (
                     <th key={hIdx} className="px-2.5 py-1.5">
@@ -177,11 +177,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 print:divide-slate-200 bg-slate-900/60 print:bg-white">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 print:divide-slate-200 bg-white dark:bg-slate-900/60 print:bg-white">
                 {block.rows.map((row, rIdx) => (
-                  <tr key={rIdx} className="hover:bg-slate-800/50 print:hover:bg-transparent">
+                  <tr key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 print:hover:bg-transparent">
                     {row.map((cell, cIdx) => (
-                      <td key={cIdx} className="px-2.5 py-1.5 text-slate-300 print:text-slate-800 print:text-[12px]">
+                      <td key={cIdx} className="px-2.5 py-1.5 text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px]">
                         {renderInline(cell)}
                       </td>
                     ))}
@@ -192,9 +192,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           </div>
         );
       case 'divider':
-        return <hr key={idx} className="border-slate-700/70 print:border-slate-300 my-2" />;
+        return <hr key={idx} className="border-slate-200 dark:border-slate-700/70 print:border-slate-300 my-2" />;
     }
   };
 
-  return <div className={`text-xs text-slate-300 print:text-slate-800 print:text-[12px] ${className}`}>{blocks.map(renderBlock)}</div>;
+  return <div className={`text-xs text-slate-700 dark:text-slate-300 print:text-slate-800 print:text-[12px] ${className}`}>{blocks.map(renderBlock)}</div>;
 };

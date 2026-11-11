@@ -202,7 +202,7 @@ describe('ResourceCard component', () => {
     expect(html).toContain('🗑️');
 
     // All 3 must share bordered button styling
-    const borderedButtons = html.match(/border border-slate-700\/80 bg-slate-900\/80/g);
+    const borderedButtons = html.match(/border border-slate-300 dark:border-slate-700\/80/g);
     expect(borderedButtons).not.toBeNull();
     // 3 action buttons (url, pencil, trash)
     expect(borderedButtons?.length).toBeGreaterThanOrEqual(3);
@@ -211,7 +211,7 @@ describe('ResourceCard component', () => {
     expect(html).toContain('▼ Ver más');
 
     // The action bar wrapper aligns toggle and actions using justify-between and ml-auto
-    expect(html).toMatch(/class="[^"]*flex items-center justify-between gap-2 text-xs text-slate-400 print:hidden[^"]*"/);
+    expect(html).toMatch(/class="[^"]*flex items-center justify-between gap-2 text-xs (text-slate-500 )?dark:text-slate-400 print:hidden[^"]*"/);
     expect(html).toMatch(/class="[^"]*flex items-center gap-1\.5 ml-auto[^"]*"/);
   });
 

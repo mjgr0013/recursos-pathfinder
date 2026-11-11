@@ -60,14 +60,14 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
   };
 
   return (
-    <section className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 shadow-md print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none">
+    <section className="w-full bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3 shadow-sm print:bg-white print:border-slate-300 print:text-slate-900 print:shadow-none">
       <div className="flex items-center gap-3">
         {/* Avatar button */}
         <div className="relative group shrink-0">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-full overflow-hidden bg-slate-700 print:bg-slate-100 border-2 border-amber-500/80 print:border-slate-400 flex items-center justify-center touch-btn relative focus:outline-none focus:ring-2 focus:ring-amber-400 print:pointer-events-none"
+            className="w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 print:bg-slate-100 border-2 border-amber-500/80 print:border-slate-400 flex items-center justify-center touch-btn relative focus:outline-none focus:ring-2 focus:ring-amber-400 print:pointer-events-none"
             title="Cambiar avatar"
             aria-label="Cambiar foto de avatar"
           >
@@ -98,7 +98,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
         {/* Character Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1">
-            <h2 className="text-lg font-bold text-slate-100 print:text-slate-900 print:text-xs truncate">{profile.name}</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 print:text-slate-900 print:text-xs truncate">{profile.name}</h2>
             <button
               type="button"
               onClick={() => {
@@ -109,7 +109,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                 setCasterModifier(profile.casterModifier ?? 0);
                 setIsEditing(true);
               }}
-              className="text-slate-400 hover:text-amber-400 p-1.5 touch-btn text-xs font-semibold flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-900/60 shrink-0 print:hidden"
+              className="text-slate-600 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 p-1.5 touch-btn text-xs font-semibold flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700/60 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-900 shrink-0 print:hidden transition-colors"
               title="Editar datos básicos"
               aria-label="Editar perfil"
             >
@@ -118,17 +118,17 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
             </button>
           </div>
           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-            <span className="text-xs text-amber-400/90 print:text-slate-800 font-medium truncate">
+            <span className="text-xs text-amber-600 dark:text-amber-400/90 print:text-slate-800 font-semibold truncate">
               {profile.characterClass} • Nivel {profile.level}
             </span>
             <span
-              className="text-[10px] font-bold bg-slate-900 print:bg-slate-100 border border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-amber-300 print:text-slate-900 shadow-sm"
+              className="text-[10px] font-bold bg-amber-50 dark:bg-slate-900 print:bg-slate-100 border border-amber-200 dark:border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300 print:text-slate-900 shadow-sm"
               title="Ataque Base (BAB)"
             >
               ⚔️ BAB +{profile.baseAttackBonus ?? 0}
             </span>
             <span
-              className="text-[10px] font-bold bg-slate-900 print:bg-slate-100 border border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-purple-300 print:text-slate-900 shadow-sm"
+              className="text-[10px] font-bold bg-purple-50 dark:bg-slate-900 print:bg-slate-100 border border-purple-200 dark:border-slate-700/80 print:border-slate-300 px-1.5 py-0.5 rounded text-purple-800 dark:text-purple-300 print:text-slate-900 shadow-sm"
               title="Modificador de Lanzador de Conjuros"
             >
               🔮 Mod {(profile.casterModifier ?? 0) >= 0 ? `+${profile.casterModifier ?? 0}` : profile.casterModifier}
@@ -138,26 +138,26 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
       </div>
 
       {avatarError && (
-        <p className="text-rose-400 text-xs mt-2 text-center print:hidden">{avatarError}</p>
+        <p className="text-rose-500 dark:text-rose-400 text-xs mt-2 text-center print:hidden">{avatarError}</p>
       )}
 
       {/* Modal / Overlay de Edición */}
       {isEditing && (
         <ModalOverlay
           onClose={() => setIsEditing(false)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label="Editar Datos del Personaje"
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-xl cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-sm p-4 shadow-2xl cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-base font-bold text-slate-100 mb-3 border-b border-slate-700 pb-2">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">
               Editar Datos del Personaje
             </h3>
             <form onSubmit={handleSaveProfile} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nombre del personaje
                 </label>
                 <input
@@ -165,14 +165,14 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                   maxLength={60}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-amber-500 min-h-touch"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Clase
                   </label>
                   <input
@@ -180,12 +180,12 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                     maxLength={60}
                     value={characterClass}
                     onChange={(e) => setCharacterClass(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-amber-500 min-h-touch"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Nivel (1-20)
                   </label>
                   <input
@@ -194,7 +194,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                     max={20}
                     value={level}
                     onChange={(e) => setLevel(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch text-center"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-amber-500 min-h-touch text-center"
                     required
                   />
                 </div>
@@ -202,7 +202,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Ataque Base (BAB)
                   </label>
                   <input
@@ -213,12 +213,12 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                     onChange={(e) =>
                       setBaseAttackBonus(e.target.value === '' ? '' : Number(e.target.value))
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-touch text-center font-bold"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-amber-500 min-h-touch text-center font-bold"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Mod. Lanzador (+/-)
                   </label>
                   <input
@@ -229,7 +229,7 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                     onChange={(e) =>
                       setCasterModifier(e.target.value === '' ? '' : Number(e.target.value))
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-400 min-h-touch text-center font-bold"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500 min-h-touch text-center font-bold"
                     required
                   />
                 </div>
@@ -239,13 +239,13 @@ export const CharacterHeader: React.FC<CharacterHeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-sm"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-sm transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2 rounded-lg touch-btn text-sm"
+                  className="flex-1 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg touch-btn text-sm shadow-sm transition-colors"
                 >
                   Guardar
                 </button>

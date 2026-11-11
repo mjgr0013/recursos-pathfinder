@@ -55,3 +55,524 @@
   }
 }
 
+/* ========================================================
+   TEMA CÁLIDO / PERGAMINO (INTERMEDIO ENTRE CLARO Y OSCURO)
+   ======================================================== */
+html.warm {
+  color-scheme: light;
+}
+
+html.warm body {
+  background-color: #f0e7d5 !important;
+  color: #241b13 !important;
+}
+
+html.warm .bg-slate-100 {
+  background-color: #f0e7d5 !important;
+}
+
+html.warm .bg-white {
+  background-color: #faf5eb !important;
+}
+
+html.warm .bg-slate-50 {
+  background-color: #e6dcbf !important;
+}
+
+html.warm .border-slate-200 {
+  border-color: #d8cca8 !important;
+}
+
+html.warm .border-slate-300 {
+  border-color: #c9bc96 !important;
+}
+
+html.warm .border-slate-400 {
+  border-color: #b0a078 !important;
+}
+
+html.warm .text-slate-900 {
+  color: #241b13 !important;
+}
+
+html.warm .text-slate-800 {
+  color: #382c20 !important;
+}
+
+html.warm .text-slate-700 {
+  color: #4f3f30 !important;
+}
+
+html.warm .text-slate-600 {
+  color: #665442 !important;
+}
+
+html.warm .text-slate-500 {
+  color: #7d6955 !important;
+}
+
+html.warm .text-slate-400 {
+  color: #96816c !important;
+}
+
+/* Hover and active states */
+html.warm .hover\:bg-slate-50:hover {
+  background-color: #f3ecdb !important;
+}
+
+html.warm .hover\:bg-slate-100:hover {
+  background-color: #dfd4b7 !important;
+}
+
+html.warm .hover\:bg-slate-200:hover {
+  background-color: #d3c6a4 !important;
+}
+
+html.warm .hover\:bg-slate-300:hover {
+  background-color: #c5b690 !important;
+}
+
+html.warm .hover\:border-slate-300:hover {
+  border-color: #baa981 !important;
+}
+
+/* Inputs, textareas & selects */
+html.warm input,
+html.warm textarea,
+html.warm select {
+  background-color: #fbf7ee !important;
+  border-color: #c9bc96 !important;
+  color: #241b13 !important;
+}
+
+html.warm input:focus,
+html.warm textarea:focus,
+html.warm select:focus {
+  border-color: #d97706 !important;
+  background-color: #ffffff !important;
+}
+
+/* Accent pills & badges on warm parchment */
+html.warm .bg-amber-50 {
+  background-color: #faeed7 !important;
+}
+
+html.warm .bg-amber-100 {
+  background-color: #f4e1be !important;
+}
+
+html.warm .border-amber-200 {
+  border-color: #e9cc94 !important;
+}
+
+html.warm .border-amber-300 {
+  border-color: #dfb96c !important;
+}
+
+html.warm .text-amber-700 {
+  color: #8f4007 !important;
+}
+
+html.warm .text-amber-800 {
+  color: #743204 !important;
+}
+
+html.warm .bg-purple-50 {
+  background-color: #f4ebfa !important;
+}
+
+html.warm .bg-purple-100 {
+  background-color: #ead8f7 !important;
+}
+
+html.warm .border-purple-200 {
+  border-color: #dcbef3 !important;
+}
+
+html.warm .border-purple-300 {
+  border-color: #c79def !important;
+}
+
+html.warm .text-purple-700 {
+  color: #641ea0 !important;
+}
+
+html.warm .text-purple-800 {
+  color: #4f1581 !important;
+}
+
+html.warm .bg-emerald-50 {
+  background-color: #eaf6ed !important;
+}
+
+html.warm .bg-emerald-100 {
+  background-color: #d5eedb !important;
+}
+
+html.warm .border-emerald-200 {
+  border-color: #b5e1c0 !important;
+}
+
+html.warm .border-emerald-300 {
+  border-color: #92d3a1 !important;
+}
+
+html.warm .text-emerald-700 {
+  color: #127335 !important;
+}
+
+html.warm .text-emerald-800 {
+  color: #0f5c2a !important;
+}
+
+html.warm .bg-rose-50 {
+  background-color: #faecec !important;
+}
+
+html.warm .bg-rose-100 {
+  background-color: #f6d7d9 !important;
+}
+
+html.warm .border-rose-200 {
+  border-color: #ecb3b7 !important;
+}
+
+html.warm .border-rose-300 {
+  border-color: #df8b92 !important;
+}
+
+html.warm .text-rose-700 {
+  color: #af0f36 !important;
+}
+
+html.warm .text-rose-800 {
+  color: #8c0c2b !important;
+}
+
+html.warm .bg-cyan-50 {
+  background-color: #e8f7fa !important;
+}
+
+html.warm .bg-cyan-100 {
+  background-color: #d0eff4 !important;
+}
+
+html.warm .border-cyan-200 {
+  border-color: #aee3eb !important;
+}
+
+html.warm .border-cyan-300 {
+  border-color: #82d3e1 !important;
+}
+
+html.warm .text-cyan-700 {
+  color: #0b6883 !important;
+}
+
+html.warm .text-cyan-800 {
+  color: #0a5268 !important;
+}
+
+/* ========================================================
+   TEMA ARCANO RÚNICO (🔮 OBSIDIANA VIOLETA, AMATISTA & MANÁ CIAN)
+   ======================================================== */
+html.arcane {
+  color-scheme: dark;
+}
+
+html.arcane body,
+html.arcane .bg-slate-100,
+html.arcane .bg-slate-900 {
+  background-color: #0e091e !important;
+  color: #ffffff !important;
+}
+
+/* Superficies principales de tarjetas y modales */
+html.arcane .bg-white,
+html.arcane .dark\:bg-slate-800\/90,
+html.arcane .dark\:bg-slate-800\/80,
+html.arcane .dark\:bg-slate-800 {
+  background-color: #181232 !important;
+  border-color: #7c3aed !important;
+  box-shadow: 0 4px 20px -2px rgba(139, 92, 246, 0.22) !important;
+}
+
+/* Contenedores interiores, pozas y subpaneles */
+html.arcane .bg-slate-50,
+html.arcane .dark\:bg-slate-900,
+html.arcane .dark\:bg-slate-900\/90,
+html.arcane .dark\:bg-slate-900\/80,
+html.arcane .dark\:bg-slate-900\/40,
+html.arcane .dark\:bg-slate-950,
+html.arcane .dark\:bg-slate-950\/70,
+html.arcane .dark\:bg-slate-950\/60,
+html.arcane .dark\:bg-slate-950\/40 {
+  background-color: #231a48 !important;
+  border-color: #6d28d9 !important;
+}
+
+/* Bordes claramente visibles con tono amatista */
+html.arcane .border-slate-200,
+html.arcane .border-slate-300,
+html.arcane .dark\:border-slate-700,
+html.arcane .dark\:border-slate-700\/80,
+html.arcane .dark\:border-slate-700\/70,
+html.arcane .dark\:border-slate-700\/60,
+html.arcane .dark\:border-slate-800,
+html.arcane .dark\:border-slate-800\/80 {
+  border-color: #6d28d9 !important;
+}
+
+/* Tipografía de máximo contraste: Blanco puro para títulos y textos principales */
+html.arcane .text-slate-900,
+html.arcane .dark\:text-slate-100,
+html.arcane .dark\:text-slate-200,
+html.arcane h1,
+html.arcane h2,
+html.arcane h3,
+html.arcane h4 {
+  color: #ffffff !important;
+}
+
+/* Textos secundarios y descriptivos en lavanda escarcha muy luminoso */
+html.arcane .text-slate-700,
+html.arcane .text-slate-600,
+html.arcane .dark\:text-slate-300 {
+  color: #ede9fe !important;
+}
+
+/* Textos atenuados y etiquetas legibles sin perder nitidez */
+html.arcane .text-slate-500,
+html.arcane .dark\:text-slate-400,
+html.arcane .dark\:text-slate-500 {
+  color: #c4b5fd !important;
+}
+
+/* Acentos dorados / runas de estrellas para títulos clave */
+html.arcane .text-amber-600,
+html.arcane .dark\:text-amber-400,
+html.arcane .text-amber-700,
+html.arcane .dark\:text-amber-300 {
+  color: #facc15 !important;
+}
+
+/* Botones principales de acción en amatista luminosa */
+html.arcane .bg-amber-500 {
+  background-color: #8b5cf6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.5) !important;
+}
+
+html.arcane .bg-amber-500:hover,
+html.arcane .hover\:bg-amber-400:hover {
+  background-color: #a78bfa !important;
+}
+
+/* Botón de lanzar conjuro en maná cian vibrante con texto oscuro de alto contraste */
+html.arcane .bg-purple-600 {
+  background-color: #06b6d4 !important;
+  color: #082f49 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.55) !important;
+}
+
+html.arcane .bg-purple-600:hover,
+html.arcane .hover\:bg-purple-700:hover {
+  background-color: #22d3ee !important;
+}
+
+/* Inputs, textareas y selects bien definidos */
+html.arcane input,
+html.arcane textarea,
+html.arcane select {
+  background-color: #1e1644 !important;
+  border-color: #7c3aed !important;
+  color: #ffffff !important;
+}
+
+html.arcane input::placeholder,
+html.arcane textarea::placeholder {
+  color: #a78bfa !important;
+}
+
+html.arcane input:focus,
+html.arcane textarea:focus,
+html.arcane select:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35) !important;
+  background-color: #241b52 !important;
+}
+
+/* Estados hover de botones secundarios */
+html.arcane .hover\:bg-slate-100:hover,
+html.arcane .dark\:hover\:bg-slate-800:hover,
+html.arcane .dark\:hover\:bg-slate-700:hover {
+  background-color: #2d225c !important;
+}
+
+/* Badges con fondo rúnico definido y texto de alto brillo */
+html.arcane .bg-purple-100,
+html.arcane .dark\:bg-purple-950,
+html.arcane .dark\:bg-purple-950\/80 {
+  background-color: #3b1d70 !important;
+  border-color: #8b5cf6 !important;
+  color: #f3e8ff !important;
+}
+
+html.arcane .dark\:text-purple-300,
+html.arcane .text-purple-700,
+html.arcane .text-purple-800 {
+  color: #e9d5ff !important;
+}
+
+html.arcane .bg-cyan-100,
+html.arcane .dark\:bg-cyan-950,
+html.arcane .dark\:bg-cyan-950\/80 {
+  background-color: #0e3e57 !important;
+  border-color: #0284c7 !important;
+  color: #e0f2fe !important;
+}
+
+html.arcane .dark\:text-cyan-300,
+html.arcane .text-cyan-700,
+html.arcane .text-cyan-800 {
+  color: #38bdf8 !important;
+}
+
+html.arcane .bg-amber-100,
+html.arcane .dark\:bg-amber-500\/20 {
+  background-color: #422006 !important;
+  border-color: #d97706 !important;
+  color: #fef08a !important;
+}
+
+html.arcane .bg-emerald-100,
+html.arcane .dark\:bg-emerald-950 {
+  background-color: #064e3b !important;
+  border-color: #059669 !important;
+  color: #6ee7b7 !important;
+}
+
+html.arcane .bg-rose-100,
+html.arcane .dark\:bg-rose-950 {
+  background-color: #4c0519 !important;
+  border-color: #be123c !important;
+  color: #fda4af !important;
+}
+
+/* ========================================================
+   TEMA FORJA ENANA (🌋 BASALTO, ACERO, BRONCE & MAGMA)
+   ======================================================== */
+html.forge {
+  color-scheme: dark;
+}
+
+html.forge body,
+html.forge .bg-slate-100,
+html.forge .bg-slate-900 {
+  background-color: #0f0f12 !important;
+  color: #f4f4f5 !important;
+}
+
+html.forge .bg-white,
+html.forge .dark\:bg-slate-800\/90,
+html.forge .dark\:bg-slate-800\/80,
+html.forge .dark\:bg-slate-800 {
+  background-color: #18181c !important;
+  box-shadow: 0 4px 20px -2px rgba(234, 88, 12, 0.15) !important;
+}
+
+html.forge .bg-slate-50,
+html.forge .dark\:bg-slate-900,
+html.forge .dark\:bg-slate-900\/90,
+html.forge .dark\:bg-slate-900\/80,
+html.forge .dark\:bg-slate-900\/40,
+html.forge .dark\:bg-slate-950,
+html.forge .dark\:bg-slate-950\/70,
+html.forge .dark\:bg-slate-950\/60,
+html.forge .dark\:bg-slate-950\/40 {
+  background-color: #222228 !important;
+}
+
+html.forge .border-slate-200,
+html.forge .border-slate-300,
+html.forge .dark\:border-slate-700,
+html.forge .dark\:border-slate-700\/80,
+html.forge .dark\:border-slate-700\/70,
+html.forge .dark\:border-slate-700\/60,
+html.forge .dark\:border-slate-800,
+html.forge .dark\:border-slate-800\/80 {
+  border-color: #9a3412 !important;
+}
+
+html.forge .text-slate-900,
+html.forge .dark\:text-slate-100,
+html.forge .dark\:text-slate-200 {
+  color: #f4f4f5 !important;
+}
+
+html.forge .text-slate-700,
+html.forge .text-slate-600,
+html.forge .dark\:text-slate-300,
+html.forge .dark\:text-slate-400 {
+  color: #d4d4d8 !important;
+}
+
+html.forge .text-slate-500,
+html.forge .dark\:text-slate-500 {
+  color: #a1a1aa !important;
+}
+
+html.forge .text-amber-600,
+html.forge .dark\:text-amber-400,
+html.forge .text-amber-700,
+html.forge .dark\:text-amber-300 {
+  color: #f97316 !important;
+}
+
+html.forge .bg-amber-500 {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(234, 88, 12, 0.45) !important;
+}
+
+html.forge .bg-amber-500:hover,
+html.forge .hover\:bg-amber-400:hover {
+  background-color: #f97316 !important;
+}
+
+html.forge .bg-purple-600 {
+  background-color: #eab308 !important;
+  color: #18181b !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 14px rgba(234, 179, 8, 0.45) !important;
+}
+
+html.forge .bg-purple-600:hover,
+html.forge .hover\:bg-purple-700:hover {
+  background-color: #facc15 !important;
+}
+
+html.forge input,
+html.forge textarea,
+html.forge select {
+  background-color: #1a1a20 !important;
+  border-color: #9a3412 !important;
+  color: #f4f4f5 !important;
+}
+
+html.forge input:focus,
+html.forge textarea:focus,
+html.forge select:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 1px #f97316 !important;
+}
+
+html.forge .hover\:bg-slate-100:hover,
+html.forge .dark\:hover\:bg-slate-800:hover,
+html.forge .dark\:hover\:bg-slate-700:hover {
+  background-color: #2c2c33 !important;
+}
+
+
+

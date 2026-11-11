@@ -6,6 +6,9 @@ describe('TopBarActions component', () => {
   const defaultProps = {
     charactersCount: 3,
     maxCharacters: 5,
+    currentTheme: 'light' as const,
+    onSelectTheme: vi.fn(),
+    onToggleTheme: vi.fn(),
     onOpenRoster: vi.fn(),
     onOpenBackup: vi.fn(),
     onOpenFormulaGuide: vi.fn(),
@@ -32,5 +35,26 @@ describe('TopBarActions component', () => {
   it('reflects different character count dynamically in badge', () => {
     const html = renderToString(<TopBarActions {...defaultProps} charactersCount={1} />);
     expect(html).toContain('1/5');
+  });
+
+  it('renders theme dropdown selector with light, warm, and dark indications', () => {
+    const lightHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="light" />);
+    expect(lightHtml).toContain('☀️');
+    expect(lightHtml).toContain('Claro');
+    expect(lightHtml).toContain('Seleccionar tema visual');
+
+    const warmHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="warm" />);
+    expect(warmHtml).toContain('📜');
+    expect(warmHtml).toContain('Cálido');
+
+    const darkHtml = renderToString(<TopBarActions {...defaultProps} currentTheme="dark" />);
+    expect(darkHtml).toContain('🌙');
+    expect(darkHtml).toContain('Oscuro');
+  });
+
+  it('has accessible popup dropdown attributes on theme selector', () => {
+    const html = renderToString(<TopBarActions {...defaultProps} />);
+    expect(html).toContain('aria-haspopup="true"');
+    expect(html).toContain('aria-expanded="false"');
   });
 });

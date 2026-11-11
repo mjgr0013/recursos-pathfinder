@@ -166,14 +166,14 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     <section className="w-full mt-1 mb-4 flex-1 flex flex-col">
       {/* Category Tabs and Add Button (Solo en pantalla) */}
       <div className="flex items-center justify-between gap-2 mb-3 print:hidden">
-        <div className="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 gap-1 flex-1">
+        <div className="flex bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 gap-1 flex-1 shadow-sm">
           <button
             type="button"
             onClick={() => setActiveTab('all')}
             className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
               activeTab === 'all'
                 ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Todos ({resources.length})
@@ -183,8 +183,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             onClick={() => setActiveTab('spell')}
             className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
               activeTab === 'spell'
-                ? 'bg-purple-600 text-slate-100 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Conjuros ({spellsCount})
@@ -194,8 +194,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             onClick={() => setActiveTab('feat_trait')}
             className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
               activeTab === 'feat_trait'
-                ? 'bg-amber-600 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Rasgos ({featsCount})
@@ -213,7 +213,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             }
             setIsModalOpen(true);
           }}
-          className="touch-btn bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm px-3 rounded-xl shadow-md shrink-0 flex items-center gap-1 active:scale-95"
+          className="touch-btn bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-sm px-3 rounded-xl shadow-md shrink-0 flex items-center gap-1 active:scale-95 transition-all"
           title="Añadir nuevo conjuro o rasgo"
         >
           <span>➕</span>
@@ -237,14 +237,14 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               ? 'Buscar rasgo por nombre o descripción...'
               : 'Buscar conjuro o rasgo por nombre o descripción...'
           }
-          className="w-full bg-slate-800/90 border border-slate-700/80 rounded-xl pl-9 pr-9 py-2 text-xs md:text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors shadow-sm"
+          className="w-full bg-white dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700/80 rounded-xl pl-9 pr-9 py-2 text-xs md:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-amber-400 transition-colors shadow-sm"
           aria-label="Buscar conjuros o rasgos"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => setSearchQuery('')}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 text-xs font-bold"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-bold"
             title="Limpiar búsqueda"
             aria-label="Limpiar búsqueda"
           >
@@ -257,9 +257,9 @@ export const ResourceList: React.FC<ResourceListProps> = ({
       <div className="flex flex-col gap-3 flex-1 w-full">
         {filteredResources.length === 0 ? (
           searchQuery.trim() ? (
-            <div className="w-full text-center py-10 px-4 bg-slate-800/40 rounded-xl border border-dashed border-slate-700 text-slate-400 text-sm print:hidden">
+            <div className="w-full text-center py-10 px-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm print:hidden">
               <p className="text-2xl mb-1">🔍</p>
-              <p className="font-semibold text-slate-300">
+              <p className="font-semibold text-slate-800 dark:text-slate-300">
                 No se encontraron resultados para &quot;{searchQuery}&quot;
               </p>
               <p className="text-xs text-slate-500 mt-1">
@@ -268,15 +268,15 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="mt-3 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg touch-btn"
+                className="mt-3 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg touch-btn transition-colors"
               >
                 Limpiar búsqueda
               </button>
             </div>
           ) : (
-            <div className="w-full text-center py-10 px-4 bg-slate-800/40 print:bg-white rounded-xl border border-dashed border-slate-700 print:border-slate-300 text-slate-400 print:text-slate-600 text-sm">
+            <div className="w-full text-center py-10 px-4 bg-slate-50 dark:bg-slate-800/40 print:bg-white rounded-xl border border-dashed border-slate-300 dark:border-slate-700 print:border-slate-300 text-slate-600 dark:text-slate-400 print:text-slate-600 text-sm">
               <p className="text-2xl mb-1">📜</p>
-              <p className="font-semibold text-slate-300 print:text-slate-800">No hay elementos registrados</p>
+              <p className="font-semibold text-slate-800 dark:text-slate-300 print:text-slate-800">No hay elementos registrados</p>
               <p className="text-xs text-slate-500 print:text-slate-600 mt-1 print:hidden">
                 Pulsa el botón &quot;+ Añadir&quot; para registrar un conjuro o dote/rasgo.
               </p>
@@ -288,12 +288,12 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             {spells.length > 0 && (
               <div className={`space-y-3 ${activeTab === 'feat_trait' ? 'hidden print:block' : 'block'}`}>
                 <div
-                  className={`flex items-center justify-between text-xs text-slate-400 print:text-slate-900 px-1 ${
+                  className={`flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 print:text-slate-900 px-1 ${
                     spellGroups.length <= 1 ? 'hidden print:flex' : 'flex'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-amber-300 print:text-slate-900 font-bold uppercase tracking-wider">
+                    <span className="text-amber-700 dark:text-amber-300 print:text-slate-900 font-bold uppercase tracking-wider">
                       <span className="hidden print:inline mr-1">🔮</span>
                       <span className="print:hidden">
                         {activeTab === 'spell'
@@ -307,7 +307,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                       type="button"
                       onClick={handleToggleAllLevels}
-                      className="text-amber-400 hover:text-amber-300 font-semibold touch-btn py-0.5 px-1 print:hidden"
+                      className="text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 font-semibold touch-btn py-0.5 px-1 print:hidden transition-colors"
                     >
                       {allLevelsCollapsed ? '▲ Desplegar todos' : '▼ Plegar todos'}
                     </button>
@@ -322,21 +322,21 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                       <button
                         type="button"
                         onClick={() => toggleLevelCollapse(group.level)}
-                        className="w-full flex items-center justify-between px-3 py-2 bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-colors print:hidden"
+                        className="w-full flex items-center justify-between px-3 py-2 bg-purple-50/80 hover:bg-purple-100 dark:bg-slate-800/90 dark:hover:bg-slate-800 border border-purple-200 dark:border-slate-700/80 rounded-xl text-left transition-colors print:hidden"
                         aria-expanded={!isCollapsed}
                         aria-label={`${group.label} (${group.spells.length}), ${isCollapsed ? 'desplegar' : 'plegar'}`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-sm">🔮</span>
-                          <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
+                          <span className="text-xs font-bold uppercase tracking-wider text-purple-900 dark:text-purple-300">
                             {group.label}
                           </span>
-                          <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 border border-purple-800/80 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-bold text-purple-800 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 border border-purple-300 dark:border-purple-800/80 px-2 py-0.5 rounded-full">
                             {group.spells.length}
                           </span>
                         </div>
 
-                        <span className="text-xs text-slate-400 font-bold">
+                        <span className="text-xs text-purple-700 dark:text-slate-400 font-bold">
                           {isCollapsed ? '▼ Desplegar' : '▲ Plegar'}
                         </span>
                       </button>
@@ -367,7 +367,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             {/* Sección de Rasgos y Dotes */}
             {feats.length > 0 && (
               <div className={`space-y-2 ${activeTab === 'spell' ? 'hidden print:block' : 'block'}`}>
-                <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-300 print:text-slate-900">
+                <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 print:text-slate-900">
                   <span>⚔️</span>
                   <span>Rasgos y Dotes ({feats.length})</span>
                 </div>
@@ -398,20 +398,20 @@ export const ResourceList: React.FC<ResourceListProps> = ({
       {isModalOpen && (
         <ModalOverlay
           onClose={() => setIsModalOpen(false)}
-          backdropClassName="bg-black/75"
+          backdropClassName="bg-black/60 dark:bg-black/75"
           aria-label="Nuevo Conjuro o Rasgo"
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-xl max-h-[90vh] overflow-y-auto cursor-default"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl w-full max-w-md md:max-w-xl lg:max-w-2xl p-4 md:p-5 shadow-2xl max-h-[90vh] overflow-y-auto cursor-default text-slate-900 dark:text-slate-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-base font-bold text-slate-100 mb-3 border-b border-slate-700 pb-2 flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2 flex items-center gap-2">
               <span>✨</span> Nuevo Conjuro o Rasgo
             </h3>
 
             <form onSubmit={handleCreateSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nombre del efecto / habilidad *
                 </label>
                 <input
@@ -420,20 +420,20 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                   placeholder="Ej. Curar Heridas Leves, Canalizar Energía..."
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Categoría
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as ResourceCategory)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                   >
                     <option value="spell">Conjuro</option>
                     <option value="feat_trait">Rasgo / Dote</option>
@@ -442,13 +442,13 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
                 {category === 'spell' ? (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Nivel de Conjuro
                     </label>
                     <select
                       value={spellLevel}
                       onChange={(e) => setSpellLevel(Number(e.target.value))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-purple-400"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-purple-500"
                     >
                       <option value={0}>0 (Truco a voluntad)</option>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((lvl) => (
@@ -460,13 +460,13 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Modo de uso
                     </label>
                     <select
                       value={usageMode}
                       onChange={(e) => setUsageMode(e.target.value as UsageMode)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                     >
                       <option value="limited">Limitado (usos/día)</option>
                       <option value="unlimited">Ilimitado (pasivo)</option>
@@ -477,7 +477,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
               {category === 'feat_trait' && usageMode === 'limited' && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Usos máximos diarios
                   </label>
                   <input
@@ -485,14 +485,14 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     min={1}
                     value={maxUses}
                     onChange={(e) => setMaxUses(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-bold text-center text-slate-100 min-h-touch focus:outline-none focus:border-amber-400"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-bold text-center text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-amber-500"
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   URL de Documentación Oficial (opcional)
                 </label>
                 <input
@@ -501,34 +501,34 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                   placeholder="https://aonprd.com/..."
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
-                  <label className="block text-xs font-semibold text-slate-300">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Alcance (opcional)
                   </label>
                   <div className="flex items-center gap-1 text-[10px] flex-wrap">
                     <button
                       type="button"
                       onClick={() => setRange('Toque')}
-                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                      className="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded border border-slate-300 dark:border-slate-700/80 active:scale-95 transition-colors"
                     >
                       Toque
                     </button>
                     <button
                       type="button"
                       onClick={() => setRange('Personal')}
-                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded border border-slate-700/80 active:scale-95"
+                      className="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded border border-slate-300 dark:border-slate-700/80 active:scale-95 transition-colors"
                     >
                       Personal
                     </button>
                     <button
                       type="button"
                       onClick={() => setRange('Corto (25 pies + 5 pies/2 nivel personaje)')}
-                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      className="px-1.5 py-0.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-slate-900 dark:hover:bg-slate-700 text-cyan-800 dark:text-cyan-300 rounded border border-cyan-300 dark:border-slate-700/80 active:scale-95 transition-colors"
                       title="25 pies + 5 pies cada 2 niveles"
                     >
                       Corto
@@ -536,7 +536,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                       type="button"
                       onClick={() => setRange('Medio (100 pies + 10 pies/nivel personaje)')}
-                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      className="px-1.5 py-0.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-slate-900 dark:hover:bg-slate-700 text-cyan-800 dark:text-cyan-300 rounded border border-cyan-300 dark:border-slate-700/80 active:scale-95 transition-colors"
                       title="100 pies + 10 pies por nivel"
                     >
                       Medio
@@ -544,7 +544,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                     <button
                       type="button"
                       onClick={() => setRange('Largo (400 pies + 40 pies/nivel personaje)')}
-                      className="px-1.5 py-0.5 bg-slate-900 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700/80 active:scale-95"
+                      className="px-1.5 py-0.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-slate-900 dark:hover:bg-slate-700 text-cyan-800 dark:text-cyan-300 rounded border border-cyan-300 dark:border-slate-700/80 active:scale-95 transition-colors"
                       title="400 pies + 40 pies por nivel"
                     >
                       Largo
@@ -557,10 +557,10 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                   placeholder="Ej. corto (25 pies + 5 pies/2 nivel personaje), Toque, 30 pies..."
                   value={range}
                   onChange={(e) => setRange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 min-h-touch focus:outline-none focus:border-cyan-400"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 min-h-touch focus:outline-none focus:border-cyan-500"
                 />
                 {range.trim() && (
-                  <p className="text-[11px] text-cyan-400 mt-1 font-medium flex items-center gap-1">
+                  <p className="text-[11px] text-cyan-700 dark:text-cyan-400 mt-1 font-medium flex items-center gap-1">
                     <span>🎯 Calculado con nivel actual ({characterLevel}):</span>
                     <strong>{resolveRange(range, variables)}</strong>
                   </p>
@@ -580,17 +580,17 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                 />
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-slate-700/60">
+              <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2 rounded-lg touch-btn text-sm"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-transparent font-semibold py-2 rounded-lg touch-btn text-sm transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-lg touch-btn text-sm"
+                  className="flex-1 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg touch-btn text-sm shadow-sm transition-colors"
                 >
                   Añadir
                 </button>

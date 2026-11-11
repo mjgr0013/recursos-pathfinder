@@ -42,7 +42,7 @@ describe('DailyResourcesTracker component', () => {
     );
 
     // Slot box should render the number "1"
-    expect(html).toContain('text-xs font-black text-purple-300">1</span>');
+    expect(html).toContain('text-xs font-black text-purple-700 dark:text-purple-300">1</span>');
 
     // Slot box MUST NOT render "Nivel 1"
     expect(html).not.toContain('Nivel 1');
