@@ -56,8 +56,6 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
 
 export const THEME_STORAGE_KEY = 'pathfinder_theme_v1';
 export const DEFAULT_THEME: ThemeId = 'light';
-/** Tema que se usa al imprimir o exportar a PDF, sea cual sea el tema de pantalla. */
-export const PRINT_THEME: ThemeId = 'light';
 
 const VALID_THEMES = new Set<ThemeId>(AVAILABLE_THEMES.map((t) => t.id));
 
@@ -110,30 +108,6 @@ export function applyThemeToDocument(theme: ThemeId, doc?: Document): void {
   }
 
   root.setAttribute('data-theme', theme);
-}
-
-type PrintEventTarget = Pick<Window, 'addEventListener' | 'removeEventListener'>;
-
-/**
- * Applies PRINT_THEME while the browser prints (window.print() or Ctrl/Cmd+P) and
- * restores `theme` afterwards. The dark: variants of Tailwind outrank print: utilities,
- * so dark themes would otherwise print dark backgrounds.
- * Returns a cleanup function that removes the listeners.
- */
-export function bindPrintTheme(theme: ThemeId, win?: PrintEventTarget, doc?: Document): () => void {
-  const targetWin = win ?? (typeof window !== 'undefined' ? window : null);
-  if (!targetWin) return () => {};
-
-  const handleBeforePrint = () => applyThemeToDocument(PRINT_THEME, doc);
-  const handleAfterPrint = () => applyThemeToDocument(theme, doc);
-
-  targetWin.addEventListener('beforeprint', handleBeforePrint);
-  targetWin.addEventListener('afterprint', handleAfterPrint);
-
-  return () => {
-    targetWin.removeEventListener('beforeprint', handleBeforePrint);
-    targetWin.removeEventListener('afterprint', handleAfterPrint);
-  };
 }
 
 /**

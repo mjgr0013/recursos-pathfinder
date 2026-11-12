@@ -4,8 +4,6 @@ import {
   saveTheme,
   applyThemeToDocument,
   toggleTheme,
-  bindPrintTheme,
-  PRINT_THEME,
   AVAILABLE_THEMES,
   THEME_STORAGE_KEY,
   DEFAULT_THEME,
@@ -171,48 +169,5 @@ describe('domain/theme', () => {
     expect(mockDoc.documentElement.classList.contains('arcane')).toBe(false);
     expect(mockDoc.documentElement.classList.contains('forge')).toBe(false);
     expect(mockDoc.documentElement.getAttribute('data-theme')).toBe('light');
-  });
-
-  describe('bindPrintTheme', () => {
-    const createWindow = () => {
-      const listeners: Record<string, Set<() => void>> = {};
-      return {
-        listeners,
-        addEventListener: (type: string, fn: () => void) => {
-          (listeners[type] ??= new Set()).add(fn);
-        },
-        removeEventListener: (type: string, fn: () => void) => {
-          listeners[type]?.delete(fn);
-        },
-        fire: (type: string) => listeners[type]?.forEach((fn) => fn()),
-      };
-    };
-
-    it.each(['dark', 'arcane', 'forge'] as const)('imprime %s con el tema claro y lo restaura después', (theme) => {
-      const win = createWindow();
-      const doc = mockDoc as unknown as Document;
-      applyThemeToDocument(theme, doc);
-      bindPrintTheme(theme, win as unknown as Window, doc);
-
-      win.fire('beforeprint');
-      expect(mockDoc.documentElement.getAttribute('data-theme')).toBe(PRINT_THEME);
-      expect(mockDoc.documentElement.classList.contains('dark')).toBe(false);
-      expect(mockDoc.documentElement.classList.contains(theme)).toBe(false);
-
-      win.fire('afterprint');
-      expect(mockDoc.documentElement.getAttribute('data-theme')).toBe(theme);
-      expect(mockDoc.documentElement.classList.contains('dark')).toBe(true);
-    });
-
-    it('la función de limpieza elimina los listeners', () => {
-      const win = createWindow();
-      const cleanup = bindPrintTheme('arcane', win as unknown as Window, mockDoc as unknown as Document);
-      expect(win.listeners.beforeprint.size).toBe(1);
-      expect(win.listeners.afterprint.size).toBe(1);
-
-      cleanup();
-      expect(win.listeners.beforeprint.size).toBe(0);
-      expect(win.listeners.afterprint.size).toBe(0);
-    });
   });
 });
