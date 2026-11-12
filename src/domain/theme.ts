@@ -1,10 +1,12 @@
-export type ThemeId = 'light' | 'warm' | 'dark' | 'arcane' | 'forge';
+export type ThemeId = 'light' | 'warm' | 'dark' | 'arcane' | 'forge' | 'grove';
 
 export interface ThemeConfig {
   id: ThemeId;
   name: string;
   icon: string;
   description: string;
+  /** Activa también la clase `dark` para reutilizar las variantes oscuras de Tailwind. */
+  isDark: boolean;
 }
 
 export const AVAILABLE_THEMES: ThemeConfig[] = [
@@ -13,37 +15,49 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
     name: 'Claro',
     icon: '☀️',
     description: 'Tema claro con alto contraste y fondos limpios',
+    isDark: false,
   },
   {
     id: 'warm',
     name: 'Cálido',
     icon: '📜',
     description: 'Tono pergamino cálido, intermedio y suave para la vista',
+    isDark: false,
   },
   {
     id: 'dark',
     name: 'Oscuro',
     icon: '🌙',
     description: 'Tema oscuro original para baja luminosidad',
+    isDark: true,
   },
   {
     id: 'arcane',
     name: 'Arcano Rúnico',
     icon: '🔮',
     description: 'Obsidiana violeta, amatista mística y maná cian',
+    isDark: true,
   },
   {
     id: 'forge',
     name: 'Forja Enana',
     icon: '🌋',
     description: 'Basalto, acero forjado, bronce y brasas de magma',
+    isDark: true,
+  },
+  {
+    id: 'grove',
+    name: 'Bosque Druídico',
+    icon: '🌿',
+    description: 'Claro luminoso de salvia, musgo vivo y bayas silvestres',
+    isDark: false,
   },
 ];
 
 export const THEME_STORAGE_KEY = 'pathfinder_theme_v1';
 export const DEFAULT_THEME: ThemeId = 'light';
 
-const VALID_THEMES = new Set<ThemeId>(['light', 'warm', 'dark', 'arcane', 'forge']);
+const VALID_THEMES = new Set<ThemeId>(AVAILABLE_THEMES.map((t) => t.id));
 
 /**
  * Loads the stored theme identifier from localStorage or returns default ('light').
@@ -85,11 +99,11 @@ export function applyThemeToDocument(theme: ThemeId, doc?: Document): void {
   if (!targetDoc?.documentElement) return;
 
   const root = targetDoc.documentElement;
-  root.classList.remove('light', 'warm', 'dark', 'arcane', 'forge');
+  root.classList.remove('dark', ...AVAILABLE_THEMES.map((t) => t.id));
   root.classList.add(theme);
 
-  // 'dark', 'arcane' and 'forge' utilize dark variants for base tailwind contrast
-  if (theme === 'dark' || theme === 'arcane' || theme === 'forge') {
+  // Los temas oscuros reutilizan las variantes dark: de Tailwind como base de contraste
+  if (AVAILABLE_THEMES.find((t) => t.id === theme)?.isDark) {
     root.classList.add('dark');
   }
 
@@ -97,7 +111,7 @@ export function applyThemeToDocument(theme: ThemeId, doc?: Document): void {
 }
 
 /**
- * Cycles to the next available theme ('light' -> 'warm' -> 'dark' -> 'arcane' -> 'forge' -> 'light').
+ * Cycles to the next available theme, in AVAILABLE_THEMES order, wrapping to the first.
  */
 export function getNextTheme(current: ThemeId): ThemeId {
   const currentIndex = AVAILABLE_THEMES.findIndex((t) => t.id === current);

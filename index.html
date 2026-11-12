@@ -11,13 +11,13 @@
         try {
           var theme = localStorage.getItem('pathfinder_theme_v1') || 'light';
           var root = document.documentElement;
-          root.classList.remove('light', 'warm', 'dark', 'arcane', 'forge');
-          if (['light', 'warm', 'dark', 'arcane', 'forge'].indexOf(theme) !== -1) {
-            root.classList.add(theme);
-          } else {
-            root.classList.add('light');
-          }
-          if (theme === 'dark' || theme === 'arcane' || theme === 'forge') {
+          // Mantener sincronizado con AVAILABLE_THEMES en src/domain/theme.ts
+          var themes = ['light', 'warm', 'dark', 'arcane', 'forge', 'grove'];
+          var darkThemes = ['dark', 'arcane', 'forge'];
+          if (themes.indexOf(theme) === -1) theme = 'light';
+          root.classList.remove.apply(root.classList, themes);
+          root.classList.add(theme);
+          if (darkThemes.indexOf(theme) !== -1) {
             root.classList.add('dark');
           }
           root.setAttribute('data-theme', theme);

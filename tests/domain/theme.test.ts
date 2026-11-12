@@ -51,9 +51,9 @@ describe('domain/theme', () => {
     };
   });
 
-  it('exposes available themes including light, warm, dark, arcane, and forge', () => {
-    expect(AVAILABLE_THEMES).toHaveLength(5);
-    expect(AVAILABLE_THEMES.map((t) => t.id)).toEqual(['light', 'warm', 'dark', 'arcane', 'forge']);
+  it('exposes available themes including light, warm, dark, arcane, forge and grove', () => {
+    expect(AVAILABLE_THEMES).toHaveLength(6);
+    expect(AVAILABLE_THEMES.map((t) => t.id)).toEqual(['light', 'warm', 'dark', 'arcane', 'forge', 'grove']);
   });
 
   it('defaults to light theme when nothing is stored', () => {
@@ -91,12 +91,13 @@ describe('domain/theme', () => {
     expect(mockStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
   });
 
-  it('cycles theme through light -> warm -> dark -> arcane -> forge -> light', () => {
+  it('cycles theme through light -> warm -> dark -> arcane -> forge -> grove -> light', () => {
     expect(toggleTheme('light')).toBe('warm');
     expect(toggleTheme('warm')).toBe('dark');
     expect(toggleTheme('dark')).toBe('arcane');
     expect(toggleTheme('arcane')).toBe('forge');
-    expect(toggleTheme('forge')).toBe('light');
+    expect(toggleTheme('forge')).toBe('grove');
+    expect(toggleTheme('grove')).toBe('light');
   });
 
   it('applies light theme to document element', () => {
@@ -135,6 +136,20 @@ describe('domain/theme', () => {
     expect(mockDoc.documentElement.classList.contains('forge')).toBe(true);
     expect(mockDoc.documentElement.classList.contains('dark')).toBe(true);
     expect(mockDoc.documentElement.getAttribute('data-theme')).toBe('forge');
+  });
+
+  it('applies grove theme as a light theme and drops dark when switching from a dark one', () => {
+    applyThemeToDocument('arcane', mockDoc as unknown as Document);
+    applyThemeToDocument('grove', mockDoc as unknown as Document);
+    expect(mockDoc.documentElement.classList.contains('grove')).toBe(true);
+    expect(mockDoc.documentElement.classList.contains('arcane')).toBe(false);
+    expect(mockDoc.documentElement.classList.contains('dark')).toBe(false);
+    expect(mockDoc.documentElement.getAttribute('data-theme')).toBe('grove');
+  });
+
+  it('restores grove theme from storage', () => {
+    mockStorage.setItem(THEME_STORAGE_KEY, 'grove');
+    expect(getStoredTheme(mockStorage)).toBe('grove');
   });
 
   it('switches between themes on document element cleanly', () => {

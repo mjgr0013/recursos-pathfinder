@@ -576,3 +576,249 @@ html.forge .dark\:hover\:bg-slate-700:hover {
 
 
 
+/* ========================================================
+   TEMA BOSQUE DRUÍDICO (🌿 SALVIA, MUSGO VIVO & BAYAS SILVESTRES)
+   Tema claro de tono verde. Solo en pantalla: la impresión
+   conserva la ficha en blanco y negro.
+   ======================================================== */
+html.grove {
+  color-scheme: light;
+}
+
+@media screen {
+  /* Superficies: claro del bosque, hojas y corteza clara */
+  html.grove body,
+  html.grove .bg-slate-100,
+  html.grove .bg-slate-100\/70 {
+    background-color: #e3ebdc !important;
+    color: #142218 !important;
+  }
+
+  html.grove .bg-white {
+    background-color: #f6f9f1 !important;
+  }
+
+  html.grove .bg-slate-50 {
+    background-color: #e9f0e2 !important;
+  }
+
+  html.grove .bg-slate-200 {
+    background-color: #cddcc3 !important;
+  }
+
+  /* Bordes en tono liquen */
+  html.grove .border-slate-200,
+  html.grove .border-slate-200\/60,
+  html.grove .divide-slate-200 > * + * {
+    border-color: #c2d3b6 !important;
+  }
+
+  html.grove .border-slate-300 {
+    border-color: #a9c09a !important;
+  }
+
+  html.grove .border-slate-400 {
+    border-color: #86a276 !important;
+  }
+
+  /* Tipografía: tinta verde bosque de alto contraste */
+  html.grove .text-slate-950,
+  html.grove .text-slate-900 {
+    color: #142218 !important;
+  }
+
+  html.grove .text-slate-800 {
+    color: #213426 !important;
+  }
+
+  html.grove .text-slate-700 {
+    color: #2e4634 !important;
+  }
+
+  html.grove .text-slate-600 {
+    color: #3f5a44 !important;
+  }
+
+  html.grove .text-slate-500 {
+    color: #4f6b53 !important;
+  }
+
+  html.grove .text-slate-400 {
+    color: #6c876d !important;
+  }
+
+  /* Títulos con serif clásica de grimorio druídico */
+  html.grove h1,
+  html.grove h2,
+  html.grove h3 {
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    letter-spacing: 0.01em;
+  }
+
+  /* Hover de botones secundarios */
+  html.grove .hover\:bg-slate-50:hover {
+    background-color: #edf3e7 !important;
+  }
+
+  html.grove .hover\:bg-slate-100:hover {
+    background-color: #d6e3cc !important;
+  }
+
+  html.grove .hover\:bg-slate-200:hover {
+    background-color: #c8d9bb !important;
+  }
+
+  html.grove .hover\:bg-slate-300:hover {
+    background-color: #b6cca6 !important;
+  }
+
+  html.grove .hover\:border-slate-300:hover {
+    border-color: #86a276 !important;
+  }
+
+  html.grove .hover\:text-slate-900:hover,
+  html.grove .hover\:text-slate-800:hover,
+  html.grove .hover\:text-slate-700:hover {
+    color: #142218 !important;
+  }
+
+  /* Acento principal (antes ámbar): musgo vivo */
+  html.grove .text-amber-500,
+  html.grove .text-amber-600,
+  html.grove .hover\:text-amber-600:hover {
+    color: #3d7a36 !important;
+  }
+
+  html.grove .text-amber-700 {
+    color: #2f6a2b !important;
+  }
+
+  html.grove .text-amber-800,
+  html.grove .hover\:text-amber-800:hover {
+    color: #245722 !important;
+  }
+
+  html.grove .text-amber-900 {
+    color: #1b431a !important;
+  }
+
+  html.grove .bg-amber-500 {
+    background-color: #3f7d3a !important;
+    color: #ffffff !important;
+  }
+
+  html.grove .bg-amber-500:hover,
+  html.grove .hover\:bg-amber-400:hover {
+    background-color: #356b31 !important;
+  }
+
+  html.grove .active\:bg-amber-600:active {
+    background-color: #326630 !important;
+  }
+
+  html.grove .bg-amber-50,
+  html.grove .bg-amber-50\/50,
+  html.grove .bg-amber-50\/60 {
+    background-color: #eaf3dc !important;
+  }
+
+  html.grove .bg-amber-100,
+  html.grove .hover\:bg-amber-100:hover {
+    background-color: #dbeac6 !important;
+  }
+
+  html.grove .hover\:bg-amber-200:hover {
+    background-color: #c9dfad !important;
+  }
+
+  html.grove .border-amber-200 {
+    border-color: #bcd59f !important;
+  }
+
+  html.grove .border-amber-300,
+  html.grove .border-amber-400 {
+    border-color: #a3c784 !important;
+  }
+
+  html.grove .border-amber-500,
+  html.grove .border-amber-500\/80,
+  html.grove .border-amber-600,
+  html.grove .focus\:border-amber-500:focus {
+    border-color: #3f7d3a !important;
+  }
+
+  html.grove .ring-amber-400\/30,
+  html.grove .ring-amber-400\/40,
+  html.grove .focus\:ring-amber-400:focus {
+    --tw-ring-color: rgba(74, 143, 68, 0.45) !important;
+  }
+
+  /* Conjuros (antes púrpura): bayas silvestres */
+  html.grove .bg-purple-600 {
+    background-color: #9b3b5a !important;
+    color: #ffffff !important;
+  }
+
+  html.grove .bg-purple-600:hover,
+  html.grove .hover\:bg-purple-700:hover {
+    background-color: #b04568 !important;
+  }
+
+  html.grove .active\:bg-purple-800:active {
+    background-color: #7d2f49 !important;
+  }
+
+  html.grove .text-purple-700 {
+    color: #8a2f52 !important;
+  }
+
+  html.grove .text-purple-800 {
+    color: #73273f !important;
+  }
+
+  html.grove .text-purple-900 {
+    color: #5c1f33 !important;
+  }
+
+  html.grove .bg-purple-50,
+  html.grove .bg-purple-50\/80,
+  html.grove .hover\:bg-purple-100:hover {
+    background-color: #f7e9ee !important;
+  }
+
+  html.grove .bg-purple-100,
+  html.grove .hover\:bg-purple-200:hover {
+    background-color: #f0d7e0 !important;
+  }
+
+  html.grove .border-purple-200 {
+    border-color: #e3b6c6 !important;
+  }
+
+  html.grove .border-purple-300,
+  html.grove .focus\:border-purple-500:focus {
+    border-color: #c4809a !important;
+  }
+
+  /* Campos de formulario */
+  html.grove input,
+  html.grove textarea,
+  html.grove select {
+    background-color: #fbfdf8 !important;
+    border-color: #a9c09a !important;
+    color: #142218 !important;
+  }
+
+  html.grove input::placeholder,
+  html.grove textarea::placeholder {
+    color: #6c876d !important;
+  }
+
+  html.grove input:focus,
+  html.grove textarea:focus,
+  html.grove select:focus {
+    border-color: #3f7d3a !important;
+    box-shadow: 0 0 0 2px rgba(63, 125, 58, 0.25) !important;
+    background-color: #ffffff !important;
+  }
+}
