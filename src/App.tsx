@@ -49,6 +49,7 @@ import {
   getStoredTheme,
   saveTheme,
   applyThemeToDocument,
+  bindPrintTheme,
   toggleTheme,
 } from './domain/theme';
 
@@ -67,6 +68,7 @@ export default function App() {
   useEffect(() => {
     applyThemeToDocument(theme);
     saveTheme(theme);
+    return bindPrintTheme(theme);
   }, [theme]);
 
   const handleSelectTheme = (newTheme: ThemeId) => {

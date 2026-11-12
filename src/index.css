@@ -45,6 +45,19 @@
     page-break-inside: avoid !important;
   }
 
+  /* Contenedores largos (p. ej. la lista de recursos) pueden partirse entre páginas;
+     sus tarjetas siguen sin partirse. */
+  .print-allow-break {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* Los títulos de sección no se quedan solos al pie de página */
+  .print-keep-with-next {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
   * {
     box-shadow: none !important;
     text-shadow: none !important;

@@ -163,7 +163,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   };
 
   return (
-    <section className="w-full mt-1 mb-4 flex-1 flex flex-col">
+    <section className="w-full mt-1 mb-4 flex-1 flex flex-col print-allow-break">
       {/* Category Tabs and Add Button (Solo en pantalla) */}
       <div className="flex items-center justify-between gap-2 mb-3 print:hidden">
         <div className="flex bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 gap-1 flex-1 shadow-sm">
@@ -288,7 +288,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             {spells.length > 0 && (
               <div className={`space-y-3 ${activeTab === 'feat_trait' ? 'hidden print:block' : 'block'}`}>
                 <div
-                  className={`flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 print:text-slate-900 px-1 ${
+                  className={`flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 print:text-slate-900 px-1 print-keep-with-next ${
                     spellGroups.length <= 1 ? 'hidden print:flex' : 'flex'
                   }`}
                 >
@@ -367,7 +367,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
             {/* Sección de Rasgos y Dotes */}
             {feats.length > 0 && (
               <div className={`space-y-2 ${activeTab === 'spell' ? 'hidden print:block' : 'block'}`}>
-                <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 print:text-slate-900">
+                <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 print:text-slate-900 print-keep-with-next">
                   <span>⚔️</span>
                   <span>Rasgos y Dotes ({feats.length})</span>
                 </div>
