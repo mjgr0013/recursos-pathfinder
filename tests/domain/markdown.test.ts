@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, parseInline, isSafeUrl } from '../../src/domain/markdown';
+import { parseMarkdown, parseInline, isSafeUrl, extractSummary } from '../../src/domain/markdown';
 
 describe('Markdown Domain Logic', () => {
   describe('isSafeUrl', () => {
@@ -217,5 +217,71 @@ Canaliza energía positiva.
       expect(blocks[2].type).toBe('unordered_list');
       expect(blocks[3].type).toBe('blockquote');
     });
+  });
+});
+
+describe('extractSummary', () => {
+  it('returns null when there is no description or no Resumen heading', () => {
+    expect(extractSummary('')).toBeNull();
+    expect(extractSummary('   ')).toBeNull();
+    expect(extractSummary('# Bola de fuego\nDaño 1d6 por nivel.')).toBeNull();
+  });
+
+  it('extracts the ## Resumen section placed between other headings', () => {
+    const md = [
+      '# Bola de Fuego',
+      'Escuela evocación.',
+      '## Resumen',
+      'Explosión de **1d6/nivel** de fuego.',
+      '',
+      'Salvación de Reflejos mitad.',
+      '## Descripción',
+      'Texto completo.',
+      '### Notas',
+      'Más cosas.',
+    ].join('\n');
+    expect(extractSummary(md)).toBe('Explosión de **1d6/nivel** de fuego.\n\nSalvación de Reflejos mitad.');
+  });
+
+  it('keeps deeper sub-headings and stops at a heading of the same or higher level', () => {
+    const md = ['## Resumen', 'Intro.', '### Detalle', 'Sub.', '#### Más', 'Hondo.', '# Otro', 'Fuera.'].join('\n');
+    expect(extractSummary(md)).toBe('Intro.\n### Detalle\nSub.\n#### Más\nHondo.');
+  });
+
+  it('runs until the end when Resumen is the last section', () => {
+    expect(extractSummary('# Título\nTexto\n### Resumen\nÚltimo bloque.')).toBe('Último bloque.');
+  });
+
+  it('matches Resumen at any heading level, case and accent insensitive, with decorations', () => {
+    expect(extractSummary('# RESUMEN\nA')).toBe('A');
+    expect(extractSummary('###### resumen:\nB')).toBe('B');
+    expect(extractSummary('## **Resumen** ##\nC')).toBe('C');
+    expect(extractSummary('## Résumen\nD')).toBe('D');
+  });
+
+  it('does not match headings that only contain the word', () => {
+    expect(extractSummary('## Resumen de la Plegaria\nX')).toBeNull();
+    expect(extractSummary('Resumen\nsin almohadilla')).toBeNull();
+    expect(extractSummary('##Resumen\nsin espacio')).toBeNull();
+  });
+
+  it('ignores headings inside fenced code blocks', () => {
+    const fakeStart = ['```', '## Resumen', '```', '## Real', 'nada'].join('\n');
+    expect(extractSummary(fakeStart)).toBeNull();
+
+    const fakeEnd = ['## Resumen', 'Antes', '```', '# no corta', '```', 'Después', '## Fin'].join('\n');
+    expect(extractSummary(fakeEnd)).toBe('Antes\n```\n# no corta\n```\nDespués');
+  });
+
+  it('returns null when the Resumen section is empty', () => {
+    expect(extractSummary('## Resumen\n\n   \n## Descripción\nTexto')).toBeNull();
+  });
+
+  it('uses the first Resumen section when there are several', () => {
+    expect(extractSummary('## Resumen\nPrimero\n## Resumen\nSegundo')).toBe('Primero');
+  });
+
+  it('handles CRLF line endings', () => {
+    expect(extractSummary('# T\r\n## Resumen\r\nLínea\r\n## Otra\r\nX')).toBe('Línea');
   });
 });

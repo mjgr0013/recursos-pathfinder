@@ -5,6 +5,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
 import { ModalOverlay } from './ModalOverlay';
+import { extractSummary } from '../domain/markdown';
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -43,6 +44,8 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const [editRangeVal, setEditRangeVal] = useState(resource.range ?? '');
   const [editDescriptionVal, setEditDescriptionVal] = useState(resource.description ?? '');
   const [urlError, setUrlError] = useState<string | null>(null);
+
+  const summary = extractSummary(resource.description ?? '');
 
   const isSpell = resource.category === 'spell';
   const isCantrip = isSpell && resource.spellLevel === 0;
@@ -280,6 +283,13 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Resumen visible por defecto (Pantalla, plegado). Se oculta al desplegar la descripción completa */}
+      {!isExpanded && summary && (
+        <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 resource-summary print:hidden">
+          <MarkdownRenderer content={summary} variables={variables} />
+        </div>
+      )}
 
       {/* Expanded rules drawer (Pantalla cuando se despliega) */}
       {isExpanded && (

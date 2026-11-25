@@ -285,4 +285,54 @@ describe('ResourceCard component', () => {
     expect(html).toMatch(/Nivel (<!-- -->)?1/);
     expect(html).toContain('15m');
   });
+
+  describe('Resumen section', () => {
+    const spellWithSummary: ResourceItem = {
+      ...cantripSpell,
+      description: [
+        '# Guía Divina',
+        'Escuela adivinación.',
+        '## Resumen',
+        'Otorga **+1** a una tirada.',
+        '### Componentes',
+        'V, S',
+        '## Descripción',
+        'TEXTO-COMPLETO-OCULTO',
+      ].join('\n'),
+    };
+
+    const render = (resource: ResourceItem) =>
+      renderToString(
+        <ResourceCard
+          resource={resource}
+          spellSlots={defaultSlots}
+          onSpend={vi.fn()}
+          onDelete={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+        />
+      );
+
+    it('shows only the Resumen content on screen while collapsed', () => {
+      const html = render(spellWithSummary);
+      const summaryBlock = html.match(/<div class="[^"]*resource-summary[^"]*">([\s\S]*?)<\/div><\/div>/);
+      expect(summaryBlock).not.toBeNull();
+      expect(summaryBlock![0]).toContain('print:hidden');
+      expect(summaryBlock![1]).toContain('<strong');
+      expect(summaryBlock![1]).toContain('Componentes');
+      expect(summaryBlock![1]).not.toContain('TEXTO-COMPLETO-OCULTO');
+      expect(summaryBlock![1]).not.toContain('Escuela adivinación');
+      expect(html).not.toContain('max-h-[350px]');
+    });
+
+    it('still prints the full description', () => {
+      const html = render(spellWithSummary);
+      const printBlock = html.slice(html.indexOf('print-description'));
+      expect(printBlock).toContain('TEXTO-COMPLETO-OCULTO');
+      expect(printBlock).toContain('Escuela adivinación');
+    });
+
+    it('does not render a summary block when the description has no Resumen', () => {
+      expect(render(cantripSpell)).not.toContain('resource-summary');
+    });
+  });
 });

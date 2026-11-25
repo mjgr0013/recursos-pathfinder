@@ -273,3 +273,63 @@ export function parseMarkdown(text: string): MarkdownBlock[] {
   flushParagraph();
   return blocks;
 }
+
+/**
+ * Normalizes a heading text for comparison: strips inline emphasis markers,
+ * trailing closing hashes / colons, accents and case.
+ */
+function normalizeHeadingText(text: string): string {
+  return text
+    .replace(/\s+#+\s*$/, '')
+    .replace(/[*_~`]/g, '')
+    .replace(/:\s*$/, '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Extracts the raw markdown content of the "Resumen" section of a description.
+ *
+ * The section starts at the first heading (any level, `#` to `######`) whose text is
+ * "Resumen" and ends right before the next heading of the same or higher level
+ * (fewer or equal `#`). Deeper sub-headings are kept as part of the summary.
+ * Headings inside fenced code blocks are ignored.
+ *
+ * Returns `null` when there is no "Resumen" heading or its section is empty.
+ */
+export function extractSummary(text: string): string | null {
+  if (!text || !text.trim()) return null;
+
+  const lines = text.split(/\r?\n/);
+  let inCodeBlock = false;
+  let summaryLevel: number | null = null;
+  const summaryLines: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      if (summaryLevel !== null) summaryLines.push(line);
+      continue;
+    }
+
+    const headingMatch = !inCodeBlock ? trimmed.match(/^(#{1,6})\s+(.*)$/) : null;
+
+    if (summaryLevel === null) {
+      if (headingMatch && normalizeHeadingText(headingMatch[2]) === 'resumen') {
+        summaryLevel = headingMatch[1].length;
+      }
+      continue;
+    }
+
+    if (headingMatch && headingMatch[1].length <= summaryLevel) break;
+    summaryLines.push(line);
+  }
+
+  if (summaryLevel === null) return null;
+  const summary = summaryLines.join('\n').trim();
+  return summary ? summary : null;
+}
