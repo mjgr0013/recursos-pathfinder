@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ThemeId, AVAILABLE_THEMES } from '../domain/theme';
+import { LayoutMode } from '../domain/layout';
 
 interface TopBarActionsProps {
   charactersCount: number;
@@ -12,6 +13,8 @@ interface TopBarActionsProps {
   onOpenFormulaGuide: () => void;
   onOpenLongRest: () => void;
   onExportPdf?: () => void;
+  layoutMode?: LayoutMode;
+  onToggleLayout?: () => void;
   initialMenuOpen?: boolean;
 }
 
@@ -26,6 +29,8 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
   onOpenFormulaGuide,
   onOpenLongRest,
   onExportPdf,
+  layoutMode = 'standard',
+  onToggleLayout,
   initialMenuOpen = false,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(initialMenuOpen);
@@ -74,6 +79,25 @@ export const TopBarActions: React.FC<TopBarActionsProps> = ({
 
   return (
     <div className="flex items-center gap-2 print:hidden">
+      {/* Alternador de Modo Recursos (solo tablet/escritorio: en móvil no hay espacio para columnas) */}
+      {onToggleLayout && (
+        <button
+          type="button"
+          onClick={onToggleLayout}
+          className={`hidden md:flex touch-btn border text-xs font-bold px-3 py-1.5 rounded-lg items-center gap-1.5 shadow-sm transition-colors ${
+            layoutMode === 'resources'
+              ? 'bg-amber-500 hover:bg-amber-400 border-amber-600 text-slate-950'
+              : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 dark:text-slate-200'
+          }`}
+          aria-pressed={layoutMode === 'resources'}
+          aria-label="Modo recursos: ver más conjuros y rasgos a la vez"
+          title={layoutMode === 'resources' ? 'Volver a la vista estándar' : 'Modo recursos: cards en columnas'}
+        >
+          <span aria-hidden="true">▦</span>
+          <span>Modo recursos</span>
+        </button>
+      )}
+
       {/* Main Settings Menu */}
       <div className="relative" ref={menuRef}>
         <button

@@ -5,6 +5,8 @@ import { createResource, sortResources } from '../domain/resources';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
 import { ModalOverlay } from './ModalOverlay';
+import { LayoutMode } from '../domain/layout';
+import { ResourceTable } from './ResourceTable';
 
 interface ResourceListProps {
   resources: ResourceItem[];
@@ -13,6 +15,11 @@ interface ResourceListProps {
   characterVariables?: CharacterVariables;
   initialSearchQuery?: string;
   initialTab?: FilterTab;
+  /**
+   * 'resources': tabla compacta sin pestañas, buscador ni botón de añadir; "Ver más" abre la card en un popup.
+   * La impresión es idéntica en ambos modos (cards de la vista estándar).
+   */
+  layout?: LayoutMode;
   onSpendResource: (id: string) => void;
   onRestoreResource: (id: string) => void;
   onDeleteResource: (id: string) => void;
@@ -31,6 +38,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   characterVariables,
   initialSearchQuery = '',
   initialTab = 'all',
+  layout = 'standard',
   onSpendResource,
   onRestoreResource,
   onDeleteResource,
@@ -39,7 +47,12 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   onRestoreSpellSlot,
   onUpdateResourceDetails,
 }) => {
-  const [activeTab, setActiveTab] = useState<FilterTab>(initialTab);
+  const [selectedTab, setActiveTab] = useState<FilterTab>(initialTab);
+
+  // En modo recursos no hay pestañas ni buscador: siempre se muestra todo
+  // (aunque quedara una pestaña o búsqueda de la vista estándar).
+  const isResourcesLayout = layout === 'resources';
+  const activeTab: FilterTab = isResourcesLayout ? 'all' : selectedTab;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const variables: CharacterVariables = characterVariables ?? {
@@ -58,7 +71,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const [maxUses, setMaxUses] = useState<number | ''>(3);
   const [description, setDescription] = useState('');
 
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [rawSearchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const searchQuery = isResourcesLayout ? '' : rawSearchQuery;
   const [collapsedLevels, setCollapsedLevels] = useState<Record<number, boolean>>({});
 
   const normalizeText = (text: string) =>
@@ -134,6 +148,22 @@ export const ResourceList: React.FC<ResourceListProps> = ({
   const spellsCount = resources.filter((r) => r.category === 'spell').length;
   const featsCount = resources.filter((r) => r.category === 'feat_trait').length;
 
+  const renderCard = (resource: ResourceItem) => (
+    <ResourceCard
+      key={resource.id}
+      resource={resource}
+      spellSlots={spellSlots}
+      characterLevel={characterLevel}
+      characterVariables={variables}
+      onSpend={onSpendResource}
+      onRestore={onRestoreResource}
+      onDelete={onDeleteResource}
+      onSpendSpellSlot={onSpendSpellSlot}
+      onRestoreSpellSlot={onRestoreSpellSlot}
+      onUpdateResourceDetails={onUpdateResourceDetails}
+    />
+  );
+
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -164,97 +194,124 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
   return (
     <section className="w-full mt-1 mb-4 flex-1 flex flex-col print-allow-break">
-      {/* Category Tabs and Add Button (Solo en pantalla) */}
-      <div className="flex items-center justify-between gap-2 mb-3 print:hidden">
-        <div className="flex bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 gap-1 flex-1 shadow-sm">
+      {/* Category Tabs and Add Button (Solo en pantalla, vista estándar) */}
+      {!isResourcesLayout && (
+        <div className="flex items-center justify-between gap-2 mb-3 print:hidden">
+          <div className="flex bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200 dark:border-slate-700/80 gap-1 flex-1 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setActiveTab('all')}
+              className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
+                activeTab === 'all'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+              }`}
+            >
+              Todos ({resources.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('spell')}
+              className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
+                activeTab === 'spell'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+              }`}
+            >
+              Conjuros ({spellsCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('feat_trait')}
+              className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
+                activeTab === 'feat_trait'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+              }`}
+            >
+              Rasgos ({featsCount})
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => setActiveTab('all')}
-            className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
-              activeTab === 'all'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
-            }`}
+            onClick={() => {
+              if (activeTab === 'spell') {
+                setCategory('spell');
+                setSpellLevel(1);
+              } else if (activeTab === 'feat_trait') {
+                setCategory('feat_trait');
+              }
+              setIsModalOpen(true);
+            }}
+            className="touch-btn bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-sm px-3 rounded-xl shadow-md shrink-0 flex items-center gap-1 active:scale-95 transition-all"
+            title="Añadir nuevo conjuro o rasgo"
           >
-            Todos ({resources.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('spell')}
-            className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
-              activeTab === 'spell'
-                ? 'bg-purple-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
-            }`}
-          >
-            Conjuros ({spellsCount})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('feat_trait')}
-            className={`flex-1 touch-btn text-xs font-bold rounded-lg py-2 transition-all ${
-              activeTab === 'feat_trait'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
-            }`}
-          >
-            Rasgos ({featsCount})
+            <span>➕</span>
+            <span>Añadir</span>
           </button>
         </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => {
-            if (activeTab === 'spell') {
-              setCategory('spell');
-              setSpellLevel(1);
-            } else if (activeTab === 'feat_trait') {
-              setCategory('feat_trait');
+      {/* Buscador de Recursos (Solo en pantalla, vista estándar) */}
+      {!isResourcesLayout && (
+        <div className="relative mb-3 print:hidden">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs sm:text-sm">
+            🔍
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={
+              activeTab === 'spell'
+                ? 'Buscar conjuro por nombre o descripción...'
+                : activeTab === 'feat_trait'
+                ? 'Buscar rasgo por nombre o descripción...'
+                : 'Buscar conjuro o rasgo por nombre o descripción...'
             }
-            setIsModalOpen(true);
-          }}
-          className="touch-btn bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-sm px-3 rounded-xl shadow-md shrink-0 flex items-center gap-1 active:scale-95 transition-all"
-          title="Añadir nuevo conjuro o rasgo"
-        >
-          <span>➕</span>
-          <span>Añadir</span>
-        </button>
-      </div>
+            className="w-full bg-white dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700/80 rounded-xl pl-9 pr-9 py-2 text-xs md:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-amber-400 transition-colors shadow-sm"
+            aria-label="Buscar conjuros o rasgos"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-bold"
+              title="Limpiar búsqueda"
+              aria-label="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* Buscador de Recursos (Solo en pantalla) */}
-      <div className="relative mb-3 print:hidden">
-        <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs sm:text-sm">
-          🔍
-        </span>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={
-            activeTab === 'spell'
-              ? 'Buscar conjuro por nombre o descripción...'
-              : activeTab === 'feat_trait'
-              ? 'Buscar rasgo por nombre o descripción...'
-              : 'Buscar conjuro o rasgo por nombre o descripción...'
-          }
-          className="w-full bg-white dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700/80 rounded-xl pl-9 pr-9 py-2 text-xs md:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-amber-400 transition-colors shadow-sm"
-          aria-label="Buscar conjuros o rasgos"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery('')}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-bold"
-            title="Limpiar búsqueda"
-            aria-label="Limpiar búsqueda"
-          >
-            ✕
-          </button>
-        )}
-      </div>
+      {/* Modo recursos: tabla compacta en pantalla */}
+      {isResourcesLayout && filteredResources.length > 0 && (
+        <div className="print:hidden">
+          <ResourceTable
+            spells={spellGroups.flatMap((group) => group.spells)}
+            feats={feats}
+            spellSlots={spellSlots}
+            characterLevel={characterLevel}
+            characterVariables={variables}
+            onSpendResource={onSpendResource}
+            onRestoreResource={onRestoreResource}
+            onDeleteResource={onDeleteResource}
+            onSpendSpellSlot={onSpendSpellSlot}
+            onRestoreSpellSlot={onRestoreSpellSlot}
+            onUpdateResourceDetails={onUpdateResourceDetails}
+          />
+        </div>
+      )}
 
-      {/* Resource Cards Collection */}
-      <div className="flex flex-col gap-3 flex-1 w-full">
+      {/* Resource Cards Collection (en modo recursos solo se usa para imprimir) */}
+      <div
+        className={`flex-col gap-3 flex-1 w-full ${
+          isResourcesLayout && filteredResources.length > 0 ? 'hidden print:flex' : 'flex'
+        }`}
+      >
         {filteredResources.length === 0 ? (
           searchQuery.trim() ? (
             <div className="w-full text-center py-10 px-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm print:hidden">
@@ -278,7 +335,9 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               <p className="text-2xl mb-1">📜</p>
               <p className="font-semibold text-slate-800 dark:text-slate-300 print:text-slate-800">No hay elementos registrados</p>
               <p className="text-xs text-slate-500 print:text-slate-600 mt-1 print:hidden">
-                Pulsa el botón &quot;+ Añadir&quot; para registrar un conjuro o dote/rasgo.
+                {isResourcesLayout
+                  ? 'Vuelve a la vista estándar para añadir conjuros o dotes/rasgos.'
+                  : 'Pulsa el botón "+ Añadir" para registrar un conjuro o dote/rasgo.'}
               </p>
             </div>
           )
@@ -341,22 +400,10 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                         </span>
                       </button>
 
-                      <div className={`flex flex-col gap-2.5 pl-1 sm:pl-2 print:pl-0 ${isCollapsed ? 'hidden print:flex' : 'flex'}`}>
-                        {group.spells.map((spell) => (
-                          <ResourceCard
-                            key={spell.id}
-                            resource={spell}
-                            spellSlots={spellSlots}
-                            characterLevel={characterLevel}
-                            characterVariables={variables}
-                            onSpend={onSpendResource}
-                            onRestore={onRestoreResource}
-                            onDelete={onDeleteResource}
-                            onSpendSpellSlot={onSpendSpellSlot}
-                            onRestoreSpellSlot={onRestoreSpellSlot}
-                            onUpdateResourceDetails={onUpdateResourceDetails}
-                          />
-                        ))}
+                      <div
+                        className={`flex-col gap-2.5 pl-1 sm:pl-2 print:pl-0 print:flex ${isCollapsed ? 'hidden' : 'flex'}`}
+                      >
+                        {group.spells.map(renderCard)}
                       </div>
                     </div>
                   );
@@ -372,21 +419,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                   <span>Rasgos y Dotes ({feats.length})</span>
                 </div>
                 <div className="flex flex-col gap-2.5">
-                  {feats.map((feat) => (
-                    <ResourceCard
-                      key={feat.id}
-                      resource={feat}
-                      spellSlots={spellSlots}
-                      characterLevel={characterLevel}
-                      characterVariables={variables}
-                      onSpend={onSpendResource}
-                      onRestore={onRestoreResource}
-                      onDelete={onDeleteResource}
-                      onSpendSpellSlot={onSpendSpellSlot}
-                      onRestoreSpellSlot={onRestoreSpellSlot}
-                      onUpdateResourceDetails={onUpdateResourceDetails}
-                    />
-                  ))}
+                  {feats.map(renderCard)}
                 </div>
               </div>
             )}

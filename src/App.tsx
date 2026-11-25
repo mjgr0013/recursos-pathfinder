@@ -51,9 +51,11 @@ import {
   applyThemeToDocument,
   toggleTheme,
 } from './domain/theme';
+import { LayoutMode, getStoredLayout, saveLayout, toggleLayout } from './domain/layout';
 
 export default function App() {
   const [theme, setTheme] = useState<ThemeId>(() => getStoredTheme());
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => getStoredLayout());
   const [roster, setRoster] = useState<CharacterRosterState>(() => loadCharacterRoster());
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isLongRestModalOpen, setIsLongRestModalOpen] = useState(false);
@@ -73,6 +75,16 @@ export default function App() {
     setTheme(newTheme);
     const config = AVAILABLE_THEMES.find((t) => t.id === newTheme);
     showToast(`Tema cambiado a ${config ? `${config.name} ${config.icon}` : newTheme}`);
+  };
+
+  useEffect(() => {
+    saveLayout(layoutMode);
+  }, [layoutMode]);
+
+  const handleToggleLayout = () => {
+    const next = toggleLayout(layoutMode);
+    setLayoutMode(next);
+    showToast(next === 'resources' ? 'Modo recursos activado' : 'Vista estándar');
   };
 
   const handleToggleTheme = () => {
@@ -254,6 +266,62 @@ export default function App() {
     showToast(`Personaje eliminado. Activo: "${active.profile.name}"`);
   };
 
+  const isResourcesMode = layoutMode === 'resources';
+
+  const characterHeader = (
+    <CharacterHeader
+      profile={characterState.profile}
+      onUpdateProfile={(updated) =>
+        setCharacterState((prev) => ({
+          ...prev,
+          profile: { ...prev.profile, ...updated },
+        }))
+      }
+    />
+  );
+
+  const healthTracker = (
+    <HealthTracker
+      health={characterState.health}
+      onUpdateHealth={(newHealth) =>
+        setCharacterState((prev) => ({
+          ...prev,
+          health: newHealth,
+        }))
+      }
+    />
+  );
+
+  const dailyResourcesTracker = (
+    <DailyResourcesTracker
+      spellSlots={characterState.spellSlots}
+      resources={characterState.resources}
+      onUpdateMaxSlots={handleUpdateMaxSlots}
+      onUpdateSlotValues={handleUpdateSpellSlotValues}
+      onSpendResource={handleSpendResource}
+      onRestoreResource={handleRestoreResource}
+      onUpdateResourceMaxUses={handleUpdateResourceMaxUses}
+      onUpdateResourceUses={handleUpdateResourceUses}
+    />
+  );
+
+  const resourceList = (
+    <ResourceList
+      layout={layoutMode}
+      resources={characterState.resources}
+      spellSlots={characterState.spellSlots}
+      characterLevel={characterState.profile.level}
+      characterVariables={characterVariables}
+      onSpendResource={handleSpendResource}
+      onRestoreResource={handleRestoreResource}
+      onDeleteResource={handleDeleteResource}
+      onAddResource={handleAddResource}
+      onSpendSpellSlot={handleSpendSlot}
+      onRestoreSpellSlot={handleRestoreSlot}
+      onUpdateResourceDetails={handleUpdateResourceDetails}
+    />
+  );
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100 flex flex-col items-center px-3 py-3 md:px-6 md:py-5 max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full pb-16 transition-colors duration-150 print:min-h-0 print:bg-white print:text-slate-900 print:p-0 print:max-w-none print:pb-0">
       {/* Toast Notification */}
@@ -280,6 +348,8 @@ export default function App() {
           onOpenFormulaGuide={() => setIsFormulaGuideOpen(true)}
           onOpenLongRest={() => setIsLongRestModalOpen(true)}
           onExportPdf={() => window.print()}
+          layoutMode={layoutMode}
+          onToggleLayout={handleToggleLayout}
         />
       </header>
 
@@ -301,61 +371,35 @@ export default function App() {
         </div>
       </div>
 
-      <main className="w-full flex-1 flex flex-col lg:flex-row lg:items-start lg:gap-6 print:block print:w-full print:gap-0">
-        {/* Left Column on Desktop / Top Area on Mobile & Tablet */}
-        <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col gap-3 lg:sticky lg:top-4 self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 print:w-full print:static print:max-h-none print:overflow-visible print:p-0 print:gap-3">
-          {/* On Tablet portrait (md) and Print, CharacterHeader and HealthTracker sit side-by-side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 print:grid-cols-2 print:gap-3">
-            <CharacterHeader
-              profile={characterState.profile}
-              onUpdateProfile={(updated) =>
-                setCharacterState((prev) => ({
-                  ...prev,
-                  profile: { ...prev.profile, ...updated },
-                }))
-              }
-            />
-
-            <HealthTracker
-              health={characterState.health}
-              onUpdateHealth={(newHealth) =>
-                setCharacterState((prev) => ({
-                  ...prev,
-                  health: newHealth,
-                }))
-              }
-            />
+      {isResourcesMode ? (
+        /* Modo recursos: panel superior en 3 columnas y cards de conjuros/rasgos en 2 columnas debajo.
+           En papel se imprime igual que la vista estándar. */
+        <main className="w-full flex-1 flex flex-col gap-3 print:block print:w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start print:grid-cols-2 print:gap-3">
+            {characterHeader}
+            {healthTracker}
+            <div className="min-w-0 print:col-span-2">{dailyResourcesTracker}</div>
           </div>
 
-          <DailyResourcesTracker
-            spellSlots={characterState.spellSlots}
-            resources={characterState.resources}
-            onUpdateMaxSlots={handleUpdateMaxSlots}
-            onUpdateSlotValues={handleUpdateSpellSlotValues}
-            onSpendResource={handleSpendResource}
-            onRestoreResource={handleRestoreResource}
-            onUpdateResourceMaxUses={handleUpdateResourceMaxUses}
-            onUpdateResourceUses={handleUpdateResourceUses}
-          />
-        </div>
+          <div className="w-full min-w-0 print:mt-4 print:p-0">{resourceList}</div>
+        </main>
+      ) : (
+        <main className="w-full flex-1 flex flex-col lg:flex-row lg:items-start lg:gap-6 print:block print:w-full print:gap-0">
+          {/* Left Column on Desktop / Top Area on Mobile & Tablet */}
+          <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col gap-3 lg:sticky lg:top-4 self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 print:w-full print:static print:max-h-none print:overflow-visible print:p-0 print:gap-3">
+            {/* On Tablet portrait (md) and Print, CharacterHeader and HealthTracker sit side-by-side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 print:grid-cols-2 print:gap-3">
+              {characterHeader}
+              {healthTracker}
+            </div>
 
-        {/* Right Column on Desktop / Bottom Area on Mobile & Tablet */}
-        <div className="w-full flex-1 min-w-0 mt-3 lg:mt-0 print:w-full print:mt-4 print:p-0">
-          <ResourceList
-            resources={characterState.resources}
-            spellSlots={characterState.spellSlots}
-            characterLevel={characterState.profile.level}
-            characterVariables={characterVariables}
-            onSpendResource={handleSpendResource}
-            onRestoreResource={handleRestoreResource}
-            onDeleteResource={handleDeleteResource}
-            onAddResource={handleAddResource}
-            onSpendSpellSlot={handleSpendSlot}
-            onRestoreSpellSlot={handleRestoreSlot}
-            onUpdateResourceDetails={handleUpdateResourceDetails}
-          />
-        </div>
-      </main>
+            {dailyResourcesTracker}
+          </div>
+
+          {/* Right Column on Desktop / Bottom Area on Mobile & Tablet */}
+          <div className="w-full flex-1 min-w-0 mt-3 lg:mt-0 print:w-full print:mt-4 print:p-0">{resourceList}</div>
+        </main>
+      )}
 
       {/* Long Rest Modal */}
       <LongRestModal

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ResourceItem, SpellSlotsMap } from '../domain/types';
-import { isValidHttpUrl } from '../domain/resources';
+import { isValidHttpUrl, getResourceUsage } from '../domain/resources';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
@@ -18,6 +18,8 @@ interface ResourceCardProps {
   onRestore?: (id: string) => void;
   onRestoreSpellSlot?: (level: number) => void;
   onUpdateResourceDetails?: (id: string, details: { url?: string; description: string; range?: string }) => void;
+  /** Abre la card con la descripción completa ya desplegada (p. ej. dentro del popup de detalle). */
+  defaultExpanded?: boolean;
 }
 
 export const ResourceCard: React.FC<ResourceCardProps> = ({
@@ -29,8 +31,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   onDelete,
   onSpendSpellSlot,
   onUpdateResourceDetails,
+  defaultExpanded = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const variables: CharacterVariables = characterVariables ?? {
@@ -55,22 +58,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
   const hasCounters = isLeveledSpell || isLimitedFeat;
 
-  let currentAvailable = 0;
-  let currentMax = 0;
-  let isOutOfUses = false;
-
-  if (isLeveledSpell) {
-    const slot = spellSlots[resource.spellLevel!];
-    if (slot) {
-      currentAvailable = slot.available;
-      currentMax = slot.max;
-      isOutOfUses = slot.available === 0;
-    }
-  } else if (isLimitedFeat) {
-    currentAvailable = resource.availableUses ?? 0;
-    currentMax = resource.maxUses ?? 0;
-    isOutOfUses = currentAvailable === 0;
-  }
+  const { available: currentAvailable, max: currentMax, isOutOfUses } = getResourceUsage(resource, spellSlots);
 
   const handleSpendClick = () => {
     if (isLeveledSpell) {
@@ -293,7 +281,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
       {/* Expanded rules drawer (Pantalla cuando se despliega) */}
       {isExpanded && (
-        <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-900/90 rounded-lg border border-slate-200 dark:border-slate-700/60 shadow-inner max-h-[350px] overflow-y-auto print:hidden">
+        <div className={`mt-2 p-3 bg-slate-50 dark:bg-slate-900/90 rounded-lg border border-slate-200 dark:border-slate-700/60 shadow-inner print:hidden ${defaultExpanded ? '' : 'max-h-[350px] overflow-y-auto'}`}>
           <MarkdownRenderer content={resource.description} variables={variables} />
         </div>
       )}

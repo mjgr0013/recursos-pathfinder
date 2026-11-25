@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, parseInline, isSafeUrl, extractSummary } from '../../src/domain/markdown';
+import { parseMarkdown, parseInline, isSafeUrl, extractSummary, extractSection, extractShort } from '../../src/domain/markdown';
 
 describe('Markdown Domain Logic', () => {
   describe('isSafeUrl', () => {
@@ -283,5 +283,36 @@ describe('extractSummary', () => {
 
   it('handles CRLF line endings', () => {
     expect(extractSummary('# T\r\n## Resumen\r\nLínea\r\n## Otra\r\nX')).toBe('Línea');
+  });
+});
+
+describe('extractSection / extractShort', () => {
+  const md = [
+    '# Bola de Fuego',
+    '## Corto',
+    '20d6 fuego, Ref mitad',
+    '## Resumen',
+    'Explosión de fuego.',
+    '### Detalle del resumen',
+    'Sub.',
+    '## Descripción',
+    'Texto completo.',
+  ].join('\n');
+
+  it('extracts any named section with the same rules as Resumen', () => {
+    expect(extractSection(md, 'Descripción')).toBe('Texto completo.');
+    expect(extractSection(md, 'descripcion')).toBe('Texto completo.');
+    expect(extractSection(md, 'No existe')).toBeNull();
+  });
+
+  it('extracts ## Corto independently from ## Resumen', () => {
+    expect(extractShort(md)).toBe('20d6 fuego, Ref mitad');
+    expect(extractSummary(md)).toBe('Explosión de fuego.\n### Detalle del resumen\nSub.');
+  });
+
+  it('matches Corto at any level and ignores longer titles', () => {
+    expect(extractShort('### CORTO:\nA')).toBe('A');
+    expect(extractShort('## Corto alcance\nB')).toBeNull();
+    expect(extractShort('')).toBeNull();
   });
 });

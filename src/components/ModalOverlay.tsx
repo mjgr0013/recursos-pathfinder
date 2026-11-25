@@ -90,19 +90,21 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
   'aria-label': ariaLabel,
 }) => {
   const isInsidePointerDown = useRef(false);
+  const stackDepth = useRef(0);
 
   // Disable background scrolling when modal mounts, restore when unmounts
   useEffect(() => {
     lockBodyScroll();
+    stackDepth.current = getOpenModalsCount();
     return () => {
       unlockBodyScroll();
     };
   }, []);
 
-  // Listen to Escape key globally to dismiss modal
+  // Listen to Escape key globally to dismiss modal. Con modales anidados solo se cierra el de encima.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && stackDepth.current >= getOpenModalsCount()) {
         onClose();
       }
     };

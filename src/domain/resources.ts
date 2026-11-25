@@ -1,4 +1,4 @@
-import { ResourceItem, ResourceCategory, UsageMode, CharacterState } from './types';
+import { ResourceItem, ResourceCategory, UsageMode, CharacterState, SpellSlotsMap } from './types';
 import { resetAllSpellSlots, compareSpellsByLevel } from './spells';
 
 /**
@@ -248,4 +248,41 @@ export function sortResources(resources: ResourceItem[]): ResourceItem[] {
     }
     return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
   });
+}
+
+export type ResourceUsageKind = 'spell_slot' | 'daily_uses' | 'unlimited';
+
+export interface ResourceUsage {
+  /** 'spell_slot': conjuro de nivel ≥ 1 (gasta espacios); 'daily_uses': rasgo limitado; 'unlimited': truco o rasgo ilimitado. */
+  kind: ResourceUsageKind;
+  available: number;
+  max: number;
+  isOutOfUses: boolean;
+  /** Etiqueta corta del nivel/tipo: "Truco", "Nivel 3", "Usos diarios", "Ilimitado". */
+  label: string;
+}
+
+/**
+ * Resolves how a resource is consumed and its current counters:
+ * leveled spells read the shared spell slot of their level, limited traits their own uses.
+ */
+export function getResourceUsage(resource: ResourceItem, spellSlots: SpellSlotsMap): ResourceUsage {
+  if (resource.category === 'spell') {
+    const level = typeof resource.spellLevel === 'number' ? resource.spellLevel : 0;
+    if (level === 0) {
+      return { kind: 'unlimited', available: 0, max: 0, isOutOfUses: false, label: 'Truco' };
+    }
+    const slot = spellSlots[level];
+    const available = slot?.available ?? 0;
+    const max = slot?.max ?? 0;
+    return { kind: 'spell_slot', available, max, isOutOfUses: available === 0, label: `Nivel ${level}` };
+  }
+
+  if (resource.usageMode === 'limited') {
+    const available = resource.availableUses ?? 0;
+    const max = resource.maxUses ?? 0;
+    return { kind: 'daily_uses', available, max, isOutOfUses: available === 0, label: 'Usos diarios' };
+  }
+
+  return { kind: 'unlimited', available: 0, max: 0, isOutOfUses: false, label: 'Ilimitado' };
 }

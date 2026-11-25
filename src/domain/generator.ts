@@ -56,7 +56,14 @@ const ARCHETYPES: ArchetypeTemplate[] = [
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Guidance',
         maxUses: null,
         availableUses: null,
-        description: `### Resumen de la Plegaria
+        description: `## Corto
+\`+1\` a una tirada · 1 min
+
+## Resumen
+Toca a una criatura: obtiene **+1** de competencia a su próxima tirada de ataque, salvación o habilidad.
+
+## Descripción
+### Invocación a Sarenrae
 Una breve invocación a **Sarenrae** que infunde confianza inmediata en el receptor.
 
 > *"La luz de la Flor del Amanecer nunca abandona a los devotos que buscan la justicia."*
@@ -92,7 +99,14 @@ Consulta más en [Archives of Nethys - Guidance](https://aonprd.com/SpellDisplay
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Cure%20Light%20Wounds',
         maxUses: null,
         availableUses: null,
-        description: `### Curación Sagrada
+        description: `## Corto
+Cura \`1d8 + {min(5, nivel_personaje)}\` PG · Toque
+
+## Resumen
+Cura \`1d8 + {min(5, nivel_personaje)}\` PG a una criatura viva. Contra muertos vivientes causa ese daño (Voluntad mitad).
+
+## Descripción
+### Curación Sagrada
 Canaliza energía positiva al colocar la mano sobre una criatura viva para cerrar sus heridas al instante.
 
 > *"Deja que el calor de la sanación cierre tu carne y renueve tu espíritu."*
@@ -128,7 +142,14 @@ Al lanzar este conjuro sobre una criatura viva, restaura una cantidad de **Punto
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Spiritual%20Weapon',
         maxUses: null,
         availableUses: null,
-        description: `### Cimitarra de Luz Radiante
+        description: `## Corto
+\`1d8 + 1\` fuerza · ataque \`+7\`
+
+## Resumen
+Invoca una cimitarra de fuerza que ataca sola cada asalto con \`+7\` e ignora la reducción de daño.
+
+## Descripción
+### Cimitarra de Luz Radiante
 Manifiesta un arma espectral hecha de pura fuerza divina con la forma de la cimitarra predilecta de Sarenrae.
 
 ### Características del Arma
@@ -152,7 +173,14 @@ Manifiesta un arma espectral hecha de pura fuerza divina con la forma de la cimi
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Prayer',
         maxUses: null,
         availableUses: null,
-        description: `### Efecto de Bendición y Maldición de Zona
+        description: `## Corto
+Aliados \`+1\`, enemigos \`-1\` · 40 pies
+
+## Resumen
+Aliados en 40 pies ganan **+1** de suerte a ataque, daño, salvaciones y habilidades; los enemigos sufren **-1**. Sin salvación.
+
+## Descripción
+### Efecto de Bendición y Maldición de Zona
 Una súplica ferviente que favorece a todos los aliados presentes y confunde a los enemigos en un radio de **40 pies**.
 
 #### Aliados bendecidos reciben:
@@ -180,7 +208,14 @@ Duración: 5 asaltos (1 asalto por nivel de lanzador)
         url: 'https://aonprd.com/ClassDisplay.aspx?ItemName=Cleric',
         maxUses: 6,
         availableUses: 5,
-        description: `### Habilidad Sobrenatural de Clase
+        description: `## Corto
+\`{ceil(nivel_personaje / 2)}d6\` · CD {14 + floor(nivel_personaje / 2)}
+
+## Resumen
+Emanación de 30 pies que cura \`{ceil(nivel_personaje / 2)}d6\` a los vivos o daña a los muertos vivientes (Voluntad mitad, CD {14 + floor(nivel_personaje / 2)}).
+
+## Descripción
+### Habilidad Sobrenatural de Clase
 Libera una poderosa ola de energía sagrada en una emanación de **30 pies** centrada en el símbolo sagrado.
 
 ### Opciones de Activación
@@ -201,7 +236,14 @@ Libera una poderosa ola de energía sagrada en una emanación de **30 pies** cen
         url: 'https://aonprd.com/DomainDisplay.aspx?ItemName=Healing',
         maxUses: 4,
         availableUses: 3,
-        description: `### Poder de Dominio de Sanación
+        description: `## Corto
+Quita *Fatigado* · \`+1d4 + 2\` PG
+
+## Resumen
+Al tocar a un aliado elimina *Fatigado* o *Estremecido* y suma \`1d4 + 2\` PG a tu curación de ese turno.
+
+## Descripción
+### Poder de Dominio de Sanación
 Con un simple toque, remueve una aflicción menor de un compañero además de cerrar heridas críticas.
 
 - Elimina la condición de **Fatigado** o **Estremecido**.
@@ -216,7 +258,14 @@ Con un simple toque, remueve una aflicción menor de un compañero además de ce
         url: 'https://aonprd.com/FeatDisplay.aspx?ItemName=Iron%20Will',
         maxUses: null,
         availableUses: null,
-        description: `### Rasgo Pasivo Permanente
+        description: `## Corto
+\`+4\` contra miedo · luz dorada
+
+## Resumen
+Pasivo: **+4** en salvaciones contra miedo y tus armas emiten luz como una antorcha.
+
+## Descripción
+### Rasgo Pasivo Permanente
 La inquebrantable fe en Sarenrae otorga un escudo mental y espiritual inalterable ante el miedo.
 
 - **Inmunidad al Miedo mágico**: Otorga \`+4\` en salvaciones contra efectos de terror o desmoralización.
@@ -248,7 +297,14 @@ La inquebrantable fe en Sarenrae otorga un escudo mental y espiritual inalterabl
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Ray%20of%20Frost',
         maxUses: null,
         availableUses: null,
-        description: `### Truco de Evocación a Voluntad
+        description: `## Corto
+\`1d3\` frío · toque a distancia \`+6\`
+
+## Resumen
+Rayo de toque a distancia (\`+6\`) que causa \`1d3\` de frío. A voluntad.
+
+## Descripción
+### Truco de Evocación a Voluntad
 Un rayo de energía gélida azul brillante surge de la punta del bastón de Ezren hacia el objetivo.
 
 - **Ataque**: Toque a distancia (\`+6\` al impacto).
@@ -265,7 +321,14 @@ Un rayo de energía gélida azul brillante surge de la punta del bastón de Ezre
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Magic%20Missile',
         maxUses: null,
         availableUses: null,
-        description: `### Misiles Arcanos Infalibles
+        description: `## Corto
+{min(5, 1 + floor((nivel_personaje - 1) / 2))} × \`1d4 + 1\` fuerza · impacta siempre
+
+## Resumen
+Dispara {min(5, 1 + floor((nivel_personaje - 1) / 2))} dardos de fuerza de \`1d4 + 1\` que impactan automáticamente, sin tirada ni salvación.
+
+## Descripción
+### Misiles Arcanos Infalibles
 Dispara dardos de energía traslúcida que impactan automáticamente sin requerir tirada de ataque ni conceder salvación.
 
 ### Desglose por Nivel de Lanzador
@@ -290,7 +353,14 @@ A nivel 7 de lanzador, Ezren dispara **4 proyectiles simultáneos**:
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Scorching%20Ray',
         maxUses: null,
         availableUses: null,
-        description: `### Rayos de Fuego Concentrado
+        description: `## Corto
+2 rayos × \`4d6\` fuego
+
+## Resumen
+Dos rayos de toque a distancia (\`+6\`) de \`4d6\` de fuego cada uno, al mismo o distintos objetivos.
+
+## Descripción
+### Rayos de Fuego Concentrado
 Libera chorros de fuego abrasador capaces de fundir armaduras a distancia media.
 
 - **Número de rayos**: A nivel 7 dispara **2 rayos independientes**.
@@ -307,7 +377,14 @@ Libera chorros de fuego abrasador capaces de fundir armaduras a distancia media.
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Fireball',
         maxUses: null,
         availableUses: null,
-        description: `### El Clásico Destructor de Evocación
+        description: `## Corto
+\`{min(10, nivel_personaje)}d6\` fuego · radio 20 pies · Ref mitad
+
+## Resumen
+Explosión de \`{min(10, nivel_personaje)}d6\` de fuego en un radio de 20 pies. Reflejos mitad (CD 17).
+
+## Descripción
+### El Clásico Destructor de Evocación
 Una explosión flamígera con un fogonazo ensordecedor que detona con tremenda potencia.
 
 \`\`\`pathfinder
@@ -329,7 +406,14 @@ Salvación: Reflejos mitad (CD 17)
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Ice%20Storm',
         maxUses: null,
         availableUses: null,
-        description: `### Granizo Devastador y Frío Extremo
+        description: `## Corto
+\`3d6\` contundente + \`2d6\` frío · sin salvación
+
+## Resumen
+Granizo en un cilindro de 40 pies: \`3d6\` contundente + \`2d6\` de frío sin salvación, y deja terreno difícil.
+
+## Descripción
+### Granizo Devastador y Frío Extremo
 Grandes bloques de hielo azotan con violencia un cilindro de **40 pies de radio y 80 pies de alto**.
 
 - **Daño inmediato**:
@@ -346,7 +430,14 @@ Grandes bloques de hielo azotan con violencia un cilindro de **40 pies de radio 
         url: 'https://aonprd.com/SchoolDisplay.aspx?ItemName=Evocation',
         maxUses: 7,
         availableUses: 6,
-        description: `### Poder de Escuela de Evocación
+        description: `## Corto
+\`1d4 + {floor(nivel_personaje / 2)}\` fuerza · 30 pies
+
+## Resumen
+Acción estándar: proyectil de fuerza que impacta automáticamente por \`1d4 + {floor(nivel_personaje / 2)}\`.
+
+## Descripción
+### Poder de Escuela de Evocación
 Como acción estándar, lanza un proyectil de fuerza mágica contra un enemigo a 30 pies.
 
 - **Impacto**: Impacta automáticamente como un *proyectil mágico*.
@@ -361,7 +452,14 @@ Como acción estándar, lanza un proyectil de fuerza mágica contra un enemigo a
         url: 'https://aonprd.com/ClassDisplay.aspx?ItemName=Wizard',
         maxUses: 1,
         availableUses: 1,
-        description: `### Objeto Enlazado
+        description: `## Corto
+1 conjuro del libro sin preparar
+
+## Resumen
+Una vez al día lanza cualquier conjuro de tu libro sin tenerlo preparado ni gastar espacio.
+
+## Descripción
+### Objeto Enlazado
 Permite lanzar **1 conjuro cualquiera** de su libro de conjuros una vez al día sin haberlo memorizado previamente.
 
 - Debe tener el bastón empuñado con al menos una mano.
@@ -375,7 +473,14 @@ Permite lanzar **1 conjuro cualquiera** de su libro de conjuros una vez al día 
         url: 'https://aonprd.com/FeatDisplay.aspx?ItemName=Spell%20Focus',
         maxUses: null,
         availableUses: null,
-        description: `### Dote de Especialización Máx
+        description: `## Corto
+\`+1\` CD evocación · \`+2\` vs RC
+
+## Resumen
+Pasivo: **+1** a la CD de tus evocaciones y **+2** para superar la resistencia a conjuros.
+
+## Descripción
+### Dote de Especialización Máx
 Aumenta la dificultad de resistencia a todos los conjuros de evocación:
 
 - \`+1\` a la CD de salvación de todos los conjuros de Evocación (*Escuela predilecta*).
@@ -406,7 +511,14 @@ Aumenta la dificultad de resistencia a todos los conjuros de evocación:
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Spark',
         maxUses: null,
         availableUses: null,
-        description: `### Truco Espontáneo
+        description: `## Corto
+Prende objetos inflamables
+
+## Resumen
+Enciende a distancia un objeto inflamable no protegido. A voluntad.
+
+## Descripción
+### Truco Espontáneo
 Enciende un fuego diminuto con solo chasquear los dedos.
 
 - **Alcance**: corto (25 pies + 5 pies/2 nivel personaje)
@@ -422,7 +534,14 @@ Enciende un fuego diminuto con solo chasquear los dedos.
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Mage%20Armor',
         maxUses: null,
         availableUses: null,
-        description: `### Campo de Fuerza Invisible
+        description: `## Corto
+\`+4\` CA armadura · {nivel_personaje} h
+
+## Resumen
+Otorga **+4** de armadura a la CA durante {nivel_personaje} horas; también funciona contra incorpóreos.
+
+## Descripción
+### Campo de Fuerza Invisible
 Un halo protector con destellos de escamas rojas rodea a Seoni.
 
 - **Bonificador**: \`+4\` de armadura a la Clase de Armadura (**CA**).
@@ -438,7 +557,14 @@ Un halo protector con destellos de escamas rojas rodea a Seoni.
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Mirror%20Image',
         maxUses: null,
         availableUses: null,
-        description: `### Ilusión Defensiva Avanzada
+        description: `## Corto
+\`1d4 + {floor(nivel_personaje / 3)}\` copias · {nivel_personaje} min
+
+## Resumen
+Crea \`1d4 + {floor(nivel_personaje / 3)}\` dobles ilusorios; cada impacto puede destruir una copia en lugar de dañarte.
+
+## Descripción
+### Ilusión Defensiva Avanzada
 Crea copias ilusorias que imitan exactamente cada uno de tus movimientos.
 
 - **Número de copias**: Crea \`1d4 + 2\` dobles ilusorios (3 a 6 copias a nivel 6).
@@ -454,7 +580,14 @@ Crea copias ilusorias que imitan exactamente cada uno de tus movimientos.
         url: 'https://aonprd.com/BloodlineDisplay.aspx?ItemName=Draconic',
         maxUses: 2,
         availableUses: 2,
-        description: `### Arma de Aliento del Linaje
+        description: `## Corto
+Cono 30 pies · \`6d6\` fuego · Ref CD 17
+
+## Resumen
+Exhala un cono de fuego de 30 pies que causa \`6d6\` (Reflejos mitad, CD 17).
+
+## Descripción
+### Arma de Aliento del Linaje
 Exhala un cono de fuego abrasador de **30 pies**.
 
 > *"La sangre de los dragones antiguos corre ardiente por mis venas."*
@@ -480,7 +613,14 @@ Exhala un cono de fuego abrasador de **30 pies**.
         url: 'https://aonprd.com/BloodlineDisplay.aspx?ItemName=Draconic',
         maxUses: 6,
         availableUses: 4,
-        description: `### Armas Naturales Espontáneas
+        description: `## Corto
+2 garras \`1d4 + 1\` + \`1d6\` fuego
+
+## Resumen
+Durante {nivel_personaje} asaltos obtienes 2 garras de \`1d4 + 1\` más \`1d6\` de fuego.
+
+## Descripción
+### Armas Naturales Espontáneas
 Las uñas de Seoni se transforman en afiladas garras draconianas rojas.
 
 - Otorga 2 ataques de garra primarios con daño \`1d4 + 1\` más \`1d6\` de fuego por ataque.
@@ -494,7 +634,14 @@ Las uñas de Seoni se transforman en afiladas garras draconianas rojas.
         url: 'https://aonprd.com/BloodlineDisplay.aspx?ItemName=Draconic',
         maxUses: null,
         availableUses: null,
-        description: `### Rasgo Pasivo Fisiológico
+        description: `## Corto
+\`+2\` armadura natural · RF 5
+
+## Resumen
+Pasivo: **+2** de armadura natural y resistencia al fuego 5.
+
+## Descripción
+### Rasgo Pasivo Fisiológico
 La sangre de dragón otorga endurecimiento dérmico y tolerancia al calor:
 
 - **Armadura Natural**: \`+2\` a la CA de armadura natural.
@@ -525,7 +672,14 @@ La sangre de dragón otorga endurecimiento dérmico y tolerancia al calor:
         url: 'https://aonprd.com/SpellDisplay.aspx?ItemName=Bless',
         maxUses: null,
         availableUses: null,
-        description: `### Bendición Marcial
+        description: `## Corto
+\`+1\` moral ataque y vs miedo · 50 pies
+
+## Resumen
+Aliados en 50 pies ganan **+1** de moral al ataque y a salvaciones contra miedo.
+
+## Descripción
+### Bendición Marcial
 Infunde valor sagrado en los corazones de los aliados cercanos.
 
 - Bonificador de moral de \`+1\` a las tiradas de ataque.
@@ -541,7 +695,14 @@ Infunde valor sagrado en los corazones de los aliados cercanos.
         url: 'https://aonprd.com/ClassDisplay.aspx?ItemName=Paladin',
         maxUses: 5,
         availableUses: 4,
-        description: `### Toque Sagrado de Restauración
+        description: `## Corto
+Cura \`{floor(nivel_personaje / 2)}d6\` PG · quita *Fatigado*
+
+## Resumen
+Toque que cura \`{floor(nivel_personaje / 2)}d6\` PG (acción rápida sobre ti) y elimina *Fatigado*. Daña a muertos vivientes.
+
+## Descripción
+### Toque Sagrado de Restauración
 Canaliza energía sanadora al tocarse a sí mismo (acción rápida) o a un aliado (acción estándar).
 
 > *"¡Por Iomedae, que la luz de la justicia reconforte a los heridos!"*
@@ -568,7 +729,14 @@ Canaliza energía sanadora al tocarse a sí mismo (acción rápida) o a un aliad
         url: 'https://aonprd.com/ClassDisplay.aspx?ItemName=Paladin',
         maxUses: 2,
         availableUses: 2,
-        description: `### Juicio Justo contra el Mal
+        description: `## Corto
+\`+3\` ataque · \`+{nivel_personaje}\` daño · \`+3\` CA
+
+## Resumen
+Contra un enemigo malvado: **+3** al ataque y a la CA, y \`+{nivel_personaje}\` al daño (el doble contra ajenos, dragones y muertos vivientes malignos).
+
+## Descripción
+### Juicio Justo contra el Mal
 Designa a una criatura malvada a la vista para descargar la furia de la Espada Heredera.
 
 #### Bonificadores Activos:
@@ -585,7 +753,14 @@ Designa a una criatura malvada a la vista para descargar la furia de la Espada H
         url: 'https://aonprd.com/ClassDisplay.aspx?ItemName=Paladin',
         maxUses: null,
         availableUses: null,
-        description: `### Aura Pasiva Protectora
+        description: `## Corto
+Inmune al miedo · aliados \`+4\` (10 pies)
+
+## Resumen
+Pasivo: eres inmune al miedo y los aliados a 10 pies ganan **+4** contra miedo.
+
+## Descripción
+### Aura Pasiva Protectora
 El paladín es completamente inmune a cualquier efecto de miedo (mágico o natural).
 
 - Todos los aliados en un radio de **10 pies** obtienen un bonificador de moral de \`+4\` a sus pruebas de salvación contra el miedo.
@@ -606,6 +781,8 @@ El paladín es completamente inmune a cualquier efecto de miedo (mágico o natur
  * - Rasgos pasivos ilimitados.
  * - Enlaces oficiales a Archives of Nethys.
  * - Descripciones exhaustivas en Markdown (encabezados, tablas, listas, citas, código, tiradas).
+ * - Secciones especiales en cada descripción: "## Corto" (columna de la tabla del Modo recursos),
+ *   "## Resumen" (visible en la card plegada) y "## Descripción" con el detalle completo.
  */
 export function generateRandomCharacter(seedIndex?: number): CharacterState {
   const index =

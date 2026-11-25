@@ -290,18 +290,19 @@ function normalizeHeadingText(text: string): string {
 }
 
 /**
- * Extracts the raw markdown content of the "Resumen" section of a description.
+ * Extracts the raw markdown content of a named section of a description.
  *
  * The section starts at the first heading (any level, `#` to `######`) whose text is
- * "Resumen" and ends right before the next heading of the same or higher level
- * (fewer or equal `#`). Deeper sub-headings are kept as part of the summary.
+ * `title` (case, accent and emphasis insensitive) and ends right before the next heading
+ * of the same or higher level (fewer or equal `#`). Deeper sub-headings are kept.
  * Headings inside fenced code blocks are ignored.
  *
- * Returns `null` when there is no "Resumen" heading or its section is empty.
+ * Returns `null` when there is no such heading or its section is empty.
  */
-export function extractSummary(text: string): string | null {
+export function extractSection(text: string, title: string): string | null {
   if (!text || !text.trim()) return null;
 
+  const wanted = normalizeHeadingText(title);
   const lines = text.split(/\r?\n/);
   let inCodeBlock = false;
   let summaryLevel: number | null = null;
@@ -319,7 +320,7 @@ export function extractSummary(text: string): string | null {
     const headingMatch = !inCodeBlock ? trimmed.match(/^(#{1,6})\s+(.*)$/) : null;
 
     if (summaryLevel === null) {
-      if (headingMatch && normalizeHeadingText(headingMatch[2]) === 'resumen') {
+      if (headingMatch && normalizeHeadingText(headingMatch[2]) === wanted) {
         summaryLevel = headingMatch[1].length;
       }
       continue;
@@ -332,4 +333,18 @@ export function extractSummary(text: string): string | null {
   if (summaryLevel === null) return null;
   const summary = summaryLines.join('\n').trim();
   return summary ? summary : null;
+}
+
+/**
+ * "## Resumen": se muestra por defecto en la card plegada.
+ */
+export function extractSummary(text: string): string | null {
+  return extractSection(text, 'Resumen');
+}
+
+/**
+ * "## Corto": texto breve que se muestra en la tabla del Modo recursos.
+ */
+export function extractShort(text: string): string | null {
+  return extractSection(text, 'Corto');
 }

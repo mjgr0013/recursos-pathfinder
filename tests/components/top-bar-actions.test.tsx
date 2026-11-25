@@ -60,4 +60,21 @@ describe('TopBarActions component', () => {
     );
     expect(warmMenuHtml).toContain('bg-amber-500');
   });
+
+  it('renders the Modo recursos toggle only when a handler is provided, hidden on mobile and print', () => {
+    expect(renderToString(<TopBarActions {...defaultProps} />)).not.toContain('Modo recursos');
+
+    const html = renderToString(<TopBarActions {...defaultProps} onToggleLayout={vi.fn()} />);
+    expect(html).toContain('Modo recursos');
+    expect(html).toContain('hidden md:flex');
+    expect(html).toContain('aria-pressed="false"');
+  });
+
+  it('marks the Modo recursos toggle as pressed when the resources layout is active', () => {
+    const html = renderToString(
+      <TopBarActions {...defaultProps} layoutMode="resources" onToggleLayout={vi.fn()} />
+    );
+    expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('Volver a la vista estándar');
+  });
 });

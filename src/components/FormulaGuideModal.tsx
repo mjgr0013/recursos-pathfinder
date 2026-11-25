@@ -4,6 +4,8 @@ import {
   FORMULA_VARIABLES,
   FORMULA_FUNCTIONS,
   FORMULA_SYNTAX_RULES,
+  DESCRIPTION_SECTIONS,
+  DESCRIPTION_SECTIONS_TEMPLATE,
   FormulaExample,
   previewFormulaSnippet,
 } from '../domain/formula-guide';
@@ -15,17 +17,20 @@ interface FormulaGuideModalProps {
   variables: CharacterVariables;
   onClose: () => void;
   onInsert?: (snippet: string) => void;
+  /** Pestaña abierta al montar (por defecto, Ejemplos). */
+  initialTab?: GuideTab;
 }
 
-type GuideTab = 'examples' | 'variables' | 'functions' | 'syntax' | 'sandbox';
+export type GuideTab = 'examples' | 'variables' | 'functions' | 'syntax' | 'sandbox';
 
 export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
   isOpen,
   variables,
   onClose,
   onInsert,
+  initialTab = 'examples',
 }) => {
-  const [activeTab, setActiveTab] = useState<GuideTab>('examples');
+  const [activeTab, setActiveTab] = useState<GuideTab>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sandboxExpr, setSandboxExpr] = useState(
@@ -459,6 +464,86 @@ export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">💡 {rule.renderedNote}</p>
                 </div>
               ))}
+
+              {/* Secciones especiales de la descripción (## Corto / ## Resumen) */}
+              <div
+                className="bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3.5 space-y-2.5 shadow-sm"
+                data-guide-section="description-sections"
+              >
+                <div className="flex items-start justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-white dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-800 font-mono">
+                      ##
+                    </span>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Secciones especiales de la descripción</h3>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(DESCRIPTION_SECTIONS_TEMPLATE, 'description-sections')}
+                      className="touch-btn text-xs font-semibold px-2.5 py-1 rounded bg-white hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center gap-1 shadow-sm transition-colors"
+                      title="Copiar plantilla al portapapeles"
+                    >
+                      {copiedId === 'description-sections' ? (
+                        <>
+                          <span>✅</span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">¡Copiado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>📋</span>
+                          <span>Copiar</span>
+                        </>
+                      )}
+                    </button>
+                    {onInsert && (
+                      <button
+                        type="button"
+                        onClick={() => handleInsert(DESCRIPTION_SECTIONS_TEMPLATE)}
+                        className="touch-btn text-xs font-bold px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 flex items-center gap-1 shadow-sm transition-colors"
+                        title="Insertar plantilla en el editor"
+                      >
+                        <span>📥</span>
+                        <span>Insertar</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Algunos títulos de la descripción tienen un uso especial. Pueden ir en cualquier orden, con
+                  cualquier nivel de título (<code>#</code> a <code>######</code>) y entre otras secciones: cada una
+                  llega hasta el siguiente título de igual o mayor nivel.
+                </p>
+
+                <ul className="space-y-1.5">
+                  {DESCRIPTION_SECTIONS.map((section) => (
+                    <li
+                      key={section.heading}
+                      className="bg-white dark:bg-slate-950 rounded-lg p-2.5 border border-slate-200 dark:border-slate-800 text-xs space-y-0.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono font-bold text-cyan-700 dark:text-cyan-300">{section.heading}</code>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-amber-800 dark:text-amber-300 border border-slate-300 dark:border-slate-600">
+                          {section.badge}
+                        </span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300">{section.description}</p>
+                      <p className="text-[11px] text-emerald-700 dark:text-emerald-400">📍 {section.whereShown}</p>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="bg-white dark:bg-slate-950 rounded-lg p-2.5 border border-slate-200 dark:border-slate-800 font-mono text-xs text-amber-800 dark:text-amber-300 whitespace-pre-wrap select-all">
+                  {DESCRIPTION_SECTIONS_TEMPLATE}
+                </div>
+
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                  💡 Las dos secciones son opcionales y admiten fórmulas. La impresión y el popup de &quot;Ver más&quot;
+                  muestran siempre la descripción completa.
+                </p>
+              </div>
             </div>
           )}
 

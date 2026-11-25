@@ -5,7 +5,10 @@ import {
   FORMULA_SYNTAX_RULES,
   FORMULA_REFERENCE_EXAMPLES,
   previewFormulaSnippet,
+  DESCRIPTION_SECTIONS,
+  DESCRIPTION_SECTIONS_TEMPLATE,
 } from '../../src/domain/formula-guide';
+import { extractShort, extractSummary } from '../../src/domain/markdown';
 
 describe('Formula Guide Domain Definitions', () => {
   const sampleVars = {
@@ -99,5 +102,21 @@ describe('Formula Guide Domain Definitions', () => {
     expect(rangesRes).toContain('corto (35 pies)');
     expect(rangesRes).toContain('medio (150 pies)');
     expect(rangesRes).toContain('largo (600 pies)');
+  });
+
+  it('documents the ## Corto and ## Resumen description sections', () => {
+    expect(DESCRIPTION_SECTIONS.map((sec) => sec.heading)).toEqual(['## Corto', '## Resumen']);
+    for (const sec of DESCRIPTION_SECTIONS) {
+      expect(sec.description).toBeTruthy();
+      expect(sec.whereShown).toBeTruthy();
+    }
+  });
+
+  it('provides a template whose sections are detected by the app', () => {
+    expect(extractShort(DESCRIPTION_SECTIONS_TEMPLATE)).toBe('`{min(10, nivel_personaje)}d6` fuego · radio 20 pies · Ref mitad');
+    const summary = extractSummary(DESCRIPTION_SECTIONS_TEMPLATE);
+    expect(summary).toContain('Explosión de');
+    expect(summary).not.toContain('Mecánica');
+    expect(previewFormulaSnippet(extractShort(DESCRIPTION_SECTIONS_TEMPLATE)!, { nivel_personaje: 7 })).toContain('7d6');
   });
 });

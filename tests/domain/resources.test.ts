@@ -10,8 +10,7 @@ import {
   updateResourceMaxUses,
   updateResourceUses,
   updateResourceDetails,
-  sortResources,
-} from '../../src/domain/resources';
+  sortResources, getResourceUsage } from '../../src/domain/resources';
 import { createDefaultSpellSlots } from '../../src/domain/spells';
 
 describe('Resource Domain Calculations (Pathfinder Rules)', () => {
@@ -578,5 +577,38 @@ describe('Resource Domain Calculations (Pathfinder Rules)', () => {
       sortResources(list);
       expect(list).toEqual(copy);
     });
+  });
+});
+
+describe('getResourceUsage', () => {
+  const slots = createDefaultSpellSlots();
+  slots[2] = { ...slots[2], available: 1, max: 3 };
+  slots[4] = { ...slots[4], available: 0, max: 1 };
+  const base = { id: 'x', name: 'X', maxUses: null, availableUses: null, description: '', sortOrder: 0 } as const;
+
+  it('treats cantrips as unlimited', () => {
+    expect(getResourceUsage({ ...base, category: 'spell', usageMode: 'unlimited', spellLevel: 0 }, slots)).toEqual({
+      kind: 'unlimited', available: 0, max: 0, isOutOfUses: false, label: 'Truco',
+    });
+  });
+
+  it('reads the shared spell slot of the spell level', () => {
+    expect(getResourceUsage({ ...base, category: 'spell', usageMode: 'limited', spellLevel: 2 }, slots)).toEqual({
+      kind: 'spell_slot', available: 1, max: 3, isOutOfUses: false, label: 'Nivel 2',
+    });
+    expect(getResourceUsage({ ...base, category: 'spell', usageMode: 'limited', spellLevel: 4 }, slots).isOutOfUses).toBe(true);
+  });
+
+  it('reads own uses for limited traits', () => {
+    const trait = { ...base, category: 'feat_trait' as const, usageMode: 'limited' as const, spellLevel: null, maxUses: 3, availableUses: 0 };
+    expect(getResourceUsage(trait, slots)).toEqual({
+      kind: 'daily_uses', available: 0, max: 3, isOutOfUses: true, label: 'Usos diarios',
+    });
+  });
+
+  it('treats unlimited traits as unlimited', () => {
+    const trait = { ...base, category: 'feat_trait' as const, usageMode: 'unlimited' as const, spellLevel: null };
+    expect(getResourceUsage(trait, slots).label).toBe('Ilimitado');
+    expect(getResourceUsage(trait, slots).kind).toBe('unlimited');
   });
 });

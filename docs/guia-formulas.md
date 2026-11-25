@@ -152,7 +152,45 @@ Ataque de toque a distancia: `1d20 + ataque_base + mod_lanzador` contra CA de to
 
 ---
 
-## 🧪 6. Probador Interactivo en la Aplicación
+## 🗂️ 6. Secciones Especiales de la Descripción: `## Corto` y `## Resumen`
+
+Además de las fórmulas, la descripción de un conjuro o rasgo puede incluir dos títulos con un uso especial en la aplicación:
+
+| Título | Para qué sirve | Dónde se muestra |
+| :--- | :--- | :--- |
+| `## Corto` | Una línea con lo imprescindible para la mesa (daño, CD, duración, alcance). | Columna **Corto** de la tabla del **Modo recursos**. |
+| `## Resumen` | Una o dos frases que explican qué hace el conjuro o rasgo. | En la card sin desplegar. Al pulsar **Ver más** se oculta y se muestra la descripción completa. |
+
+**Reglas de detección:**
+- Vale cualquier nivel de título (`#` a `######`). No importan las mayúsculas, las tildes ni los adornos: `# RESUMEN`, `### corto:` o `## **Resumen**` funcionan igual.
+- El título debe ser exactamente *Corto* o *Resumen*: `## Corto alcance` o `### Resumen de la plegaria` son títulos normales.
+- Cada sección llega hasta el siguiente título de **igual o mayor nivel**. Los subtítulos más profundos (por ejemplo, un `###` dentro de un `## Resumen`) forman parte de la sección.
+- Pueden ir en cualquier orden y rodeadas de otras secciones. Si aparecen repetidas, se usa la primera.
+- Los títulos dentro de bloques de código (` ``` `) no cuentan.
+- Ambas son opcionales y admiten fórmulas y variables. La impresión en papel y el popup de **Ver más** muestran siempre la descripción completa.
+
+> **Consejo**: si el detalle de la descripción usa subtítulos `###`, colócalo bajo un `## Descripción` para que no quede incluido dentro del `## Resumen`.
+
+### Plantilla recomendada
+```markdown
+## Corto
+`{min(10, nivel_personaje)}d6` fuego · radio 20 pies · Ref mitad
+
+## Resumen
+Explosión de `{min(10, nivel_personaje)}d6` de fuego en un radio de 20 pies. Reflejos mitad (CD {10 + 3 + mod_lanzador}).
+
+## Descripción
+### Mecánica
+- **Tiempo de lanzamiento**: 1 acción estándar
+- **Salvación**: Reflejos mitad
+```
+- *A nivel 7 con Mod +4*: la tabla muestra `7d6 fuego · radio 20 pies · Ref mitad` y la card plegada *Explosión de 7d6 de fuego… (CD 17)*.
+
+Los personajes de ejemplo generados desde **Personajes** incluyen estas secciones en todos sus conjuros y rasgos. Esta plantilla también está en la pestaña **Sintaxis** de la Guía de Fórmulas, con los botones **📋 Copiar** y **📥 Insertar**.
+
+---
+
+## 🧪 7. Probador Interactivo en la Aplicación
 
 Tanto desde el botón **📐 Fórmulas** en la barra superior como desde el botón **📐 Guía** en el editor de Markdown, puedes:
 1. Ver tus valores actuales de nivel, BAB y modificador de lanzador.

@@ -152,6 +152,47 @@ export const FORMULA_SYNTAX_RULES: FormulaSyntaxRule[] = [
   },
 ];
 
+export interface DescriptionSection {
+  heading: string;
+  badge: string;
+  description: string;
+  whereShown: string;
+}
+
+/**
+ * Secciones con título reservado dentro de la descripción de un conjuro o rasgo.
+ * Se detectan con cualquier nivel de título (# a ######), sin distinguir mayúsculas ni tildes,
+ * y abarcan hasta el siguiente título de igual o mayor nivel.
+ */
+export const DESCRIPTION_SECTIONS: DescriptionSection[] = [
+  {
+    heading: '## Corto',
+    badge: 'Tabla',
+    description: 'Una línea con lo imprescindible para la mesa: daño, CD, duración o alcance.',
+    whereShown: 'Columna "Corto" de la tabla del Modo recursos.',
+  },
+  {
+    heading: '## Resumen',
+    badge: 'Card',
+    description: 'Una o dos frases que explican qué hace el conjuro o rasgo.',
+    whereShown: 'Visible en la card sin desplegar; al pulsar "Ver más" se muestra la descripción completa.',
+  },
+];
+
+/**
+ * Plantilla de descripción con las secciones especiales y el detalle completo debajo.
+ */
+export const DESCRIPTION_SECTIONS_TEMPLATE = `## Corto
+\`{min(10, nivel_personaje)}d6\` fuego · radio 20 pies · Ref mitad
+
+## Resumen
+Explosión de \`{min(10, nivel_personaje)}d6\` de fuego en un radio de 20 pies. Reflejos mitad (CD {10 + 3 + mod_lanzador}).
+
+## Descripción
+### Mecánica
+- **Tiempo de lanzamiento**: 1 acción estándar
+- **Salvación**: Reflejos mitad`;
+
 /**
  * Curated reference examples covering classic Pathfinder 1e spells, feats, and powers.
  */

@@ -355,4 +355,80 @@ describe('ResourceList component', () => {
       expect(html).toContain('Conjuros (3)');
     });
   });
+
+  describe('resources layout', () => {
+    const renderList = (layout?: 'standard' | 'resources', initialTab?: 'all' | 'spell' | 'feat_trait') =>
+      renderToString(
+        <ResourceList
+          resources={[spellLvl3, spellLvl1, cantrip, trait]}
+          spellSlots={defaultSlots}
+          layout={layout}
+          initialTab={initialTab}
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+
+    it('keeps tabs, level separators and a single column in the standard layout', () => {
+      const html = renderList();
+      expect(html).toContain('Todos (');
+      expect(html).toContain('Trucos (Nivel 0)');
+      expect(html).toContain('Plegar todos');
+      expect(html).not.toContain('<table');
+    });
+
+    it('hides the filter tabs, the search box and the add button', () => {
+      const html = renderList('resources');
+      expect(html).not.toContain('Todos (');
+      expect(html).not.toContain('Rasgos (');
+      expect(html).not.toContain('Buscar conjuro');
+      expect(html).not.toContain('Añadir');
+    });
+
+    it('ignores a previously selected tab and shows both spells and traits in the table', () => {
+      const html = renderList('resources', 'feat_trait');
+      expect(html).toContain('data-resource-row="res-s3"');
+      expect(html).toContain('data-resource-row="res-t1"');
+    });
+
+    it('renders a screen-only table with spells ordered by level, and keeps the cards for paper', () => {
+      const html = renderList('resources');
+      const tableStart = html.indexOf('<div class="print:hidden"><div class="flex flex-col gap-4 w-full">');
+      expect(tableStart).toBeGreaterThanOrEqual(0);
+      const cardsStart = html.indexOf('hidden print:flex', tableStart);
+      const table = html.slice(tableStart, cardsStart);
+
+      expect(table).toContain('<table');
+      expect(table).not.toContain('Trucos (Nivel 0)');
+      expect(table).not.toContain('Plegar todos');
+      const rows = [...table.matchAll(/data-resource-row="([^"]+)"/g)].map((m) => m[1]);
+      expect(rows).toEqual(['res-c1', 'res-s1', 'res-s3', 'res-t1']);
+
+      // Las cards completas siguen en el DOM solo para imprimir
+      expect(cardsStart).toBeGreaterThan(tableStart);
+      expect(html.slice(cardsStart)).toContain('<article');
+    });
+
+    it('explains how to add resources when the list is empty', () => {
+      const html = renderToString(
+        <ResourceList
+          resources={[]}
+          spellSlots={defaultSlots}
+          layout="resources"
+          onSpendResource={vi.fn()}
+          onRestoreResource={vi.fn()}
+          onDeleteResource={vi.fn()}
+          onAddResource={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          onRestoreSpellSlot={vi.fn()}
+        />
+      );
+      expect(html).toContain('Vuelve a la vista estándar para añadir');
+      expect(html).not.toContain('<table');
+    });
+  });
 });

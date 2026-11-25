@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateRandomCharacter } from '../../src/domain/generator';
-import { parseMarkdown } from '../../src/domain/markdown';
+import { parseMarkdown, extractShort, extractSummary, extractSection } from '../../src/domain/markdown';
 
 describe('Random Character Generator', () => {
   it('generates a complete, valid character state with all game components', () => {
@@ -95,5 +95,24 @@ describe('Random Character Generator', () => {
     expect(c1.profile.name).not.toBe(c2.profile.name);
     expect(c2.profile.name).not.toBe(c3.profile.name);
     expect(c3.profile.name).not.toBe(c4.profile.name);
+  });
+
+  it('includes ## Corto, ## Resumen and ## Descripción sections in every generated resource', () => {
+    for (let i = 0; i < 4; i++) {
+      for (const res of generateRandomCharacter(i).resources) {
+        const short = extractShort(res.description);
+        const summary = extractSummary(res.description);
+        const detail = extractSection(res.description, 'Descripción');
+
+        expect(short, `${res.name} sin ## Corto`).toBeTruthy();
+        expect(summary, `${res.name} sin ## Resumen`).toBeTruthy();
+        expect(detail, `${res.name} sin ## Descripción`).toBeTruthy();
+
+        // Corto es una sola línea y ninguna sección especial arrastra el detalle completo
+        expect(short!.split('\n')).toHaveLength(1);
+        expect(summary).not.toContain('###');
+        expect(summary!.length).toBeLessThan(detail!.length);
+      }
+    }
   });
 });
