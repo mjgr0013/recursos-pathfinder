@@ -66,17 +66,35 @@ describe('FormulaGuideModal component', () => {
     expect(html).toContain('Insertar');
   });
 
-  it('explains the ## Corto and ## Resumen sections in the Sintaxis tab with copy and insert actions', () => {
+  it('explains the ## Corto section in the Sintaxis tab with copy and insert actions', () => {
     const html = renderToString(
       <FormulaGuideModal isOpen={true} onClose={vi.fn()} onInsert={vi.fn()} variables={sampleVars} initialTab="syntax" />
     );
     const section = html.slice(html.indexOf('data-guide-section="description-sections"'));
-    expect(section).toContain('Secciones especiales de la descripción');
+    expect(section).toContain('Sección especial de la descripción');
     expect(section).toContain('## Corto');
-    expect(section).toContain('## Resumen');
+    expect(section).not.toContain('## Resumen');
     expect(section).toContain('Modo recursos');
     expect(section).toContain('Ver más');
     expect(section).toContain('Copiar');
     expect(section).toContain('Insertar');
+  });
+
+  it('previews Corto both in the table row and in the collapsed card with the current character', () => {
+    const html = renderToString(
+      <FormulaGuideModal isOpen={true} onClose={vi.fn()} variables={{ nivel_personaje: 7, modificador_lanzador: 4 }} initialTab="syntax" />
+    );
+    const preview = html.slice(html.indexOf('data-guide-preview="description-sections"'));
+    expect(preview).toContain('Modo recursos');
+    expect(preview).toContain('card plegada');
+
+    const table = preview.slice(preview.indexOf('data-preview="short"'), preview.indexOf('data-preview="card"'));
+    const card = preview.slice(preview.indexOf('data-preview="card"'), preview.indexOf('Es opcional y admite'));
+    for (const block of [table, card]) {
+      expect(block).toContain('7d6');
+      expect(block).toContain('CD 17');
+      expect(block).not.toContain('{');
+      expect(block).not.toContain('Mecánica');
+    }
   });
 });

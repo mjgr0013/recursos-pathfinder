@@ -289,62 +289,87 @@ function normalizeHeadingText(text: string): string {
     .toLowerCase();
 }
 
+interface SectionRange {
+  /** Índice de la línea del título. */
+  headingIndex: number;
+  /** Índice (exclusivo) de la línea donde termina la sección. */
+  endIndex: number;
+}
+
 /**
- * Extracts the raw markdown content of a named section of a description.
- *
- * The section starts at the first heading (any level, `#` to `######`) whose text is
- * `title` (case, accent and emphasis insensitive) and ends right before the next heading
+ * Locates a named section: it starts at the first heading (any level, `#` to `######`) whose
+ * text is `title` (case, accent and emphasis insensitive) and ends right before the next heading
  * of the same or higher level (fewer or equal `#`). Deeper sub-headings are kept.
  * Headings inside fenced code blocks are ignored.
- *
+ */
+function findSectionRange(lines: string[], title: string): SectionRange | null {
+  const wanted = normalizeHeadingText(title);
+  let inCodeBlock = false;
+  let start: { index: number; level: number } | null = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+
+    if (trimmed.startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+
+    const headingMatch = !inCodeBlock ? trimmed.match(/^(#{1,6})\s+(.*)$/) : null;
+    if (!headingMatch) continue;
+
+    if (start === null) {
+      if (normalizeHeadingText(headingMatch[2]) === wanted) {
+        start = { index: i, level: headingMatch[1].length };
+      }
+    } else if (headingMatch[1].length <= start.level) {
+      return { headingIndex: start.index, endIndex: i };
+    }
+  }
+
+  return start === null ? null : { headingIndex: start.index, endIndex: lines.length };
+}
+
+/**
+ * Extracts the raw markdown content of a named section of a description (see `findSectionRange`).
  * Returns `null` when there is no such heading or its section is empty.
  */
 export function extractSection(text: string, title: string): string | null {
   if (!text || !text.trim()) return null;
 
-  const wanted = normalizeHeadingText(title);
   const lines = text.split(/\r?\n/);
-  let inCodeBlock = false;
-  let summaryLevel: number | null = null;
-  const summaryLines: string[] = [];
+  const range = findSectionRange(lines, title);
+  if (!range) return null;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith('```')) {
-      inCodeBlock = !inCodeBlock;
-      if (summaryLevel !== null) summaryLines.push(line);
-      continue;
-    }
-
-    const headingMatch = !inCodeBlock ? trimmed.match(/^(#{1,6})\s+(.*)$/) : null;
-
-    if (summaryLevel === null) {
-      if (headingMatch && normalizeHeadingText(headingMatch[2]) === wanted) {
-        summaryLevel = headingMatch[1].length;
-      }
-      continue;
-    }
-
-    if (headingMatch && headingMatch[1].length <= summaryLevel) break;
-    summaryLines.push(line);
-  }
-
-  if (summaryLevel === null) return null;
-  const summary = summaryLines.join('\n').trim();
-  return summary ? summary : null;
+  const section = lines.slice(range.headingIndex + 1, range.endIndex).join('\n').trim();
+  return section ? section : null;
 }
 
 /**
- * "## Resumen": se muestra por defecto en la card plegada.
+ * Returns the description without the named section (its heading and content).
+ * The rest of the text is kept as is; returns the original text if the section is not present.
  */
-export function extractSummary(text: string): string | null {
-  return extractSection(text, 'Resumen');
+export function removeSection(text: string, title: string): string {
+  if (!text) return text;
+
+  const lines = text.split(/\r?\n/);
+  const range = findSectionRange(lines, title);
+  if (!range) return text;
+
+  return [...lines.slice(0, range.headingIndex), ...lines.slice(range.endIndex)].join('\n').trim();
 }
 
 /**
- * "## Corto": texto breve que se muestra en la tabla del Modo recursos.
+ * "## Corto": texto breve que se muestra en la card plegada (vista estándar)
+ * y debajo de cada fila de la tabla del Modo recursos.
  */
 export function extractShort(text: string): string | null {
   return extractSection(text, 'Corto');
+}
+
+/**
+ * Descripción completa sin la sección "## Corto" (para "Ver más", donde el Corto sobraría).
+ */
+export function removeShort(text: string): string {
+  return removeSection(text, 'Corto');
 }

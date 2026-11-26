@@ -5,7 +5,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { MarkdownEditor } from './MarkdownEditor';
 import { CharacterVariables, resolveRange } from '../domain/variables';
 import { ModalOverlay } from './ModalOverlay';
-import { extractSummary } from '../domain/markdown';
+import { extractShort, removeShort } from '../domain/markdown';
 
 interface ResourceCardProps {
   resource: ResourceItem;
@@ -48,7 +48,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const [editDescriptionVal, setEditDescriptionVal] = useState(resource.description ?? '');
   const [urlError, setUrlError] = useState<string | null>(null);
 
-  const summary = extractSummary(resource.description ?? '');
+  const short = extractShort(resource.description ?? '');
 
   const isSpell = resource.category === 'spell';
   const isCantrip = isSpell && resource.spellLevel === 0;
@@ -272,17 +272,18 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       </div>
 
-      {/* Resumen visible por defecto (Pantalla, plegado). Se oculta al desplegar la descripción completa */}
-      {!isExpanded && summary && (
-        <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 resource-summary print:hidden">
-          <MarkdownRenderer content={summary} variables={variables} />
+      {/* "## Corto" visible por defecto (Pantalla, plegado). Se oculta al desplegar la descripción completa */}
+      {!isExpanded && short && (
+        <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 resource-short print:hidden">
+          <MarkdownRenderer content={short} variables={variables} />
         </div>
       )}
 
       {/* Expanded rules drawer (Pantalla cuando se despliega) */}
+      {/* "Ver más" (y el popup de la tabla) muestran la descripción sin el "## Corto" */}
       {isExpanded && (
         <div className={`mt-2 p-3 bg-slate-50 dark:bg-slate-900/90 rounded-lg border border-slate-200 dark:border-slate-700/60 shadow-inner print:hidden ${defaultExpanded ? '' : 'max-h-[350px] overflow-y-auto'}`}>
-          <MarkdownRenderer content={resource.description} variables={variables} />
+          <MarkdownRenderer content={removeShort(resource.description ?? '')} variables={variables} />
         </div>
       )}
 

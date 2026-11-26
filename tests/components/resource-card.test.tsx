@@ -286,16 +286,16 @@ describe('ResourceCard component', () => {
     expect(html).toContain('15m');
   });
 
-  describe('Resumen section', () => {
-    const spellWithSummary: ResourceItem = {
+  describe('Corto section', () => {
+    const spellWithShort: ResourceItem = {
       ...cantripSpell,
       description: [
         '# Guía Divina',
         'Escuela adivinación.',
-        '## Resumen',
+        '## Corto',
         'Otorga **+1** a una tirada.',
-        '### Componentes',
-        'V, S',
+        '## Resumen',
+        'RESUMEN-SIN-EFECTO',
         '## Descripción',
         'TEXTO-COMPLETO-OCULTO',
       ].join('\n'),
@@ -312,27 +312,58 @@ describe('ResourceCard component', () => {
         />
       );
 
-    it('shows only the Resumen content on screen while collapsed', () => {
-      const html = render(spellWithSummary);
-      const summaryBlock = html.match(/<div class="[^"]*resource-summary[^"]*">([\s\S]*?)<\/div><\/div>/);
-      expect(summaryBlock).not.toBeNull();
-      expect(summaryBlock![0]).toContain('print:hidden');
-      expect(summaryBlock![1]).toContain('<strong');
-      expect(summaryBlock![1]).toContain('Componentes');
-      expect(summaryBlock![1]).not.toContain('TEXTO-COMPLETO-OCULTO');
-      expect(summaryBlock![1]).not.toContain('Escuela adivinación');
+    it('shows only the Corto content on screen while collapsed', () => {
+      const html = render(spellWithShort);
+      const shortBlock = html.match(/<div class="[^"]*resource-short[^"]*">([\s\S]*?)<\/div><\/div>/);
+      expect(shortBlock).not.toBeNull();
+      expect(shortBlock![0]).toContain('print:hidden');
+      expect(shortBlock![1]).toContain('<strong');
+      expect(shortBlock![1]).toContain('Otorga');
+      expect(shortBlock![1]).not.toContain('RESUMEN-SIN-EFECTO');
+      expect(shortBlock![1]).not.toContain('TEXTO-COMPLETO-OCULTO');
+      expect(shortBlock![1]).not.toContain('Escuela adivinación');
       expect(html).not.toContain('max-h-[350px]');
     });
 
+    it('no longer gives ## Resumen any special behavior', () => {
+      const onlySummary: ResourceItem = { ...cantripSpell, description: '## Resumen\nRESUMEN-SIN-EFECTO\n## Otra\nX' };
+      const html = render(onlySummary);
+      expect(html).not.toContain('resource-short');
+      expect(html).not.toContain('resource-summary');
+      // Solo aparece en la descripción completa para impresión
+      expect(html.indexOf('RESUMEN-SIN-EFECTO')).toBeGreaterThan(html.indexOf('print-description'));
+    });
+
+    it('hides the Corto section in the expanded "Ver más" description', () => {
+      const html = renderToString(
+        <ResourceCard
+          resource={spellWithShort}
+          spellSlots={defaultSlots}
+          onSpend={vi.fn()}
+          onDelete={vi.fn()}
+          onSpendSpellSlot={vi.fn()}
+          defaultExpanded
+        />
+      );
+      expect(html).toContain('▲ Ver menos');
+      expect(html).not.toContain('resource-short');
+
+      const drawer = html.slice(html.indexOf('shadow-inner'), html.indexOf('print-description'));
+      expect(drawer).toContain('TEXTO-COMPLETO-OCULTO');
+      expect(drawer).toContain('Escuela adivinación');
+      expect(drawer).not.toContain('Otorga');
+      expect(drawer).not.toContain('>Corto<');
+    });
+
     it('still prints the full description', () => {
-      const html = render(spellWithSummary);
+      const html = render(spellWithShort);
       const printBlock = html.slice(html.indexOf('print-description'));
       expect(printBlock).toContain('TEXTO-COMPLETO-OCULTO');
       expect(printBlock).toContain('Escuela adivinación');
     });
 
-    it('does not render a summary block when the description has no Resumen', () => {
-      expect(render(cantripSpell)).not.toContain('resource-summary');
+    it('does not render a Corto block when the description has no Corto', () => {
+      expect(render(cantripSpell)).not.toContain('resource-short');
     });
   });
 });

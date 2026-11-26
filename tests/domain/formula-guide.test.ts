@@ -8,7 +8,7 @@ import {
   DESCRIPTION_SECTIONS,
   DESCRIPTION_SECTIONS_TEMPLATE,
 } from '../../src/domain/formula-guide';
-import { extractShort, extractSummary } from '../../src/domain/markdown';
+import { extractShort, extractSection } from '../../src/domain/markdown';
 
 describe('Formula Guide Domain Definitions', () => {
   const sampleVars = {
@@ -104,19 +104,18 @@ describe('Formula Guide Domain Definitions', () => {
     expect(rangesRes).toContain('largo (600 pies)');
   });
 
-  it('documents the ## Corto and ## Resumen description sections', () => {
-    expect(DESCRIPTION_SECTIONS.map((sec) => sec.heading)).toEqual(['## Corto', '## Resumen']);
-    for (const sec of DESCRIPTION_SECTIONS) {
-      expect(sec.description).toBeTruthy();
-      expect(sec.whereShown).toBeTruthy();
-    }
+  it('documents ## Corto as the only special description section, shown in card and table', () => {
+    expect(DESCRIPTION_SECTIONS.map((sec) => sec.heading)).toEqual(['## Corto']);
+    expect(DESCRIPTION_SECTIONS[0].whereShown).toContain('card');
+    expect(DESCRIPTION_SECTIONS[0].whereShown).toContain('Modo recursos');
   });
 
-  it('provides a template whose sections are detected by the app', () => {
-    expect(extractShort(DESCRIPTION_SECTIONS_TEMPLATE)).toBe('`{min(10, nivel_personaje)}d6` fuego · radio 20 pies · Ref mitad');
-    const summary = extractSummary(DESCRIPTION_SECTIONS_TEMPLATE);
-    expect(summary).toContain('Explosión de');
-    expect(summary).not.toContain('Mecánica');
-    expect(previewFormulaSnippet(extractShort(DESCRIPTION_SECTIONS_TEMPLATE)!, { nivel_personaje: 7 })).toContain('7d6');
+  it('provides a template whose Corto is detected by the app and has no Resumen', () => {
+    const short = extractShort(DESCRIPTION_SECTIONS_TEMPLATE)!;
+    expect(short).toContain('{min(10, nivel_personaje)}d6');
+    expect(short).not.toContain('Mecánica');
+    expect(extractSection(DESCRIPTION_SECTIONS_TEMPLATE, 'Resumen')).toBeNull();
+    expect(previewFormulaSnippet(short, { nivel_personaje: 7, modificador_lanzador: 4 })).toContain('7d6');
+    expect(previewFormulaSnippet(short, { nivel_personaje: 7, modificador_lanzador: 4 })).toContain('CD 17');
   });
 });

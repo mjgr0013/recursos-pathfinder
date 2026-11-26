@@ -11,6 +11,8 @@ import {
 } from '../domain/formula-guide';
 import { CharacterVariables } from '../domain/variables';
 import { ModalOverlay } from './ModalOverlay';
+import { MarkdownRenderer } from './MarkdownRenderer';
+import { extractShort } from '../domain/markdown';
 
 interface FormulaGuideModalProps {
   isOpen: boolean;
@@ -465,7 +467,7 @@ export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
                 </div>
               ))}
 
-              {/* Secciones especiales de la descripción (## Corto / ## Resumen) */}
+              {/* Sección especial de la descripción: ## Corto */}
               <div
                 className="bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3.5 space-y-2.5 shadow-sm"
                 data-guide-section="description-sections"
@@ -475,7 +477,7 @@ export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
                     <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-white dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-800 font-mono">
                       ##
                     </span>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Secciones especiales de la descripción</h3>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Sección especial de la descripción: ## Corto</h3>
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
@@ -512,9 +514,9 @@ export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
                 </div>
 
                 <p className="text-xs text-slate-600 dark:text-slate-300">
-                  Algunos títulos de la descripción tienen un uso especial. Pueden ir en cualquier orden, con
-                  cualquier nivel de título (<code>#</code> a <code>######</code>) y entre otras secciones: cada una
-                  llega hasta el siguiente título de igual o mayor nivel.
+                  El título <code>Corto</code> tiene un uso especial. Puede ir en cualquier posición, con cualquier
+                  nivel de título (<code>#</code> a <code>######</code>) y entre otras secciones: llega hasta el
+                  siguiente título de igual o mayor nivel.
                 </p>
 
                 <ul className="space-y-1.5">
@@ -539,9 +541,51 @@ export const FormulaGuideModal: React.FC<FormulaGuideModalProps> = ({
                   {DESCRIPTION_SECTIONS_TEMPLATE}
                 </div>
 
+                {/* Vista previa con las variables del personaje actual */}
+                <div className="space-y-1.5" data-guide-preview="description-sections">
+                  <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Así se ve con tu personaje
+                  </p>
+
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden text-xs">
+                    <div className="px-2.5 py-1 bg-slate-50 dark:bg-slate-900/70 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      ▦ Modo recursos · tabla
+                    </div>
+                    <div className="px-2.5 pt-1.5 flex items-center gap-3">
+                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100 flex-1">Bola de Fuego</span>
+                      <span className="text-slate-600 dark:text-slate-300">Nivel 3</span>
+                      <span className="font-black text-slate-900 dark:text-slate-100">2/3</span>
+                    </div>
+                    <div className="px-2.5 pb-1.5 text-slate-700 dark:text-slate-300" data-preview="short">
+                      <MarkdownRenderer
+                        content={extractShort(DESCRIPTION_SECTIONS_TEMPLATE) ?? ''}
+                        variables={variables}
+                        className="[&_p]:my-0"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden text-xs">
+                    <div className="px-2.5 py-1 bg-slate-50 dark:bg-slate-900/70 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      Vista estándar · card plegada
+                    </div>
+                    <div className="px-2.5 py-1.5">
+                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100">Bola de Fuego</span>
+                      <p className="text-amber-700 dark:text-amber-400 font-semibold text-[11px] mt-0.5">▼ Ver más</p>
+                      <div className="text-slate-700 dark:text-slate-300" data-preview="card">
+                        <MarkdownRenderer
+                          content={extractShort(DESCRIPTION_SECTIONS_TEMPLATE) ?? ''}
+                          variables={variables}
+                          className="[&_p]:my-0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
-                  💡 Las dos secciones son opcionales y admiten fórmulas. La impresión y el popup de &quot;Ver más&quot;
-                  muestran siempre la descripción completa.
+                  💡 Es opcional y admite fórmulas. &quot;Ver más&quot; muestra el resto de la descripción sin repetir el
+                  Corto; la impresión en papel incluye la descripción completa.
                 </p>
               </div>
             </div>

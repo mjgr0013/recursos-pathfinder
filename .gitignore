@@ -36,3 +36,12 @@ Thumbs.db
 # Lockfiles of other package managers (project uses npm)
 yarn.lock
 pnpm-lock.yaml
+
+# Datos en JSON (fichas exportadas, respaldos, volcados…): no se versionan.
+# Excepciones: los JSON de configuración del proyecto, de Spec Kit y de los contratos de las specs.
+*.json
+!package.json
+!package-lock.json
+!tsconfig*.json
+!.specify/**/*.json
+!specs/**/*.json

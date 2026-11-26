@@ -20,7 +20,7 @@ describe('ResourceTable component', () => {
     usageMode: 'limited',
     spellLevel: 1,
     range: '{30 + 5 * nivel} pies',
-    description: '# Proyectil\n## Corto\n**1d4+1** por nivel {nivel}\n## Resumen\nDardo de fuerza.\n## Detalle\nDESCRIPCION-COMPLETA',
+    description: '# Proyectil\n## Corto\n**1d4+1** por nivel {nivel}\n## Detalle\nDESCRIPCION-COMPLETA',
   };
   const lvl3: ResourceItem = { ...base, id: 's3', name: 'Bola de Fuego', category: 'spell', usageMode: 'limited', spellLevel: 3 };
   const limited: ResourceItem = {
@@ -54,7 +54,7 @@ describe('ResourceTable component', () => {
 
   const row = (html: string, id: string) => {
     const start = html.indexOf(`data-resource-row="${id}"`);
-    return html.slice(start, html.indexOf('</tr>', start));
+    return html.slice(start, html.indexOf('</tbody>', start));
   };
 
   it('renders one table per section with the minimal columns', () => {
@@ -115,29 +115,41 @@ describe('ResourceTable component', () => {
     expect(dialog).toContain('DESCRIPCION-COMPLETA');
     expect(dialog).toContain('▲ Ver menos');
     expect(dialog).toContain('Cerrar detalle');
+    // El "## Corto" ya se ve en la fila: el popup no lo repite en pantalla (solo en la versión impresa)
+    const onScreen = dialog.slice(0, dialog.indexOf('print-description'));
+    expect(onScreen).toContain('DESCRIPCION-COMPLETA');
+    expect(onScreen).not.toContain('1d4+1');
+    expect(onScreen).not.toContain('>Corto<');
   });
 
-  it('shows the "## Corto" section in its own column, rendered with markdown and variables', () => {
+  it('shows the "## Corto" text in a full-width row below the resource, rendered with markdown and variables', () => {
     const html = render();
-    const spellsTable = html.slice(0, html.indexOf('Rasgos y Dotes'));
-    expect(spellsTable).toContain('>Corto</th>');
+    expect(html).not.toContain('>Corto</th>');
 
     const r = row(html, 's1');
-    expect(r).toContain('resource-short');
-    expect(r).toContain('<strong');
-    expect(r).toContain('1d4+1');
-    expect(r).toContain('por nivel 2');
-    expect(r).not.toContain('Dardo de fuerza');
-    expect(r).not.toContain('DESCRIPCION-COMPLETA');
+    const [mainRow, shortRow] = r.split('</tr>');
+    expect(mainRow).toContain('Proyectil Mágico');
+    expect(mainRow).not.toContain('resource-short');
 
-    // Los conjuros sin "## Corto" muestran un guion en esa columna
-    expect(row(html, 's3')).toContain('—');
+    expect(shortRow).toContain('colSpan="5"');
+    expect(shortRow).toContain('resource-short');
+    expect(shortRow).toContain('<strong');
+    expect(shortRow).toContain('1d4+1');
+    expect(shortRow).toContain('por nivel 2');
+    expect(r).not.toContain('DESCRIPCION-COMPLETA');
   });
 
-  it('omits the Corto column in sections where no resource defines it', () => {
+  it('renders a single row for resources without "## Corto"', () => {
     const html = render();
-    const featsTable = html.slice(html.indexOf('Rasgos y Dotes'));
-    expect(featsTable).not.toContain('>Corto</th>');
-    expect(featsTable).not.toContain('resource-short');
+    for (const id of ['c', 's3', 't1', 't2']) {
+      const r = row(html, id);
+      expect(r.match(/<tr>/g)).toHaveLength(1);
+      expect(r).not.toContain('resource-short');
+    }
+  });
+
+  it('groups each resource in its own tbody so dividers separate resources, not their Corto line', () => {
+    const html = render();
+    expect(html.match(/<tbody[^>]*data-resource-row=/g)).toHaveLength(5);
   });
 });

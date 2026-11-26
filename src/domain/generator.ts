@@ -57,10 +57,7 @@ const ARCHETYPES: ArchetypeTemplate[] = [
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+1\` a una tirada · 1 min
-
-## Resumen
-Toca a una criatura: obtiene **+1** de competencia a su próxima tirada de ataque, salvación o habilidad.
+1 acción estándar · **+1** de competencia a la próxima tirada de ataque, salvación o habilidad · 1 minuto
 
 ## Descripción
 ### Invocación a Sarenrae
@@ -100,10 +97,7 @@ Consulta más en [Archives of Nethys - Guidance](https://aonprd.com/SpellDisplay
         maxUses: null,
         availableUses: null,
         description: `## Corto
-Cura \`1d8 + {min(5, nivel_personaje)}\` PG · Toque
-
-## Resumen
-Cura \`1d8 + {min(5, nivel_personaje)}\` PG a una criatura viva. Contra muertos vivientes causa ese daño (Voluntad mitad).
+1 acción estándar · cura \`1d8 + {min(5, nivel_personaje)}\` PG · contra muertos vivientes: daño, Voluntad mitad (CD 15)
 
 ## Descripción
 ### Curación Sagrada
@@ -143,10 +137,7 @@ Al lanzar este conjuro sobre una criatura viva, restaura una cantidad de **Punto
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`1d8 + 1\` fuerza · ataque \`+7\`
-
-## Resumen
-Invoca una cimitarra de fuerza que ataca sola cada asalto con \`+7\` e ignora la reducción de daño.
+Cimitarra de fuerza · ataque \`+7\` · \`1d8 + 1\` fuerza · crítico \`19-20/x2\` · ignora RD · {nivel_personaje} asaltos
 
 ## Descripción
 ### Cimitarra de Luz Radiante
@@ -174,10 +165,7 @@ Manifiesta un arma espectral hecha de pura fuerza divina con la forma de la cimi
         maxUses: null,
         availableUses: null,
         description: `## Corto
-Aliados \`+1\`, enemigos \`-1\` · 40 pies
-
-## Resumen
-Aliados en 40 pies ganan **+1** de suerte a ataque, daño, salvaciones y habilidades; los enemigos sufren **-1**. Sin salvación.
+Emanación 40 pies · aliados **+1** y enemigos **-1** a ataque, daño, salvaciones y habilidades · sin salvación · {nivel_personaje} asaltos
 
 ## Descripción
 ### Efecto de Bendición y Maldición de Zona
@@ -209,10 +197,7 @@ Duración: 5 asaltos (1 asalto por nivel de lanzador)
         maxUses: 6,
         availableUses: 5,
         description: `## Corto
-\`{ceil(nivel_personaje / 2)}d6\` · CD {14 + floor(nivel_personaje / 2)}
-
-## Resumen
-Emanación de 30 pies que cura \`{ceil(nivel_personaje / 2)}d6\` a los vivos o daña a los muertos vivientes (Voluntad mitad, CD {14 + floor(nivel_personaje / 2)}).
+Emanación 30 pies · cura \`{ceil(nivel_personaje / 2)}d6\` a los vivos **o** daña a muertos vivientes · Voluntad mitad CD {14 + floor(nivel_personaje / 2)}
 
 ## Descripción
 ### Habilidad Sobrenatural de Clase
@@ -237,10 +222,7 @@ Libera una poderosa ola de energía sagrada en una emanación de **30 pies** cen
         maxUses: 4,
         availableUses: 3,
         description: `## Corto
-Quita *Fatigado* · \`+1d4 + 2\` PG
-
-## Resumen
-Al tocar a un aliado elimina *Fatigado* o *Estremecido* y suma \`1d4 + 2\` PG a tu curación de ese turno.
+Toque · elimina *Fatigado* o *Estremecido* · \`+1d4 + 2\` PG a tu curación de este turno
 
 ## Descripción
 ### Poder de Dominio de Sanación
@@ -259,10 +241,7 @@ Con un simple toque, remueve una aflicción menor de un compañero además de ce
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+4\` contra miedo · luz dorada
-
-## Resumen
-Pasivo: **+4** en salvaciones contra miedo y tus armas emiten luz como una antorcha.
+Pasivo · **+4** a salvaciones contra miedo · tus armas brillan como una antorcha
 
 ## Descripción
 ### Rasgo Pasivo Permanente
@@ -298,10 +277,7 @@ La inquebrantable fe en Sarenrae otorga un escudo mental y espiritual inalterabl
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`1d3\` frío · toque a distancia \`+6\`
-
-## Resumen
-Rayo de toque a distancia (\`+6\`) que causa \`1d3\` de frío. A voluntad.
+1 acción estándar · toque a distancia \`+6\` · \`1d3\` de frío · a voluntad
 
 ## Descripción
 ### Truco de Evocación a Voluntad
@@ -322,10 +298,7 @@ Un rayo de energía gélida azul brillante surge de la punta del bastón de Ezre
         maxUses: null,
         availableUses: null,
         description: `## Corto
-{min(5, 1 + floor((nivel_personaje - 1) / 2))} × \`1d4 + 1\` fuerza · impacta siempre
-
-## Resumen
-Dispara {min(5, 1 + floor((nivel_personaje - 1) / 2))} dardos de fuerza de \`1d4 + 1\` que impactan automáticamente, sin tirada ni salvación.
+1 acción estándar · {min(5, 1 + floor((nivel_personaje - 1) / 2))} dardos × \`1d4 + 1\` de fuerza · impactan siempre · sin salvación
 
 ## Descripción
 ### Misiles Arcanos Infalibles
@@ -354,10 +327,7 @@ A nivel 7 de lanzador, Ezren dispara **4 proyectiles simultáneos**:
         maxUses: null,
         availableUses: null,
         description: `## Corto
-2 rayos × \`4d6\` fuego
-
-## Resumen
-Dos rayos de toque a distancia (\`+6\`) de \`4d6\` de fuego cada uno, al mismo o distintos objetivos.
+1 acción estándar · 2 rayos de toque a distancia \`+6\` · \`4d6\` de fuego cada uno · objetivos a menos de 30 pies entre sí
 
 ## Descripción
 ### Rayos de Fuego Concentrado
@@ -378,10 +348,7 @@ Libera chorros de fuego abrasador capaces de fundir armaduras a distancia media.
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`{min(10, nivel_personaje)}d6\` fuego · radio 20 pies · Ref mitad
-
-## Resumen
-Explosión de \`{min(10, nivel_personaje)}d6\` de fuego en un radio de 20 pies. Reflejos mitad (CD 17).
+1 acción estándar · \`{min(10, nivel_personaje)}d6\` de fuego · radio 20 pies · Reflejos mitad CD 17 · prende combustibles
 
 ## Descripción
 ### El Clásico Destructor de Evocación
@@ -407,10 +374,7 @@ Salvación: Reflejos mitad (CD 17)
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`3d6\` contundente + \`2d6\` frío · sin salvación
-
-## Resumen
-Granizo en un cilindro de 40 pies: \`3d6\` contundente + \`2d6\` de frío sin salvación, y deja terreno difícil.
+Cilindro 40 pies · \`3d6\` contundente + \`2d6\` frío · sin salvación · terreno difícil {nivel_personaje} asaltos
 
 ## Descripción
 ### Granizo Devastador y Frío Extremo
@@ -431,10 +395,7 @@ Grandes bloques de hielo azotan con violencia un cilindro de **40 pies de radio 
         maxUses: 7,
         availableUses: 6,
         description: `## Corto
-\`1d4 + {floor(nivel_personaje / 2)}\` fuerza · 30 pies
-
-## Resumen
-Acción estándar: proyectil de fuerza que impacta automáticamente por \`1d4 + {floor(nivel_personaje / 2)}\`.
+1 acción estándar · 30 pies · \`1d4 + {floor(nivel_personaje / 2)}\` de fuerza · impacta siempre
 
 ## Descripción
 ### Poder de Escuela de Evocación
@@ -453,10 +414,7 @@ Como acción estándar, lanza un proyectil de fuerza mágica contra un enemigo a
         maxUses: 1,
         availableUses: 1,
         description: `## Corto
-1 conjuro del libro sin preparar
-
-## Resumen
-Una vez al día lanza cualquier conjuro de tu libro sin tenerlo preparado ni gastar espacio.
+1/día · lanza cualquier conjuro de tu libro sin prepararlo · con el bastón empuñado
 
 ## Descripción
 ### Objeto Enlazado
@@ -474,10 +432,7 @@ Permite lanzar **1 conjuro cualquiera** de su libro de conjuros una vez al día 
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+1\` CD evocación · \`+2\` vs RC
-
-## Resumen
-Pasivo: **+1** a la CD de tus evocaciones y **+2** para superar la resistencia a conjuros.
+Pasivo · **+1** a la CD de evocación · **+2** a superar la resistencia a conjuros
 
 ## Descripción
 ### Dote de Especialización Máx
@@ -512,10 +467,7 @@ Aumenta la dificultad de resistencia a todos los conjuros de evocación:
         maxUses: null,
         availableUses: null,
         description: `## Corto
-Prende objetos inflamables
-
-## Resumen
-Enciende a distancia un objeto inflamable no protegido. A voluntad.
+1 acción estándar · prende un objeto inflamable no protegido · a voluntad
 
 ## Descripción
 ### Truco Espontáneo
@@ -535,10 +487,7 @@ Enciende un fuego diminuto con solo chasquear los dedos.
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+4\` CA armadura · {nivel_personaje} h
-
-## Resumen
-Otorga **+4** de armadura a la CA durante {nivel_personaje} horas; también funciona contra incorpóreos.
+Toque · **+4** de armadura a la CA · también contra incorpóreos · {nivel_personaje} horas
 
 ## Descripción
 ### Campo de Fuerza Invisible
@@ -558,10 +507,7 @@ Un halo protector con destellos de escamas rojas rodea a Seoni.
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`1d4 + {floor(nivel_personaje / 3)}\` copias · {nivel_personaje} min
-
-## Resumen
-Crea \`1d4 + {floor(nivel_personaje / 3)}\` dobles ilusorios; cada impacto puede destruir una copia en lugar de dañarte.
+Personal · \`1d4 + {floor(nivel_personaje / 3)}\` dobles ilusorios · cada impacto puede destruir una copia · {nivel_personaje} minutos
 
 ## Descripción
 ### Ilusión Defensiva Avanzada
@@ -581,10 +527,7 @@ Crea copias ilusorias que imitan exactamente cada uno de tus movimientos.
         maxUses: 2,
         availableUses: 2,
         description: `## Corto
-Cono 30 pies · \`6d6\` fuego · Ref CD 17
-
-## Resumen
-Exhala un cono de fuego de 30 pies que causa \`6d6\` (Reflejos mitad, CD 17).
+Cono 30 pies · \`6d6\` de fuego · Reflejos mitad CD 17
 
 ## Descripción
 ### Arma de Aliento del Linaje
@@ -614,10 +557,7 @@ Exhala un cono de fuego abrasador de **30 pies**.
         maxUses: 6,
         availableUses: 4,
         description: `## Corto
-2 garras \`1d4 + 1\` + \`1d6\` fuego
-
-## Resumen
-Durante {nivel_personaje} asaltos obtienes 2 garras de \`1d4 + 1\` más \`1d6\` de fuego.
+2 garras primarias · \`1d4 + 1\` + \`1d6\` de fuego · {nivel_personaje} asaltos
 
 ## Descripción
 ### Armas Naturales Espontáneas
@@ -635,10 +575,7 @@ Las uñas de Seoni se transforman en afiladas garras draconianas rojas.
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+2\` armadura natural · RF 5
-
-## Resumen
-Pasivo: **+2** de armadura natural y resistencia al fuego 5.
+Pasivo · **+2** de armadura natural · resistencia al fuego 5
 
 ## Descripción
 ### Rasgo Pasivo Fisiológico
@@ -673,10 +610,7 @@ La sangre de dragón otorga endurecimiento dérmico y tolerancia al calor:
         maxUses: null,
         availableUses: null,
         description: `## Corto
-\`+1\` moral ataque y vs miedo · 50 pies
-
-## Resumen
-Aliados en 50 pies ganan **+1** de moral al ataque y a salvaciones contra miedo.
+Emanación 50 pies · aliados **+1** de moral al ataque y contra miedo · {nivel_personaje} minutos
 
 ## Descripción
 ### Bendición Marcial
@@ -696,10 +630,7 @@ Infunde valor sagrado en los corazones de los aliados cercanos.
         maxUses: 5,
         availableUses: 4,
         description: `## Corto
-Cura \`{floor(nivel_personaje / 2)}d6\` PG · quita *Fatigado*
-
-## Resumen
-Toque que cura \`{floor(nivel_personaje / 2)}d6\` PG (acción rápida sobre ti) y elimina *Fatigado*. Daña a muertos vivientes.
+Acción rápida (tú) o estándar (aliado) · cura \`{floor(nivel_personaje / 2)}d6\` PG · quita *Fatigado* · daña a muertos vivientes
 
 ## Descripción
 ### Toque Sagrado de Restauración
@@ -730,10 +661,7 @@ Canaliza energía sanadora al tocarse a sí mismo (acción rápida) o a un aliad
         maxUses: 2,
         availableUses: 2,
         description: `## Corto
-\`+3\` ataque · \`+{nivel_personaje}\` daño · \`+3\` CA
-
-## Resumen
-Contra un enemigo malvado: **+3** al ataque y a la CA, y \`+{nivel_personaje}\` al daño (el doble contra ajenos, dragones y muertos vivientes malignos).
+Acción rápida · **+3** al ataque · \`+{nivel_personaje}\` al daño (doble vs ajenos, dragones y muertos vivientes malignos) · **+3** CA
 
 ## Descripción
 ### Juicio Justo contra el Mal
@@ -754,10 +682,7 @@ Designa a una criatura malvada a la vista para descargar la furia de la Espada H
         maxUses: null,
         availableUses: null,
         description: `## Corto
-Inmune al miedo · aliados \`+4\` (10 pies)
-
-## Resumen
-Pasivo: eres inmune al miedo y los aliados a 10 pies ganan **+4** contra miedo.
+Pasivo · inmune al miedo · aliados a 10 pies **+4** contra miedo
 
 ## Descripción
 ### Aura Pasiva Protectora
@@ -781,8 +706,8 @@ El paladín es completamente inmune a cualquier efecto de miedo (mágico o natur
  * - Rasgos pasivos ilimitados.
  * - Enlaces oficiales a Archives of Nethys.
  * - Descripciones exhaustivas en Markdown (encabezados, tablas, listas, citas, código, tiradas).
- * - Secciones especiales en cada descripción: "## Corto" (columna de la tabla del Modo recursos),
- *   "## Resumen" (visible en la card plegada) y "## Descripción" con el detalle completo.
+ * - Sección "## Corto" en cada descripción (visible en la card plegada y bajo cada fila de la tabla
+ *   del Modo recursos), seguida de "## Descripción" con el detalle completo.
  */
 export function generateRandomCharacter(seedIndex?: number): CharacterState {
   const index =

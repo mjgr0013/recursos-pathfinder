@@ -152,41 +152,69 @@ Ataque de toque a distancia: `1d20 + ataque_base + mod_lanzador` contra CA de to
 
 ---
 
-## 🗂️ 6. Secciones Especiales de la Descripción: `## Corto` y `## Resumen`
+## 🗂️ 6. Sección Especial de la Descripción: `## Corto`
 
-Además de las fórmulas, la descripción de un conjuro o rasgo puede incluir dos títulos con un uso especial en la aplicación:
+Además de las fórmulas, la descripción de un conjuro o rasgo puede incluir un título con uso especial en la aplicación:
 
 | Título | Para qué sirve | Dónde se muestra |
 | :--- | :--- | :--- |
-| `## Corto` | Una línea con lo imprescindible para la mesa (daño, CD, duración, alcance). | Columna **Corto** de la tabla del **Modo recursos**. |
-| `## Resumen` | Una o dos frases que explican qué hace el conjuro o rasgo. | En la card sin desplegar. Al pulsar **Ver más** se oculta y se muestra la descripción completa. |
+| `## Corto` | Una línea con lo imprescindible para la mesa (acción, daño, CD, duración, alcance). | En la **card sin desplegar** de la vista estándar (al pulsar **Ver más** se sustituye por el resto de la descripción) y **debajo de su fila** en la tabla del **Modo recursos**, a todo el ancho. |
 
 **Reglas de detección:**
-- Vale cualquier nivel de título (`#` a `######`). No importan las mayúsculas, las tildes ni los adornos: `# RESUMEN`, `### corto:` o `## **Resumen**` funcionan igual.
-- El título debe ser exactamente *Corto* o *Resumen*: `## Corto alcance` o `### Resumen de la plegaria` son títulos normales.
-- Cada sección llega hasta el siguiente título de **igual o mayor nivel**. Los subtítulos más profundos (por ejemplo, un `###` dentro de un `## Resumen`) forman parte de la sección.
-- Pueden ir en cualquier orden y rodeadas de otras secciones. Si aparecen repetidas, se usa la primera.
+- Vale cualquier nivel de título (`#` a `######`). No importan las mayúsculas, las tildes ni los adornos: `# CORTO`, `### corto:` o `## **Corto**` funcionan igual.
+- El título debe ser exactamente *Corto*: `## Corto alcance` es un título normal.
+- La sección llega hasta el siguiente título de **igual o mayor nivel**. Los subtítulos más profundos (por ejemplo, un `###` dentro de un `## Corto`) forman parte de ella.
+- Puede ir en cualquier posición y rodeada de otras secciones. Si aparece repetida, se usa la primera.
 - Los títulos dentro de bloques de código (` ``` `) no cuentan.
-- Ambas son opcionales y admiten fórmulas y variables. La impresión en papel y el popup de **Ver más** muestran siempre la descripción completa.
+- Es opcional y admite fórmulas y variables.
+- **Ver más** (en la card y en el popup de la tabla) muestra el resto de la descripción **sin el `## Corto`**, para no repetirlo. La impresión en papel incluye la descripción completa, Corto incluido.
 
-> **Consejo**: si el detalle de la descripción usa subtítulos `###`, colócalo bajo un `## Descripción` para que no quede incluido dentro del `## Resumen`.
+> **Consejo**: escribe el detalle bajo un `## Descripción` (o cualquier otro título `##`) para que el `## Corto` termine donde empieza el detalle.
 
 ### Plantilla recomendada
 ```markdown
 ## Corto
-`{min(10, nivel_personaje)}d6` fuego · radio 20 pies · Ref mitad
-
-## Resumen
-Explosión de `{min(10, nivel_personaje)}d6` de fuego en un radio de 20 pies. Reflejos mitad (CD {10 + 3 + mod_lanzador}).
+1 acción estándar · `{min(10, nivel_personaje)}d6` de fuego · radio 20 pies · Reflejos mitad CD {10 + 3 + mod_lanzador}
 
 ## Descripción
 ### Mecánica
 - **Tiempo de lanzamiento**: 1 acción estándar
 - **Salvación**: Reflejos mitad
 ```
-- *A nivel 7 con Mod +4*: la tabla muestra `7d6 fuego · radio 20 pies · Ref mitad` y la card plegada *Explosión de 7d6 de fuego… (CD 17)*.
+- *A nivel 7 con Mod +4*: tanto la card plegada como la tabla muestran `1 acción estándar · 7d6 de fuego · radio 20 pies · Reflejos mitad CD 17`.
 
-Los personajes de ejemplo generados desde **Personajes** incluyen estas secciones en todos sus conjuros y rasgos. Esta plantilla también está en la pestaña **Sintaxis** de la Guía de Fórmulas, con los botones **📋 Copiar** y **📥 Insertar**.
+### Cómo se ve en la aplicación
+
+**Vista estándar (card)**: el `## Corto` se ve con la card plegada; al pulsar **▼ Ver más** se sustituye por el resto de la descripción, sin repetir el Corto.
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ 🔮 Conjuro  Nivel 3  🎯 largo (680 pies)        ✨ Lanzar    │
+│ Bola de Fuego                                                │
+│ ──────────────────────────────────────────────────────────── │
+│ ▼ Ver más                                    🌐  ✏️  🗑️      │
+│ 1 acción estándar · 7d6 de fuego · radio 20 pies ·           │
+│ Reflejos mitad CD 17 · prende combustibles                   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Modo recursos (tabla)**: el `## Corto` aparece en una línea propia debajo de la fila del recurso, ocupando todo el ancho de la tabla. Los recursos sin `## Corto` ocupan una sola fila.
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ NOMBRE                 NIVEL     ALCANCE             USOS                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Proyectil Mágico       Nivel 1   medio (170 pies)    2/3   ✨ Lanzar  Ver más │
+│   1 acción estándar · 4 dardos × 1d4 + 1 de fuerza · impactan siempre · ...  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Bola de Fuego          Nivel 3   largo (680 pies)    0/2   ✨ Lanzar  Ver más │
+│   1 acción estándar · 7d6 de fuego · radio 20 pies · Reflejos mitad CD 17    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Conjuro sin Corto      Nivel 2   —                   3/4   ✨ Lanzar  Ver más │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+> **Para verlo con datos reales**: crea un personaje de ejemplo desde **⚙️ Menú → 🎭 Personajes → Nuevo Aleatorio**. Todos sus conjuros y rasgos incluyen `## Corto` y `## Descripción`, con fórmulas que se ajustan al nivel del personaje; activa **▦ Modo recursos** en la barra superior para ver también la tabla. La plantilla está en la pestaña **Sintaxis** de la Guía de Fórmulas, con los botones **📋 Copiar** y **📥 Insertar** y una vista previa con tu personaje.
 
 ---
 

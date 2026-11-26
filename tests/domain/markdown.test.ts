@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, parseInline, isSafeUrl, extractSummary, extractSection, extractShort } from '../../src/domain/markdown';
+import { parseMarkdown, parseInline, isSafeUrl, extractSection, extractShort, removeSection, removeShort } from '../../src/domain/markdown';
 
 describe('Markdown Domain Logic', () => {
   describe('isSafeUrl', () => {
@@ -220,18 +220,18 @@ Canaliza energía positiva.
   });
 });
 
-describe('extractSummary', () => {
-  it('returns null when there is no description or no Resumen heading', () => {
-    expect(extractSummary('')).toBeNull();
-    expect(extractSummary('   ')).toBeNull();
-    expect(extractSummary('# Bola de fuego\nDaño 1d6 por nivel.')).toBeNull();
+describe('extractShort', () => {
+  it('returns null when there is no description or no Corto heading', () => {
+    expect(extractShort('')).toBeNull();
+    expect(extractShort('   ')).toBeNull();
+    expect(extractShort('# Bola de fuego\nDaño 1d6 por nivel.')).toBeNull();
   });
 
-  it('extracts the ## Resumen section placed between other headings', () => {
+  it('extracts the ## Corto section placed between other headings', () => {
     const md = [
       '# Bola de Fuego',
       'Escuela evocación.',
-      '## Resumen',
+      '## Corto',
       'Explosión de **1d6/nivel** de fuego.',
       '',
       'Salvación de Reflejos mitad.',
@@ -240,49 +240,49 @@ describe('extractSummary', () => {
       '### Notas',
       'Más cosas.',
     ].join('\n');
-    expect(extractSummary(md)).toBe('Explosión de **1d6/nivel** de fuego.\n\nSalvación de Reflejos mitad.');
+    expect(extractShort(md)).toBe('Explosión de **1d6/nivel** de fuego.\n\nSalvación de Reflejos mitad.');
   });
 
   it('keeps deeper sub-headings and stops at a heading of the same or higher level', () => {
-    const md = ['## Resumen', 'Intro.', '### Detalle', 'Sub.', '#### Más', 'Hondo.', '# Otro', 'Fuera.'].join('\n');
-    expect(extractSummary(md)).toBe('Intro.\n### Detalle\nSub.\n#### Más\nHondo.');
+    const md = ['## Corto', 'Intro.', '### Detalle', 'Sub.', '#### Más', 'Hondo.', '# Otro', 'Fuera.'].join('\n');
+    expect(extractShort(md)).toBe('Intro.\n### Detalle\nSub.\n#### Más\nHondo.');
   });
 
-  it('runs until the end when Resumen is the last section', () => {
-    expect(extractSummary('# Título\nTexto\n### Resumen\nÚltimo bloque.')).toBe('Último bloque.');
+  it('runs until the end when Corto is the last section', () => {
+    expect(extractShort('# Título\nTexto\n### Corto\nÚltimo bloque.')).toBe('Último bloque.');
   });
 
-  it('matches Resumen at any heading level, case and accent insensitive, with decorations', () => {
-    expect(extractSummary('# RESUMEN\nA')).toBe('A');
-    expect(extractSummary('###### resumen:\nB')).toBe('B');
-    expect(extractSummary('## **Resumen** ##\nC')).toBe('C');
-    expect(extractSummary('## Résumen\nD')).toBe('D');
+  it('matches Corto at any heading level, case and accent insensitive, with decorations', () => {
+    expect(extractShort('# CORTO\nA')).toBe('A');
+    expect(extractShort('###### corto:\nB')).toBe('B');
+    expect(extractShort('## **Corto** ##\nC')).toBe('C');
+    expect(extractShort('## Córto\nD')).toBe('D');
   });
 
   it('does not match headings that only contain the word', () => {
-    expect(extractSummary('## Resumen de la Plegaria\nX')).toBeNull();
-    expect(extractSummary('Resumen\nsin almohadilla')).toBeNull();
-    expect(extractSummary('##Resumen\nsin espacio')).toBeNull();
+    expect(extractShort('## Corto alcance\nX')).toBeNull();
+    expect(extractShort('Corto\nsin almohadilla')).toBeNull();
+    expect(extractShort('##Corto\nsin espacio')).toBeNull();
   });
 
   it('ignores headings inside fenced code blocks', () => {
-    const fakeStart = ['```', '## Resumen', '```', '## Real', 'nada'].join('\n');
-    expect(extractSummary(fakeStart)).toBeNull();
+    const fakeStart = ['```', '## Corto', '```', '## Real', 'nada'].join('\n');
+    expect(extractShort(fakeStart)).toBeNull();
 
-    const fakeEnd = ['## Resumen', 'Antes', '```', '# no corta', '```', 'Después', '## Fin'].join('\n');
-    expect(extractSummary(fakeEnd)).toBe('Antes\n```\n# no corta\n```\nDespués');
+    const fakeEnd = ['## Corto', 'Antes', '```', '# no corta', '```', 'Después', '## Fin'].join('\n');
+    expect(extractShort(fakeEnd)).toBe('Antes\n```\n# no corta\n```\nDespués');
   });
 
-  it('returns null when the Resumen section is empty', () => {
-    expect(extractSummary('## Resumen\n\n   \n## Descripción\nTexto')).toBeNull();
+  it('returns null when the Corto section is empty', () => {
+    expect(extractShort('## Corto\n\n   \n## Descripción\nTexto')).toBeNull();
   });
 
-  it('uses the first Resumen section when there are several', () => {
-    expect(extractSummary('## Resumen\nPrimero\n## Resumen\nSegundo')).toBe('Primero');
+  it('uses the first Corto section when there are several', () => {
+    expect(extractShort('## Corto\nPrimero\n## Corto\nSegundo')).toBe('Primero');
   });
 
   it('handles CRLF line endings', () => {
-    expect(extractSummary('# T\r\n## Resumen\r\nLínea\r\n## Otra\r\nX')).toBe('Línea');
+    expect(extractShort('# T\r\n## Corto\r\nLínea\r\n## Otra\r\nX')).toBe('Línea');
   });
 });
 
@@ -299,20 +299,60 @@ describe('extractSection / extractShort', () => {
     'Texto completo.',
   ].join('\n');
 
-  it('extracts any named section with the same rules as Resumen', () => {
+  it('extracts any named section with the same rules as Corto', () => {
     expect(extractSection(md, 'Descripción')).toBe('Texto completo.');
     expect(extractSection(md, 'descripcion')).toBe('Texto completo.');
     expect(extractSection(md, 'No existe')).toBeNull();
   });
 
-  it('extracts ## Corto independently from ## Resumen', () => {
+  it('treats ## Resumen as a regular section (no special behavior)', () => {
     expect(extractShort(md)).toBe('20d6 fuego, Ref mitad');
-    expect(extractSummary(md)).toBe('Explosión de fuego.\n### Detalle del resumen\nSub.');
+    expect(extractShort(md)).not.toContain('Explosión');
+    expect(extractSection(md, 'Resumen')).toBe('Explosión de fuego.\n### Detalle del resumen\nSub.');
   });
 
   it('matches Corto at any level and ignores longer titles', () => {
     expect(extractShort('### CORTO:\nA')).toBe('A');
     expect(extractShort('## Corto alcance\nB')).toBeNull();
     expect(extractShort('')).toBeNull();
+  });
+});
+
+describe('removeSection / removeShort', () => {
+  it('removes the Corto heading and its content, keeping the rest', () => {
+    const md = ['# Bola de Fuego', 'Intro.', '## Corto', '7d6 fuego', '', '## Descripción', 'Detalle.'].join('\n');
+    expect(removeShort(md)).toBe(['# Bola de Fuego', 'Intro.', '## Descripción', 'Detalle.'].join('\n'));
+  });
+
+  it('removes deeper sub-headings inside Corto and stops at the next same-level heading', () => {
+    const md = ['## Corto', 'A', '### Sub', 'B', '## Descripción', 'C', '### Más', 'D'].join('\n');
+    expect(removeShort(md)).toBe(['## Descripción', 'C', '### Más', 'D'].join('\n'));
+  });
+
+  it('removes a trailing Corto section', () => {
+    expect(removeShort('Texto completo.\n\n### corto:\nLínea')).toBe('Texto completo.');
+  });
+
+  it('returns the text unchanged when there is no Corto (or only in code blocks)', () => {
+    const md = '# Título\n## Corto alcance\nX';
+    expect(removeShort(md)).toBe(md);
+    const code = '```\n## Corto\n```\nfin';
+    expect(removeShort(code)).toBe(code);
+    expect(removeShort('')).toBe('');
+  });
+
+  it('removes only the first occurrence and handles CRLF', () => {
+    expect(removeShort('## Corto\nUno\n## Corto\nDos')).toBe('## Corto\nDos');
+    expect(removeShort('## Corto\r\nUno\r\n## Otra\r\nX')).toBe('## Otra\nX');
+  });
+
+  it('works for any section title', () => {
+    expect(removeSection('## A\n1\n## B\n2', 'b')).toBe('## A\n1');
+  });
+
+  it('agrees with extractSection: removed content is exactly the extracted one', () => {
+    const md = ['Intro', '## Corto', 'Línea corta', '## Descripción', 'Detalle'].join('\n');
+    expect(extractShort(removeShort(md))).toBeNull();
+    expect(removeShort(md)).not.toContain(extractShort(md)!);
   });
 });

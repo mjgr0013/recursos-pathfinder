@@ -167,26 +167,18 @@ export interface DescriptionSection {
 export const DESCRIPTION_SECTIONS: DescriptionSection[] = [
   {
     heading: '## Corto',
-    badge: 'Tabla',
-    description: 'Una línea con lo imprescindible para la mesa: daño, CD, duración o alcance.',
-    whereShown: 'Columna "Corto" de la tabla del Modo recursos.',
+    badge: 'Card y tabla',
+    description: 'Una línea con lo imprescindible para la mesa: acción, daño, CD, duración o alcance.',
+    whereShown:
+      'En la card sin desplegar y debajo de su fila en la tabla del Modo recursos. Al pulsar "Ver más" se muestra el resto de la descripción, sin el Corto.',
   },
-  {
-    heading: '## Resumen',
-    badge: 'Card',
-    description: 'Una o dos frases que explican qué hace el conjuro o rasgo.',
-    whereShown: 'Visible en la card sin desplegar; al pulsar "Ver más" se muestra la descripción completa.',
-  },
-];
+]
 
 /**
- * Plantilla de descripción con las secciones especiales y el detalle completo debajo.
+ * Plantilla de descripción con la sección "## Corto" y el detalle completo debajo.
  */
 export const DESCRIPTION_SECTIONS_TEMPLATE = `## Corto
-\`{min(10, nivel_personaje)}d6\` fuego · radio 20 pies · Ref mitad
-
-## Resumen
-Explosión de \`{min(10, nivel_personaje)}d6\` de fuego en un radio de 20 pies. Reflejos mitad (CD {10 + 3 + mod_lanzador}).
+1 acción estándar · \`{min(10, nivel_personaje)}d6\` de fuego · radio 20 pies · Reflejos mitad CD {10 + 3 + mod_lanzador}
 
 ## Descripción
 ### Mecánica

@@ -56,9 +56,7 @@ export const ResourceTable: React.FC<ResourceTableProps> = ({
   const renderSection = (title: string, icon: string, items: ResourceItem[], typeHeader: string) => {
     if (items.length === 0) return null;
 
-    // La columna "Corto" solo aparece si algún recurso de la sección tiene una sección "## Corto".
-    const shortTexts = new Map(items.map((r) => [r.id, extractShort(r.description ?? '')]));
-    const hasShortColumn = [...shortTexts.values()].some(Boolean);
+    const columnCount = 5;
 
     return (
       <section aria-label={title} className="w-full">
@@ -68,13 +66,11 @@ export const ResourceTable: React.FC<ResourceTableProps> = ({
         </h3>
 
         <div className="w-full overflow-x-auto bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/70 rounded-xl shadow-sm">
-          <table className="w-full text-xs text-left border-collapse">
+          {/* Cada recurso es un <tbody> propio: fila principal + fila "## Corto" a todo el ancho debajo */}
+          <table className="w-full text-xs text-left border-collapse divide-y divide-slate-200 dark:divide-slate-700/60">
             <thead className="bg-slate-50 dark:bg-slate-900/70 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
               <tr>
                 <th scope="col" className="px-3 py-2 font-bold">Nombre</th>
-                {hasShortColumn && (
-                  <th scope="col" className="px-2 py-2 font-bold">Corto</th>
-                )}
                 <th scope="col" className="px-2 py-2 font-bold whitespace-nowrap">{typeHeader}</th>
                 <th scope="col" className="px-2 py-2 font-bold">Alcance</th>
                 <th scope="col" className="px-2 py-2 font-bold text-center">Usos</th>
@@ -83,29 +79,21 @@ export const ResourceTable: React.FC<ResourceTableProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-700/60">
-              {items.map((resource) => {
-                const usage = getResourceUsage(resource, spellSlots);
-                const hasCounter = usage.kind !== 'unlimited';
-                const isSpellSlot = usage.kind === 'spell_slot';
-                const range = resource.range ? resolveRange(resource.range, characterVariables) : '';
+            {items.map((resource) => {
+              const usage = getResourceUsage(resource, spellSlots);
+              const hasCounter = usage.kind !== 'unlimited';
+              const isSpellSlot = usage.kind === 'spell_slot';
+              const range = resource.range ? resolveRange(resource.range, characterVariables) : '';
+              const short = extractShort(resource.description ?? '');
 
-                return (
-                  <tr
-                    key={resource.id}
-                    className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
-                    data-resource-row={resource.id}
-                  >
+              return (
+                <tbody
+                  key={resource.id}
+                  className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+                  data-resource-row={resource.id}
+                >
+                  <tr>
                     <td className="px-3 py-1 font-bold text-sm text-slate-900 dark:text-slate-100">{resource.name}</td>
-                    {hasShortColumn && (
-                      <td className="px-2 py-1 text-slate-700 dark:text-slate-300 resource-short">
-                        {shortTexts.get(resource.id) ? (
-                          <MarkdownRenderer content={shortTexts.get(resource.id)!} variables={characterVariables} />
-                        ) : (
-                          <span className="text-slate-400">—</span>
-                        )}
-                      </td>
-                    )}
                     <td className="px-2 py-1 whitespace-nowrap text-slate-600 dark:text-slate-300">{usage.label}</td>
                     <td className="px-2 py-1 text-cyan-800 dark:text-cyan-300">{range || <span className="text-slate-400">—</span>}</td>
                     <td className="px-2 py-1 text-center whitespace-nowrap">
@@ -148,9 +136,16 @@ export const ResourceTable: React.FC<ResourceTableProps> = ({
                       </div>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
+                  {short && (
+                    <tr>
+                      <td colSpan={columnCount} className="px-3 pb-2 pt-0 text-slate-700 dark:text-slate-300 resource-short">
+                        <MarkdownRenderer content={short} variables={characterVariables} className="[&_p]:my-0" />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              );
+            })}
           </table>
         </div>
       </section>
