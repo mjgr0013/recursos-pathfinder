@@ -42,11 +42,16 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # Nombre único por intento: al relanzar un run ("Re-run jobs") el artefacto del intento
+      # anterior sigue existiendo, y deploy-pages falla si encuentra dos con el mismo nombre.
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
+          name: github-pages-${{ github.run_attempt }}
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
